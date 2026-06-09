@@ -1,7 +1,9 @@
-![Header](https://capsule-render.vercel.app/api?type=waving&height=200&color=23272a,3b4d1a,ffffff&text=VeTwo.Dev&section=header&reversal=false&fontColor=FFFFFF&fontSize=60&fontAlign=50&fontAlignY=45&animation=twinkling&stroke=000000&strokeWidth=2)
+<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=200&color=23272a,3b4d1a,ffffff&text=VeTwo.Dev&section=header&reversal=false&fontColor=FFFFFF&fontSize=60&fontAlign=50&fontAlignY=45&animation=twinkling&stroke=008000&strokeWidth=2" />
+</div>
 
-<div align="center" style="margin-top: -75px; margin-bottom: 20px;">
-  <img src="assets/VeTwo-logo.jpg" alt="VeTwo Logo" width="275" height="275" style="border-radius: 50%; object-fit: cover; box-shadow: 0px 4px 15px rgba(0,0,0,0.4); border: 3px solid #23272a;" />
+<div align="center" style="margin-top: -50px; margin-bottom: 20px;">
+  <img src="assets/VeTwo-logo.jpg" alt="VeTwo Logo" width="200" height="200" style="border-radius: 50%; object-fit: cover; box-shadow: 0px 4px 15px rgba(0,0,0,0.5);" />
 </div>
 
 <div align="center" margin="">
