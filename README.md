@@ -3,7 +3,7 @@
 </div>
 
 <div align="center" style="margin-top: -50px; margin-bottom: 20px;">
-  <img src="assets/VeTwo-logo.jpg" alt="VeTwo Logo" width="200" height="200" style="border-radius: 50%; object-fit: cover; box-shadow: 0px 4px 15px rgba(0,0,0,0.5);" />
+  <img src="assets/Logo.png" alt="VeTwo Logo" width="200" height="200" style="border-radius: 50%; object-fit: cover; box-shadow: 0px 4px 15px rgba(0,0,0,0.5);" />
 </div>
 
 <div align="center" margin="">
