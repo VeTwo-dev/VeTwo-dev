@@ -1,0 +1,28 @@
+{
+  "name": "@vetwo/profile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Data-driven generator for the VeTwo-dev GitHub profile README.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@9.15.9",
+  "scripts": {
+    "profile:update": "tsx scripts/update-profile.ts",
+    "profile:check": "tsx scripts/update-profile.ts --check",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "test": "vitest run",
+    "build": "pnpm run typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@typescript-eslint/eslint-plugin": "^8.19.0",
+    "@typescript-eslint/parser": "^8.19.0",
+    "eslint": "^9.17.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

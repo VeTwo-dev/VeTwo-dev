@@ -1,124 +1,150 @@
 <div align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&height=220&color=0:23272a,50:3b4d1a,100:0f4c25&text=VeTwo.Dev&section=header&reversal=false&fontColor=FFFFFF&fontSize=62&fontAlign=50&fontAlignY=35&animation=twinkling&stroke=00c37a&strokeWidth=1&desc=Where%20Veterinary%20Medicine%20Meets%20Code&descAlign=50&descAlignY=58&descSize=18" />
-</div>
-
-<div align="center" style="margin-top: -60px;">
-  <img src="assets/Logo.png" alt="VeTwo Logo" width="150" height="150" style="border-radius: 50%; object-fit: cover; border: 3px solid #00c37a; box-shadow: 0px 4px 20px rgba(0,195,122,0.5);" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=180&color=0:1a1f1c,50:20301c,100:0f4c25&text=VeTwo.Dev&section=header&fontColor=FFFFFF&fontSize=52&fontAlign=50&fontAlignY=38&animation=fadeIn&stroke=00c37a&strokeWidth=1&desc=Veterinary%20Medicine%20%C3%97%20Software%20Engineering&descAlign=50&descAlignY=62&descSize=16" width="100%" />
 </div>
 
 <div align="center">
-  <h1>👋 Hey, I'm Ahmed Kamal</h1>
-  <p>
-    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=20&duration=3000&pause=1000&color=00C37A&center=true&vCenter=true&width=650&lines=Founder+%40+VeTwo.Dev;Veterinary+Software+Engineer;Building+LP-Powered+Diet+Formulation+Engines;TypeScript+%7C+Node.js+%7C+Optimization+Solvers" alt="Typing SVG" />
-  </p>
+  <img src="assets/Logo.png" alt="VeTwo" width="96" height="96" style="border-radius:50%;" />
+  <h2>Ahmed Kamal</h2>
+  <p>Veterinary Student · Software Engineer · Founder of <a href="https://vetwo.dev">VeTwo</a></p>
 </div>
 
-<p align="center">
-  <a href="https://vetwo.dev"><img src="https://img.shields.io/badge/Website-vetwo.dev-00C37A?style=for-the-badge&logo=googlechrome&logoColor=white" /></a>
-  <a href="https://www.instagram.com/vetwo.dev/"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white" /></a>
-  <a href="#"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" /></a>
+---
+
+### About
+
+I'm a veterinary student who builds production software for animal health and nutrition. My main focus is **VeTwo** — an open-source toolchain that applies proper software-engineering practices (typed APIs, dimensional-analysis engines, linear-programming solvers) to problems that veterinary and animal-nutrition software usually gets wrong.
+
+Most of what's here is TypeScript: a dependency-free unit/dimensional-analysis engine, a nutrition domain layer built on top of it, and the developer tooling (CLI scaffolding, project intelligence, a documentation generator) that keeps the rest of the ecosystem consistent.
+
+### What is VeTwo?
+
+VeTwo is a small, real open-source ecosystem rather than a single app. Each package does one job and composes with the others:
+
+- a **unit engine** that does real dimensional analysis so incompatible units (e.g. `%` vs `mg/kg`) can never silently combine
+- a **nutrition domain layer** on top of it, which turns feed/animal data into numbers an LP solver can consume directly
+- an **application layer** where that math becomes an actual diet-formulation tool
+- **developer tooling** (scaffolding, project auditing, a docs generator, a package registry) that supports building and shipping the rest
+
+<!-- AUTO:ECOSYSTEM:START -->
+**Core Engine**
+- [`units`](https://github.com/VeTwo-dev/units) — A small, dependency-free scientific unit & dimensional-analysis engine for TypeScript.
+
+**Domain Layer**
+- [`nutrition-units`](https://github.com/VeTwo-dev/nutrition-units) — Nutrition & feed-formulation calculation rules built on @vetwo/units — turns unit-safe feed/animal data into numbers an LP solver can consume.
+
+**Applications**
+- [`Feed-Formulation`](https://github.com/VeTwo-dev/Feed-Formulation)
+
+**Developer Tools**
+- [`whichenv`](https://github.com/VeTwo-dev/whichenv) — A JavaScript & TypeScript project intelligence engine — detects frameworks, runtimes, tooling, and produces a health score.
+- [`Repo-Fetch`](https://github.com/VeTwo-dev/Repo-Fetch) — Downloads selected files and folders from Git repositories without cloning the entire repository.
+- [`Cli-sound`](https://github.com/VeTwo-dev/Cli-sound) — Production-ready event-driven sound engine for CLI applications.
+- [`Create-VeTwo-Pack`](https://github.com/VeTwo-dev/Create-VeTwo-Pack)
+
+**Infrastructure**
+- [`VeTwo-Market-Place`](https://github.com/VeTwo-dev/VeTwo-Market-Place) — The official Git-based Registry for the VeTwo ecosystem — stores, validates, indexes, and distributes reusable resources.
+
+**Documentation**
+- [`Docs`](https://github.com/VeTwo-dev/Docs) — Documentation generator for JavaScript/TypeScript: Markdown, MDX, and automatic API docs from source.
+<!-- AUTO:ECOSYSTEM:END -->
+
+### Featured Projects
+
+<!-- AUTO:FEATURED:START -->
+#### [units](https://github.com/VeTwo-dev/units)
+
+A small, dependency-free scientific unit & dimensional-analysis engine for TypeScript.
+
+`TypeScript` · ⭐ 1 · updated 2mo ago
+
+---
+
+#### [nutrition-units](https://github.com/VeTwo-dev/nutrition-units)
+
+Nutrition & feed-formulation calculation rules built on @vetwo/units — turns unit-safe feed/animal data into numbers an LP solver can consume.
+
+`TypeScript` · ⭐ 1 · updated 2mo ago
+
+---
+
+#### [Feed-Formulation](https://github.com/VeTwo-dev/Feed-Formulation)
+
+_No description set on GitHub yet._
+
+`TypeScript` · ⭐ 1 · updated 2mo ago
+
+---
+
+#### [whichenv](https://github.com/VeTwo-dev/whichenv)
+
+A JavaScript & TypeScript project intelligence engine — detects frameworks, runtimes, tooling, and produces a health score.
+
+`TypeScript` · updated 1mo ago
+
+---
+
+#### [Repo-Fetch](https://github.com/VeTwo-dev/Repo-Fetch)
+
+Downloads selected files and folders from Git repositories without cloning the entire repository.
+
+`TypeScript` · updated 1mo ago
+
+---
+
+#### [VeTwo-Market-Place](https://github.com/VeTwo-dev/VeTwo-Market-Place)
+
+The official Git-based Registry for the VeTwo ecosystem — stores, validates, indexes, and distributes reusable resources.
+
+`TypeScript` · updated 27d ago
+<!-- AUTO:FEATURED:END -->
+
+### Recent Work
+
+<!-- AUTO:ACTIVITY:START -->
+- [`Docs`](https://github.com/VeTwo-dev/Docs) — recently updated (today, Sep 2026)
+- [`Create-VeTwo-Pack`](https://github.com/VeTwo-dev/Create-VeTwo-Pack) — recently updated (today, Sep 2026)
+- [`Units-manager`](https://github.com/VeTwo-dev/Units-manager) — recently updated (22d ago, Aug 2026)
+- [`Cli`](https://github.com/VeTwo-dev/Cli) — recently updated (22d ago, Aug 2026)
+- [`VeTwo-Market-Place`](https://github.com/VeTwo-dev/VeTwo-Market-Place) — recently updated (27d ago, Aug 2026)
+<!-- AUTO:ACTIVITY:END -->
+
+### Technology Landscape
+
+<!-- AUTO:LANGUAGES:START -->
+`TypeScript  ` ████████████████████ 99.9%
+
+`CSS         ` █░░░░░░░░░░░░░░░░░░░ 0.1%
+
+`JavaScript  ` █░░░░░░░░░░░░░░░░░░░ 0.0%
+
+<sub>Aggregated from language bytes across non-fork public repositories — reflects repository usage, not the complete list of languages I know.</sub>
+<!-- AUTO:LANGUAGES:END -->
+
+### GitHub Snapshot
+
+<!-- AUTO:STATS:START -->
+| Metric | Value |
+| --- | --- |
+| Public repositories | 13 |
+| Followers | 3 |
+| Total stars | 4 |
+| Total forks | 0 |
+
+<sub>Pulled directly from the GitHub API for [@VeTwo-dev](https://github.com/VeTwo-dev).</sub>
+<!-- AUTO:STATS:END -->
+
+### Open Source
+
+VeTwo is fully open source. Issues, discussions, and pull requests on any of the repositories above are welcome — especially from other developers working at the intersection of veterinary medicine, animal nutrition, or agtech.
+
+### Connect
+
+<p>
+  <a href="https://vetwo.dev">Website</a> ·
+  <a href="https://www.instagram.com/vetwo.dev/">Instagram</a> ·
+  <a href="https://github.com/VeTwo-dev">GitHub</a>
 </p>
 
----
-
-### 🩺 About VeTwo
-
-**VeTwo** is an open-source movement bridging **Veterinary Medicine** and **Software Engineering** — built by a veterinary student who codes production systems for animal health and nutrition. The mission: give the global veterinary community the same quality of tooling that modern software engineering takes for granted.
-
-```txt
-const ahmed = {
-  role: "Veterinary Student & Software Engineer",
-  focus: "Feed Formulation & Diet Balancing Systems",
-  specialty: "Linear Programming (LP) solvers for nutrient optimization",
-  stack: ["TypeScript", "Node.js", "HiGHS WASM", "Bun"],
-  mission: "Bridging Veterinary Medicine & Advanced Technology 🐾💻",
-};
-```
-
-- 🔭 Currently engineering **LP-based diet formulation & feed optimization tools** for livestock nutrition
-- 🛠️ Building the **VeTwo open-source toolchain**: CLI scaffolding, linting configs, and rendering frameworks for TypeScript teams
-- 🌱 Studying veterinary medicine while shipping production-grade npm packages
-- 👯 Open to collaborating on **VetTech** open-source projects
-- 💬 Ask me about **LP solvers, TypeScript architecture, CLI tooling, or Veterinary Nutrition Science**
-
----
-
-## 🚀 Featured Projects
-
-| Project | Description | Stack |
-|---|---|---|
-| 🥗 **[Diet Formulation Engine](https://github.com/VeTwo-dev/diet-formulation-engine)** | LP-based diet & ration balancing engine for livestock nutrition, powered by the **HiGHS WASM solver** — optimizes CP, DE, Ca & P simultaneously across arbitrary feeds, with a full business validation layer and infeasibility diagnostics. | `TypeScript` `HiGHS WASM` `LP Solver` |
-| 📦 **[create-vetwo-pack](https://github.com/VeTwo-dev/create-vetwo-pack)** | Production-ready CLI scaffolding tool generating opinionated TypeScript package skeletons & monorepos. | `Bun` `tsup` `Vitest` `Turborepo` `Changesets` |
-| 🖥️ **[cli-forge](https://github.com/VeTwo-dev/cli-forge)** | General-purpose CLI rendering framework that wraps arbitrary functions as self-rendering, interactive command-line tools. | `TypeScript` `Node.js` |
-| 🧹 **[@vetwo/eslint-config](https://github.com/VeTwo-dev/vetwo-eslint-config)** | Shared ESLint Flat Config package with dual ESM/CJS output, type-aware rules, and presets for TS, React, Next.js, Vitest & Turborepo. | `ESLint` `TypeScript` |
-
-<div align="center"><i>Replace links above with the exact repo URLs if they differ.</i></div>
-
----
-
-## 🛠️ Tech Stack & Tools
-
-### Languages & Core
-![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)
-
-### Runtime, Frameworks & Solvers
-![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) ![Bun](https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white) ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white) ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB) ![WASM](https://img.shields.io/badge/WebAssembly-654FF0?style=for-the-badge&logo=webassembly&logoColor=white)
-
-### Data & Storage
-![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white) ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white) ![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
-
-### Tooling, DevOps & Hardware
-![Linux](https://img.shields.io/badge/linux-%23FCC624.svg?style=for-the-badge&logo=linux&logoColor=black) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white) ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white) ![PNPM](https://img.shields.io/badge/pnpm-%234a4a4a.svg?style=for-the-badge&logo=pnpm&logoColor=f69220) ![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white) ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white) ![Raspberry Pi](https://img.shields.io/badge/-Raspberry_Pi-C51A4A?style=for-the-badge&logo=Raspberry-Pi)
-
----
-
-## 📊 GitHub Analytics
-
 <div align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=VeTwo-dev&show_icons=true&theme=github_dark&hide_border=true&count_private=true&include_all_commits=true" alt="GitHub Stats" width="48%" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=VeTwo-dev&layout=compact&theme=github_dark&hide_border=true&langs_count=8" alt="Top Languages" width="38%" />
-</div>
-
-<div align="center">
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=VeTwo-dev&theme=github-dark-blue&hide_border=true" alt="GitHub Streak" width="70%" />
-</div>
-
-<div align="center">
-  <img src="https://github-profile-trophy.vercel.app/?username=VeTwo-dev&theme=onedark&no-frame=true&row=1&column=7&margin-w=8" alt="Trophies" width="90%" />
-</div>
-
-<div align="center">
-  <img src="https://github-readme-activity-graph.vercel.app/graph?username=VeTwo-dev&theme=react-dark&hide_border=true&area=true" alt="Activity Graph" width="95%" />
-</div>
-
-<div align="center"><i>Stats update automatically — GitHub username assumed as <code>VeTwo-dev</code>; swap it for your real handle if different.</i></div>
-
----
-
-## 🌐 Let's Connect & Build the Future of VetTech
-
-<div align="center">
-  <a href="https://vetwo.dev">
-    <img src="https://img.shields.io/badge/🌐_Website-vetwo.dev-23272a?style=for-the-badge" />
-  </a>
-  <a href="https://www.instagram.com/vetwo.dev/">
-    <img src="https://img.shields.io/badge/Instagram-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white" />
-  </a>
-  <a href="https://linkedin.com/in/YOUR-LINKEDIN-USERNAME">
-    <img src="https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white" />
-  </a>
-</div>
-
-<p align="center">
-  <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=ts,js,nodejs,bun,nextjs,go,python,postgres,mongodb,redis,prisma,docker,linux,git,githubactions,pnpm,vitest&perline=17" />
-  </a>
-</p>
-
-<div align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&height=120&color=0:0f4c25,50:3b4d1a,100:23272a&section=footer" />
-</div>
-
-<div align="center">
-  <sub>🐾 Built with care by the <b>VeTwo</b> community — forging the future of Veterinary Technology, one commit at a time.</sub>
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=100&color=0:0f4c25,50:20301c,100:1a1f1c&section=footer" width="100%" />
 </div>
