@@ -3,8 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "ready": "node scripts/generate-snake.mjs",
     "snk": "node scripts/generate-snake.mjs",
     "readme": "node scripts/build-readme.mjs",
+    "projects": "node scripts/generate-project-cards.mjs",
     "ci": "node scripts/ci.mjs",
     "ship": "node scripts/ci.mjs"
   },
