@@ -1,63 +1,6 @@
-<p align="right"> <img src="https://komarev.com/ghpvc/?username=VeTwo-dev&label=visitors%20&color=129e00&style=plastic" alt="hanshulll" /> </p>
+<!-- This file is generated from profile/*.md — do not edit directly. Run `pnpm readme` to regenerate. -->
 
-
-[![VeTwo-dev's Github Activity Graph](https://github-readme-activity-graph-lemon-theta.vercel.app/graph?username=VeTwo-dev&custom_title=VeTwo-dev's%20GitHub%20Activity%20Graph&bg_color=161B22&color=00C853&line=00C853&point=00C853&area=true&hide_border=true)](https://github.com/ashutosh00710/github-readme-activity-graph)
-
-<h3><b><samp>Contribution Graph</samp></b></h3>
-
-<picture>
-  <source
-    media="(prefers-color-scheme: dark)"
-    srcset="https://raw.githubusercontent.com/VeTwo-dev/VeTwo-dev/output/github-contribution-grid-snake-dark.svg"
-  >
-  <source
-    media="(prefers-color-scheme: light)"
-    srcset="https://raw.githubusercontent.com/VeTwo-dev/VeTwo-dev/output/github-contribution-grid-snake.svg"
-  >
-  <img
-    alt="GitHub contribution grid snake animation"
-    src="https://raw.githubusercontent.com/VeTwo-dev/VeTwo-dev/output/github-contribution-grid-snake.svg"
-  >
-</picture>
-
-
-<picture>
-  <source
-    media="(prefers-color-scheme: dark)"
-    srcset="https://raw.githubusercontent.com/VeTwo-dev/VeTwo-dev/output/github-contribution-grid-snake-dark.svg"
-  >
-  <source
-    media="(prefers-color-scheme: light)"
-    srcset="https://raw.githubusercontent.com/VeTwo-dev/VeTwo-dev/output/github-contribution-grid-snake.svg"
-  >
-  <img
-    alt="GitHub contribution grid snake animation"
-    src="https://raw.githubusercontent.com/VeTwo-dev/VeTwo-dev/output/github-contribution-grid-snake.svg"
-  >
-</picture>
-
-
-
-<p align="center">
-<a href="https://github.com/VeTwo-dev">
-  <img height="180em" src="https://github-readme-stats-eight-theta.vercel.app/api?username=VeTwo-dev&show_icons=true&theme=github_dark&include_all_commits=true&count_private=true&title_color=2ea043&icon_color=2ea043&text_color=c9d1d9&bg_color=0d1117"/>
-  <img height="180em" src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=VeTwo-dev&layout=compact&langs_count=8&theme=github_dark&title_color=2ea043&text_color=c9d1d9&bg_color=0d1117"/>
-</a>
-</p>
-
-
-
-
-
-<p align="center">
- <a href="https://github.com/VeTwo-dev/readme-typing-svg"><img src="https://readme-typing-svg.herokuapp.com?lines=Full-Stack+Web+Developer;DS%20|%20AI%20|%20ML%20Enthusiast;Graphic%20Designer;Always%20learning%20new%20things&center=true&width=500&height=50&font=georgia"></a>
-</p>
-
-
-## 🔥 Streak Stats
-
-[![GitHub Streak](https://github-readme-streak-stats.herokuapp.com?user=VeTwo-dev&theme=soft-green&hide_border=true&border_radius=7.5&timezone=EEST&ring=308A74A1)](https://git.io/streak-stats)
-
+<p align="right"><img src="https://komarev.com/ghpvc/?username=VeTwo-dev&label=visitors%20&color=129e00&style=plastic" alt="visitors" /></p>
 
 <div align="center">
 
@@ -65,7 +8,7 @@
 
 <br />
 
-<img src="assets/Logo.png" alt="VeTwo" width="110" height="110" />
+<img src="./assets/Logo.png" alt="VeTwo" width="110" height="110" />
 
 <br />
 
@@ -92,15 +35,17 @@
 
 </div>
 
----
+<p align="center">
+  <a href="https://github.com/VeTwo-dev/readme-typing-svg"><img src="https://readme-typing-svg.herokuapp.com?lines=Full-Stack+Web+Developer;DS%20|%20AI%20|%20ML%20Enthusiast;Graphic%20Designer;Always%20learning%20new%20things&center=true&width=500&height=50&font=georgia"></a>
+</p>
 
 ## 🧬 About
 
-I'm a veterinary student who builds production software for animal health and nutrition.
+I'm a veterinary student who builds production-grade software for animal health and nutrition.
 
-My main focus is **VeTwo** — an open-source ecosystem that applies software-engineering practices to problems in veterinary and animal-nutrition software.
+My main focus is **VeTwo** — an open-source ecosystem that applies software-engineering practices to veterinary and animal-nutrition problems. Instead of one large monolithic app, the ecosystem is a collection of small, focused packages with clear responsibilities.
 
-The ecosystem focuses on:
+**Focus areas:**
 
 - **Type-safe scientific computation**
 - **Dimensional analysis**
@@ -110,9 +55,7 @@ The ecosystem focuses on:
 - **Documentation infrastructure**
 - **Open-source ecosystem infrastructure**
 
-Most of the ecosystem is written in **TypeScript**, with each package designed around a specific responsibility rather than one large monolithic application.
-
----
+Most of the ecosystem is written in **TypeScript**, each package designed to do one thing well.
 
 <div align="center">
 
@@ -243,8 +186,6 @@ CLI tooling, project intelligence, documentation generation, package registries,
 </table>
 
 <!-- AUTO:ECOSYSTEM:END -->
-
----
 
 <div align="center">
 
@@ -385,8 +326,6 @@ Recently updated · 27d ago, Aug 2026
 
 <!-- AUTO:ACTIVITY:END -->
 
----
-
 <div align="center">
 
 ## 💻 Technology Landscape
@@ -400,6 +339,41 @@ Recently updated · 27d ago, Aug 2026
 <h3 align="left">Languages and Tools:</h3>
 <p align="left"> <a href="https://developer.mozilla.org/en-US/docs/Web/bash" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=bash" alt="bash" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/css3" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=css" alt="css3" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/docker" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=docker" alt="docker" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/express" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=express" alt="express" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/git" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=git" alt="git" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/html5" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=html" alt="html5" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/javascript" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=js" alt="javascript" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/linux" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=linux" alt="linux" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/mongodb" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=mongodb" alt="mongodb" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/nestjs" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=nestjs" alt="nestjs" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/nextjs" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=nextjs" alt="nextjs" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/nodejs" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=nodejs" alt="nodejs" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/openresty" target="_blank" rel="noreferrer"> <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" alt="openresty" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/postgresql" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=postgres" alt="postgresql" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/python" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=py" alt="python" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/react" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=react" alt="react" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/redis" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=redis" alt="redis" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/rust" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=rust" alt="rust" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/sqlite" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=sqlite" alt="sqlite" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/tailwind" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=tailwind" alt="tailwind" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/typescript" target="_blank" rel="noreferrer"> <img src="https://skillicons.dev/icons?i=ts" alt="typescript" width="40" height="40"/> </a></p>
 
+</div>
+
+<!-- AUTO:LANGUAGES:END -->
+
+## 📊 GitHub Activity
+
+[![VeTwo-dev's Github Activity Graph](https://github-readme-activity-graph-lemon-theta.vercel.app/graph?username=VeTwo-dev&custom_title=VeTwo-dev's%20GitHub%20Activity%20Graph&bg_color=161B22&color=00C853&line=00C853&point=00C853&area=true&hide_border=true)](https://github.com/ashutosh00710/github-readme-activity-graph)
+
+<h3><b><samp>Contribution Graph</samp></b></h3>
+
+<picture>
+  <source
+    media="(prefers-color-scheme: dark)"
+    srcset="./assets/github/github-contribution-grid-snake-dark.svg"
+  />
+  <source
+    media="(prefers-color-scheme: light)"
+    srcset="./assets/github/github-contribution-grid-snake.svg"
+  />
+  <img
+    src="./assets/github/github-contribution-grid-snake.svg"
+    alt="GitHub contribution grid snake animation"
+  />
+</picture>
+
+<p align="center">
+<a href="https://github.com/VeTwo-dev">
+  <img height="180em" src="https://github-readme-stats-eight-theta.vercel.app/api?username=VeTwo-dev&show_icons=true&theme=github_dark&include_all_commits=true&count_private=true&title_color=2ea043&icon_color=2ea043&text_color=c9d1d9&bg_color=0d1117"/>
+  <img height="180em" src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=VeTwo-dev&layout=compact&langs_count=8&theme=github_dark&title_color=2ea043&text_color=c9d1d9&bg_color=0d1117"/>
+</a>
+</p>
+
+## 🔥 Streak Stats
+
+[![GitHub Streak](https://github-readme-streak-stats.herokuapp.com?user=VeTwo-dev&theme=soft-green&hide_border=true&border_radius=7.5&timezone=EEST&ring=308A74A1)](https://git.io/streak-stats)
 
 ```console
 VeTwo-dev@github:~$ ./welcome.sh
@@ -457,4 +431,5 @@ CATching bugs in code...
 [bug] .*' /  .*' ; .*`- +'  `*' 
       `*-*   `*-*  `*-*'
 ```
+
 # VeTwo-dev
