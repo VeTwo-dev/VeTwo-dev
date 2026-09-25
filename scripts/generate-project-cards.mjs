@@ -55,13 +55,13 @@ function generateCard(repo, thumbnail, description) {
   const safeThumb = escapeHtml(thumbSrc);
   const thumbHtml = `        <a href="${url}"><img src="${safeThumb}" alt="${name}" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>`;
 
-  const metaParts = [];
-  if (lang) metaParts.push(`<span>${lang}</span>`);
-  if (topics.length > 0) metaParts.push(`<span>${topics.map((t) => escapeHtml(t)).join(" · ")}</span>`);
-  if (pushed) metaParts.push(`<span>Updated ${escapeHtml(pushed)}</span>`);
-  const meta = metaParts.length ? `<div style="font-size:11px; color:#7a7a7a; margin:6px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${metaParts.join(" · ")}</div>` : "";
+  const langTopicParts = [];
+  if (lang) langTopicParts.push(`<span>${lang}</span>`);
+  if (topics.length > 0) langTopicParts.push(`<span>${topics.map((t) => escapeHtml(t)).join(" · ")}</span>`);
+  const langTopicHtml = langTopicParts.length ? `<div style="font-size:11px; color:#7a7a7a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${langTopicParts.join(" · ")}</div>` : "";
+  const dateHtml = pushed ? `<div style="font-size:10px; color:#484f58; margin-top:2px;">🕓 ${escapeHtml(pushed)}</div>` : "";
 
-  return `    <td width="33.33%" valign="top" style="padding:8px;">
+  return `    <td width="50%" valign="top" style="padding:8px;">
       <div style="border:1px solid #252525; border-radius:8px; padding:12px; background:#0d1117; height:280px; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
 ${thumbHtml}
@@ -69,7 +69,9 @@ ${thumbHtml}
           <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">${desc}</div>
         </div>
         <div>
-${meta}          <a href="${url}" style="font-size:12px; color:#8957e5; text-decoration:none;">View Repository →</a>
+          ${langTopicHtml}
+          ${dateHtml}
+          <a href="${url}" style="font-size:12px; color:#8957e5; text-decoration:none; display:inline-block; margin-top:4px;">View Repository →</a>
         </div>
       </div>
     </td>`;
@@ -119,12 +121,12 @@ async function main() {
     let table = "<!-- This section is generated automatically. Do not edit directly. -->\n";
     table += "## Recent Projects\n\n";
     table += '<table style="width:100%; table-layout:fixed;">\n';
-    for (let i = 0; i < withThumbs.length; i += 3) {
+    for (let i = 0; i < withThumbs.length; i += 2) {
       table += "  <tr>\n";
-      for (let j = 0; j < 3; j++) {
+      for (let j = 0; j < 2; j++) {
         const item = withThumbs[i + j];
         if (item) table += generateCard(item.repo, item.thumbnail, item.description) + "\n";
-        else table += `    <td width="33.33%" valign="top" style="padding:8px;"></td>\n`;
+        else table += `    <td width="50%" valign="top" style="padding:8px;"></td>\n`;
       }
       table += "  </tr>\n";
     }

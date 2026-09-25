@@ -65,12 +65,12 @@ function generateCard(repo, thumbnail, description) {
   const safeThumb = escapeHtml(thumbSrc);
   const thumbHtml = `        <a href="${url}"><img src="${safeThumb}" alt="${name}" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>`;
 
-  const metaParts = [];
-  if (lang) metaParts.push(`<span>${lang}</span>`);
-  metaParts.push(`<span>⭐ ${stars}</span>`);
-  if (forks > 0) metaParts.push(`<span>⑂ ${forks}</span>`);
-  if (pushed) metaParts.push(`<span>Updated ${escapeHtml(pushed)}</span>`);
-  const meta = `<div style="font-size:11px; color:#7a7a7a; margin:6px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${metaParts.join(" · ")}</div>`;
+  const langStarsParts = [];
+  if (lang) langStarsParts.push(`<span>${lang}</span>`);
+  langStarsParts.push(`<span>⭐ ${stars}</span>`);
+  if (forks > 0) langStarsParts.push(`<span>⑂ ${forks}</span>`);
+  const langStarsHtml = langStarsParts.length ? `<div style="font-size:11px; color:#7a7a7a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${langStarsParts.join(" · ")}</div>` : "";
+  const dateHtml = pushed ? `<div style="font-size:10px; color:#484f58; margin-top:2px;">🕓 ${escapeHtml(pushed)}</div>` : "";
 
   return `    <td width="33.33%" valign="top" style="padding:8px;">
       <div style="border:1px solid #252525; border-radius:8px; padding:12px; background:#0d1117; height:280px; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
@@ -80,7 +80,9 @@ ${thumbHtml}
           <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">${desc}</div>
         </div>
         <div>
-${meta}          <a href="${url}" style="font-size:12px; color:#8957e5; text-decoration:none;">View Repository →</a>
+          ${langStarsHtml}
+          ${dateHtml}
+          <a href="${url}" style="font-size:12px; color:#8957e5; text-decoration:none; display:inline-block; margin-top:4px;">View Repository →</a>
         </div>
       </div>
     </td>`;
