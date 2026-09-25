@@ -1,0 +1,10 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="675" fill="#161b22" rx="16"/>
+  <rect x="0" y="0" width="1200" height="675" fill="none" stroke="#58a6ff" stroke-width="1" rx="16" opacity="0.2"/>
+  <circle cx="600" cy="300" r="180" fill="#58a6ff" opacity="0.06"/>
+  <circle cx="600" cy="300" r="120" fill="#58a6ff" opacity="0.1"/>
+  <text x="600" y="320" font-family="JetBrains Mono, monospace" font-size="72" fill="#58a6ff" text-anchor="middle" opacity="0.9">⬢</text>
+  <text x="600" y="420" font-family="Inter, sans-serif" font-size="42" font-weight="700" fill="#ffffff" text-anchor="middle">marketplace-fetch-pack</text>
+  <text x="600" y="460" font-family="Inter, sans-serif" font-size="16" fill="#8b949e" text-anchor="middle">TypeScript project</text>
+  <text x="600" y="500" font-family="JetBrains Mono, monospace" font-size="12" fill="#7a7a7a" text-anchor="middle">TypeScript</text>
+</svg>

@@ -1,0 +1,11 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="675" fill="#0f172a" rx="16"/>
+  <rect x="0" y="0" width="480" height="675" fill="#2ea043" opacity="0.08" rx="16"/>
+  <rect x="40" y="40" width="400" height="400" fill="none" stroke="#2ea043" stroke-width="1" rx="12" opacity="0.2"/>
+  <text x="240" y="260" font-family="JetBrains Mono, monospace" font-size="96" fill="#2ea043" text-anchor="middle" opacity="0.3">⬢</text>
+  <text x="520" y="260" font-family="Inter, sans-serif" font-size="36" font-weight="700" fill="#ffffff">nutrition-units</text>
+  <text x="520" y="310" font-family="Inter, sans-serif" font-size="16" fill="#c9d1d9">TypeScript project</text>
+  <text x="520" y="360" font-family="JetBrains Mono, monospace" font-size="12" fill="#2ea043">TypeScript · VeTwo</text>
+  <text x="520" y="390" font-family="JetBrains Mono, monospace" font-size="11" fill="#7a7a7a"></text>
+  <rect x="520" y="420" width="80" height="3" fill="#2ea043" rx="1"/>
+</svg>

@@ -5,14 +5,11 @@ import {
   USER,
   sanitize,
   fetchAllRepos,
-  fetchWithTimeout,
-  detectThumbnail,
   escapeHtml,
   formatDate,
   getRepoDescription,
-  getLocalPlaceholder,
-  ensureLocalThumbnail,
 } from "./lib/github.mjs";
+import { getLocalThumbnailPath, getPlaceholderPath, localThumbnailExists } from "./lib/thumbnails.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -103,27 +100,29 @@ async function main() {
 
     const withThumbs = [];
     for (const repo of top) {
-      console.log(`[stars] Checking thumbnail for ${repo.name}...`);
-      let thumb = await detectThumbnail(repo, token);
-      let finalThumb = getLocalPlaceholder();
-      if (thumb) {
+      const localSvg = getLocalThumbnailPath(repo.name, "svg");
+      const localPng = getLocalThumbnailPath(repo.name, "png");
+      let finalThumb = getPlaceholderPath();
+      try {
+        const { stat } = await import("node:fs/promises");
         try {
-          const res = await fetchWithTimeout(thumb, { method: "HEAD" }, 3000);
-          if (res.ok) {
-            console.log(`  ✓ Thumbnail: ${thumb}`);
-            finalThumb = await ensureLocalThumbnail(thumb, repo.name);
-            if (finalThumb !== thumb) console.log(`  → Cached locally: ${finalThumb}`);
-          } else {
-            console.log(`  ⚠ Not reachable (${res.status}), using placeholder`);
-            finalThumb = getLocalPlaceholder();
-          }
+          await stat(path.join(root, localSvg.replace("./", "")));
+          finalThumb = localSvg;
+          console.log(`[stars] Thumbnail for ${repo.name}: ${finalThumb} (local SVG)`);
         } catch {
-          console.log(`  ⚠ Check failed, using placeholder`);
-          finalThumb = getLocalPlaceholder();
+          await stat(path.join(root, localPng.replace("./", "")));
+          finalThumb = localPng;
+          console.log(`[stars] Thumbnail for ${repo.name}: ${finalThumb} (local PNG)`);
         }
-      } else {
-        console.log(`  ℹ No thumbnail, using placeholder`);
-        finalThumb = getLocalPlaceholder();
+      } catch {
+        const existing = await localThumbnailExists(repo.name);
+        if (existing) {
+          finalThumb = existing;
+          console.log(`[stars] Thumbnail for ${repo.name}: ${finalThumb} (cached)`);
+        } else {
+          console.log(`[stars] Thumbnail for ${repo.name}: placeholder`);
+          finalThumb = getPlaceholderPath();
+        }
       }
       const desc = await getRepoDescription(repo, token).then(escapeHtml);
       withThumbs.push({ repo, thumbnail: finalThumb, description: desc });

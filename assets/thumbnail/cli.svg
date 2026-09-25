@@ -1,0 +1,13 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="675" fill="#0d1117" rx="16"/>
+  <rect x="40" y="40" width="1120" height="595" fill="none" stroke="#8957e5" stroke-width="2" rx="12" opacity="0.3"/>
+  <circle cx="1000" cy="80" r="120" fill="#8957e5" opacity="0.08"/>
+  <circle cx="1100" cy="150" r="80" fill="#8957e5" opacity="0.05"/>
+  <rect x="60" y="60" width="60" height="60" fill="#8957e5" rx="8" opacity="0.15"/>
+  <text x="80" y="95" font-family="JetBrains Mono, monospace" font-size="28" fill="#8957e5" text-anchor="middle">⬢</text>
+  <text x="140" y="85" font-family="Inter, sans-serif" font-size="14" fill="#7a7a7a" letter-spacing="2">VeTwo • TypeScript</text>
+  <text x="60" y="320" font-family="Inter, sans-serif" font-size="48" font-weight="700" fill="#ffffff">Cli</text>
+  <text x="60" y="380" font-family="Inter, sans-serif" font-size="18" fill="#c9d1d9">TypeScript project</text>
+  <text x="60" y="430" font-family="JetBrains Mono, monospace" font-size="13" fill="#7a7a7a">TypeScript </text>
+  <rect x="60" y="500" width="200" height="4" fill="#8957e5" rx="2"/>
+</svg>

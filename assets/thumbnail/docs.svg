@@ -1,0 +1,11 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="675" fill="#1a1a2e" rx="16"/>
+  <rect x="40" y="40" width="1120" height="120" fill="#f778ba" opacity="0.08" rx="8"/>
+  <text x="60" y="110" font-family="JetBrains Mono, monospace" font-size="14" fill="#f778ba">● VeTwo • TypeScript</text>
+  <text x="60" y="280" font-family="Inter, sans-serif" font-size="44" font-weight="800" fill="#ffffff" letter-spacing="-1">Docs</text>
+  <text x="60" y="330" font-family="Inter, sans-serif" font-size="18" fill="#8b949e">TypeScript project</text>
+  <rect x="60" y="380" width="1080" height="1" fill="#252525"/>
+  <text x="60" y="420" font-family="JetBrains Mono, monospace" font-size="12" fill="#7a7a7a"> </text>
+  <circle cx="1120" cy="80" r="40" fill="none" stroke="#f778ba" stroke-width="2" opacity="0.15"/>
+  <circle cx="1120" cy="80" r="20" fill="#f778ba" opacity="0.1"/>
+</svg>

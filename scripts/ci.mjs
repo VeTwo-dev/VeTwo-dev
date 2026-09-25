@@ -32,7 +32,13 @@ async function main() {
   const hasBuilder = generators.includes("build-readme.mjs") ? false : true;
 
   // Ensure build-readme runs last, even if it matches generate-*
-  const orderedGenerators = generators.filter((f) => f !== "build-readme.mjs").sort();
+  let orderedGenerators = generators.filter((f) => f !== "build-readme.mjs").sort();
+  // Ensure thumbnails runs before cards/starred (dependency order)
+  const thumbIdx = orderedGenerators.indexOf("generate-project-thumbnails.mjs");
+  if (thumbIdx > 0) {
+    const [thumb] = orderedGenerators.splice(thumbIdx, 1);
+    orderedGenerators.unshift(thumb);
+  }
   const all = [...orderedGenerators, "build-readme.mjs"];
 
   // Verify build-readme exists
