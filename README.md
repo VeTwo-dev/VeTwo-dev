@@ -382,7 +382,7 @@ VeTwo-dev@github:~$ ./welcome.sh
 <table border="0">
 <tr>
 <td width="35%" valign="middle" align="center">
-<img src="https://github.com/VeTwo-dev/VeTwo-dev/blob/main/cropped.jpg" alt="Unfortunately I didn't find the author of the pic, feel to open a pull request if found" width="300" />
+<img src="https://github.com/VeTwo-dev/VeTwo-dev/blob/main/cropped.jpg" alt="Ahmed Kamal — VeTwo" width="300" />
 <br>
 </td>
 <td width="65%" valign="middle">
@@ -390,17 +390,14 @@ VeTwo-dev@github:~$ ./welcome.sh
 ```
 VeTwo-dev@github
 -------------------------
-🏫 PhD Student and Researcher @CISPA
-🔎 Main interests in Agentic AI and automatic exploitation
-🌱 Learning about Game Theory
-🏴‍☠️ Currently involved in slopping CTFs 🐴
-💖 In a complicated relationship with Claude Opus
-🧬 Interested in Psychological Sci-Fi books and movies
-🖌️ Love drawing portraits and cute stuff, hiking, going to concerts
-🎵 Love metal, rock, jazz and blues
-⚡ Love ketchup (but not on pasta or pizza) 🍅
-💻 Total commits: 842
-⭐ Total stars gained: 180
+🎓 Veterinary Student · Software Engineer · Founder of VeTwo
+🔬 Veterinary Medicine × Software Engineering
+🌱 Building the software layer for animal health & nutrition
+⚙️  Focus: Type-safe units · Dimensional analysis · Feed formulation
+💻 TypeScript · Node.js · Python · Rust · Docker
+📦 VeTwo Ecosystem: units · nutrition-units · Feed-Formulation
+🔧 Tools: whichenv · Repo-Fetch · Cli-sound · Create-VeTwo-Pack
+📊 13 public repos · TypeScript-first · Open Source
 ```
 
 </td>
@@ -415,8 +412,8 @@ VeTwo-dev@github:~$ sudo echo "* * * * * /usr/local/bin/catchbugs" >> /tmp/cront
 [sudo] Password for VeTwo-dev:
 
 CATching bugs in code...
-                              
-       \`*-.    [me]              
+
+       \`*-.    [me]
         )  _`-.                 
        .  : `. .                
        : _   '  \               
@@ -432,12 +429,18 @@ CATching bugs in code...
       `*-*   `*-*  `*-*'
 ```
 
-## 🖥️ GitAscii Terminal
+## 🖥️ Terminal
 
-Live terminal rendered by [GitAscii](https://gitascii.com) — auto-updated via `.github/workflows/gitascii.yml` from `gitascii.json` on the `gitascii` branch.
+```console
+VeTwo-dev@github:~$ gitascii --live
+```
+
+Live GitAscii terminal — encrypted telemetry deck rendered from `gitascii.json` (`terminal` template, `accent #8957e5`). Updates automatically via `.github/workflows/gitascii.yml` on the `gitascii` branch.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/VeTwo-dev/VeTwo-dev/gitascii/profiles/default/dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/VeTwo-dev/VeTwo-dev/gitascii/profiles/default/light.svg">
   <img alt="GitAscii Terminal — VeTwo-dev" src="https://raw.githubusercontent.com/VeTwo-dev/VeTwo-dev/gitascii/profiles/default/dark.svg" width="100%">
 </picture>
+
+> **No setup for viewers** — SVG is served from `gitascii` branch (`profiles/default/{dark,light}.svg`), not the GitAscii API, so it renders natively on GitHub with automatic dark/light switching.
