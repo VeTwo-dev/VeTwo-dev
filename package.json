@@ -3,7 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "ready": "node scripts/generate-snake.mjs",
     "snk": "node scripts/generate-snake.mjs",
     "readme": "node scripts/build-readme.mjs",
     "ci": "node scripts/ci.mjs",
