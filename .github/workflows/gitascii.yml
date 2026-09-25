@@ -4,10 +4,6 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths:
-      - "profile/**"
-      - "gitascii.json"
-      - ".github/workflows/gitascii.yml"
 
 permissions:
   contents: write
