@@ -1,0 +1,7 @@
+<svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="200" fill="#0d1117" stroke="#252525" rx="8"/>
+  <rect width="400" height="200" fill="none" stroke="#252525" stroke-width="1" rx="8"/>
+  <text x="200" y="90" font-family="JetBrains Mono, monospace" font-size="14" fill="#7a7a7a" text-anchor="middle">No Preview</text>
+  <text x="200" y="115" font-family="JetBrains Mono, monospace" font-size="12" fill="#8957e5" text-anchor="middle">VeTwo • Open Source</text>
+  <text x="200" y="135" font-family="Inter, sans-serif" font-size="10" fill="#484f58" text-anchor="middle">400 × 200</text>
+</svg>

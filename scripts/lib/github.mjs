@@ -181,4 +181,87 @@ export function formatDate(dateStr) {
   }
 }
 
+export async function getRepoDescription(repo, token) {
+  if (repo.description && repo.description.trim()) {
+    return repo.description.trim();
+  }
+  // Try to extract first meaningful paragraph from README
+  try {
+    const headers = getHeaders(token);
+    const res = await fetchWithTimeout(`https://api.github.com/repos/${USERNAME}/${repo.name}/readme`, { headers }, 4000);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.content) {
+        const decoded = Buffer.from(data.content, "base64").toString("utf8");
+        // Remove badges and images, get first paragraph
+        const cleaned = decoded
+          .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
+          .replace(/<img[^>]*>/gi, "")
+          .replace(/\[!\[[^\]]*\]\([^)]+\)\]\([^)]+\)/g, "")
+          .replace(/#+\s.*\n/g, "")
+          .split("\n")
+          .map((l) => l.trim())
+          .filter((l) => l.length > 20 && !l.startsWith("!") && !l.startsWith("[") && !l.startsWith("<") && !l.startsWith("|"));
+        if (cleaned.length > 0) {
+          let first = cleaned[0];
+          if (first.length > 120) first = first.slice(0, 117) + "...";
+          return first;
+        }
+      }
+    }
+  } catch {}
+  // Fallback based on language/topics
+  const lang = repo.language ? ` ${repo.language}` : "";
+  const topics = Array.isArray(repo.topics) && repo.topics.length > 0 ? ` · ${repo.topics.slice(0, 2).join(", ")}` : "";
+  if (lang || topics) {
+    return `${repo.name} —${lang} project${topics}.`;
+  }
+  return `${repo.name} — open-source repository.`;
+}
+
+export function getLocalPlaceholder() {
+  return "./assets/thumbnail/placeholder.svg";
+}
+
+export async function ensureLocalThumbnail(thumbnailUrl, repoName) {
+  const placeholder = getLocalPlaceholder();
+  if (!thumbnailUrl) return placeholder;
+  if (thumbnailUrl.startsWith("./assets/thumbnail/")) return thumbnailUrl;
+  // Try to cache externally hosted thumbnails locally under assets/thumbnail
+  try {
+    const extMatch = thumbnailUrl.match(/\.(png|jpg|jpeg|svg|webp|gif)(\?|$)/i);
+    const ext = extMatch ? extMatch[1].toLowerCase() : "png";
+    const safeExt = ext === "jpeg" ? "jpg" : ext === "svg" ? "svg" : "png";
+    const localFileName = `${repoName}.${safeExt}`;
+    const localUrl = `./assets/thumbnail/${localFileName}`;
+
+    // Resolve filesystem path
+    const { mkdir, writeFile, stat } = await import("node:fs/promises");
+    const path = await import("node:path");
+    const { fileURLToPath } = await import("node:url");
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const root = path.resolve(__dirname, "../..");
+    const thumbDir = path.join(root, "assets", "thumbnail");
+    const fullPath = path.join(thumbDir, localFileName);
+
+    // If already cached, return local
+    try {
+      await stat(fullPath);
+      return localUrl;
+    } catch {}
+
+    // Download
+    const res = await fetchWithTimeout(thumbnailUrl, {}, 8000);
+    if (!res.ok) return placeholder;
+    const buf = Buffer.from(await res.arrayBuffer());
+    if (buf.length === 0 || buf.length > 800 * 1024) return thumbnailUrl; // keep original if too large
+    await mkdir(thumbDir, { recursive: true });
+    await writeFile(fullPath, buf);
+    return localUrl;
+  } catch {
+    return placeholder;
+  }
+}
+
 export const USER = USERNAME;

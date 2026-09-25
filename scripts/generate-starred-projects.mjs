@@ -9,6 +9,9 @@ import {
   detectThumbnail,
   escapeHtml,
   formatDate,
+  getRepoDescription,
+  getLocalPlaceholder,
+  ensureLocalThumbnail,
 } from "./lib/github.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -44,20 +47,23 @@ function selectStarredRepos(repos) {
   return result;
 }
 
-function generateCard(repo, thumbnail) {
+async function getDescriptionWithFallback(repo, token) {
+  const desc = await getRepoDescription(repo, token);
+  return escapeHtml(desc);
+}
+
+function generateCard(repo, thumbnail, description) {
   const name = escapeHtml(repo.name);
-  const desc = repo.description ? escapeHtml(repo.description) : "No description provided.";
+  const desc = description || "No description provided.";
   const url = repo.html_url;
   const stars = repo.stargazers_count ?? 0;
   const forks = repo.forks_count ?? 0;
   const lang = repo.language ? escapeHtml(repo.language) : null;
   const pushed = repo.pushed_at ? formatDate(repo.pushed_at) : null;
 
-  let thumbHtml = "";
-  if (thumbnail) {
-    const safeThumb = escapeHtml(thumbnail);
-    thumbHtml = `        <a href="${url}"><img src="${safeThumb}" alt="${name}" width="100%" style="border-radius:6px; max-height:140px; object-fit:cover;" /></a><br />`;
-  }
+  const thumbSrc = thumbnail || getLocalPlaceholder();
+  const safeThumb = escapeHtml(thumbSrc);
+  const thumbHtml = `        <a href="${url}"><img src="${safeThumb}" alt="${name}" width="100%" style="border-radius:6px; max-height:140px; object-fit:cover;" /></a><br />`;
 
   const metaParts = [];
   if (lang) metaParts.push(`<span>${lang}</span>`);
@@ -66,7 +72,7 @@ function generateCard(repo, thumbnail) {
   if (pushed) metaParts.push(`<span>Updated ${escapeHtml(pushed)}</span>`);
   const meta = `      <div style="font-size:11px; color:#7a7a7a; margin:6px 0;">${metaParts.join(" · ")}</div>`;
 
-  return `    <td width="50%" valign="top" style="padding:8px;">
+  return `    <td width="33%" valign="top" style="padding:8px;">
       <div style="border:1px solid #252525; border-radius:8px; padding:12px; background:#0d1117;">
 ${thumbHtml}        <strong style="font-size:14px;"><a href="${url}" style="text-decoration:none; color:#58a6ff;">${name}</a></strong><br />
         <span style="font-size:12px; color:#c9d1d9;">${desc}</span><br />
@@ -91,39 +97,39 @@ async function main() {
     const withThumbs = [];
     for (const repo of top) {
       console.log(`[stars] Checking thumbnail for ${repo.name}...`);
-      const thumb = await detectThumbnail(repo, token);
+      let thumb = await detectThumbnail(repo, token);
+      let finalThumb = getLocalPlaceholder();
       if (thumb) {
         try {
           const res = await fetchWithTimeout(thumb, { method: "HEAD" }, 3000);
-          if (!res.ok) {
-            console.log(`  ⚠ Not reachable (${res.status}), omitting`);
-            withThumbs.push({ repo, thumbnail: null });
-          } else {
+          if (res.ok) {
             console.log(`  ✓ Thumbnail: ${thumb}`);
-            withThumbs.push({ repo, thumbnail: thumb });
+            finalThumb = await ensureLocalThumbnail(thumb, repo.name);
+            if (finalThumb !== thumb) console.log(`  → Cached locally: ${finalThumb}`);
+          } else {
+            console.log(`  ⚠ Not reachable (${res.status}), using placeholder`);
+            finalThumb = getLocalPlaceholder();
           }
         } catch {
-          console.log(`  ⚠ Check failed, omitting`);
-          withThumbs.push({ repo, thumbnail: null });
+          console.log(`  ⚠ Check failed, using placeholder`);
+          finalThumb = getLocalPlaceholder();
         }
       } else {
-        console.log(`  ℹ No thumbnail`);
-        withThumbs.push({ repo, thumbnail: null });
+        console.log(`  ℹ No thumbnail, using placeholder`);
+        finalThumb = getLocalPlaceholder();
       }
+      const desc = await getRepoDescription(repo, token).then(escapeHtml);
+      withThumbs.push({ repo, thumbnail: finalThumb, description: desc });
     }
 
     let table = "<!-- This section is generated automatically. Do not edit directly. -->\n";
     table += "## ⭐ Featured by Stars\n\n";
     table += "<table>\n";
-    for (let i = 0; i < withThumbs.length; i += 2) {
-      table += "  <tr>\n";
-      const a = withThumbs[i];
-      const b = withThumbs[i + 1];
-      table += generateCard(a.repo, a.thumbnail) + "\n";
-      if (b) table += generateCard(b.repo, b.thumbnail) + "\n";
-      else table += `    <td width="50%" valign="top"></td>\n`;
-      table += "  </tr>\n";
+    table += "  <tr>\n";
+    for (const item of withThumbs) {
+      table += generateCard(item.repo, item.thumbnail, item.description) + "\n";
     }
+    table += "  </tr>\n";
     table += "</table>\n";
 
     await mkdir(path.dirname(outFile), { recursive: true });
