@@ -47,6 +47,31 @@ async function main() {
     process.exit(1);
   }
 
+  // 2.5 Clear GitHub Actions cache (so gitascii is fresh on next push)
+  if (hasToken) {
+    console.log("\n▶ Clearing GitHub Actions cache (gitascii) ...");
+    try {
+      // Use gh CLI if available, fallback to API via curl
+      try {
+        execSync('gh cache list --json key,id 2>/dev/null | jq -r \'.[].id\' | while read -r id; do [ -n "$id" ] && gh cache delete "$id" --confirm 2>/dev/null || true; done', {
+          cwd: root,
+          stdio: "inherit",
+          env: { ...process.env, GH_TOKEN: process.env.GITHUB_TOKEN },
+        });
+        console.log("✓ Cache clear attempted via gh CLI");
+      } catch {
+        // Fallback via GitHub API
+        const apiCmd = `curl -s -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/VeTwo-dev/VeTwo-dev/actions/caches" | jq -r '.actions_caches[].id' | while read -r id; do [ -n "$id" ] && curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/VeTwo-dev/VeTwo-dev/actions/caches/$id" >/dev/null || true; done`;
+        execSync(apiCmd, { cwd: root, stdio: "inherit", shell: "/bin/bash" });
+        console.log("✓ Cache clear attempted via API");
+      }
+    } catch (e) {
+      console.warn("⚠️ Cache clear failed (continuing):", e instanceof Error ? e.message : e);
+    }
+  } else {
+    console.log("\nℹ Skipping cache clear (no GITHUB_TOKEN)");
+  }
+
   // 3. Git add / commit / push
   console.log("\n▶ Checking git status ...");
   try {
