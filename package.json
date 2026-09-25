@@ -4,7 +4,10 @@
   "type": "module",
   "scripts": {
     "ready": "node scripts/generate-snake.mjs",
-    "readme": "node scripts/build-readme.mjs"
+    "snk": "node scripts/generate-snake.mjs",
+    "readme": "node scripts/build-readme.mjs",
+    "ci": "node scripts/ci.mjs",
+    "ship": "node scripts/ci.mjs"
   },
   "dependencies": {
     "generate-snake-animation": "^3.5.0"
