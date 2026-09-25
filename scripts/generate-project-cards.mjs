@@ -53,19 +53,24 @@ function generateCard(repo, thumbnail, description) {
 
   const thumbSrc = thumbnail || getLocalPlaceholder();
   const safeThumb = escapeHtml(thumbSrc);
-  const thumbHtml = `        <a href="${url}"><img src="${safeThumb}" alt="${name}" width="100%" style="border-radius:6px; max-height:140px; object-fit:cover;" /></a><br />`;
+  const thumbHtml = `        <a href="${url}"><img src="${safeThumb}" alt="${name}" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>`;
 
   const metaParts = [];
   if (lang) metaParts.push(`<span>${lang}</span>`);
   if (topics.length > 0) metaParts.push(`<span>${topics.map((t) => escapeHtml(t)).join(" · ")}</span>`);
   if (pushed) metaParts.push(`<span>Updated ${escapeHtml(pushed)}</span>`);
-  const meta = metaParts.length ? `      <div style="font-size:11px; color:#7a7a7a; margin:6px 0;">${metaParts.join(" · ")}</div>` : "";
+  const meta = metaParts.length ? `<div style="font-size:11px; color:#7a7a7a; margin:6px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${metaParts.join(" · ")}</div>` : "";
 
-  return `    <td width="50%" valign="top" style="padding:8px;">
-      <div style="border:1px solid #252525; border-radius:8px; padding:12px; background:#0d1117;">
-${thumbHtml}        <strong style="font-size:14px;"><a href="${url}" style="text-decoration:none; color:#58a6ff;">${name}</a></strong><br />
-        <span style="font-size:12px; color:#c9d1d9;">${desc}</span><br />
-${meta}        <a href="${url}" style="font-size:12px; color:#8957e5; text-decoration:none;">View Repository →</a>
+  return `    <td width="33.33%" valign="top" style="padding:8px;">
+      <div style="border:1px solid #252525; border-radius:8px; padding:12px; background:#0d1117; height:280px; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
+        <div>
+${thumbHtml}
+          <div style="margin-top:8px;"><strong style="font-size:14px;"><a href="${url}" style="text-decoration:none; color:#58a6ff;">${name}</a></strong></div>
+          <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">${desc}</div>
+        </div>
+        <div>
+${meta}          <a href="${url}" style="font-size:12px; color:#8957e5; text-decoration:none;">View Repository →</a>
+        </div>
       </div>
     </td>`;
 }
@@ -113,14 +118,14 @@ async function main() {
 
     let table = "<!-- This section is generated automatically. Do not edit directly. -->\n";
     table += "## Recent Projects\n\n";
-    table += "<table>\n";
-    for (let i = 0; i < withThumbs.length; i += 2) {
+    table += '<table style="width:100%; table-layout:fixed;">\n';
+    for (let i = 0; i < withThumbs.length; i += 3) {
       table += "  <tr>\n";
-      const a = withThumbs[i];
-      const b = withThumbs[i + 1];
-      table += generateCard(a.repo, a.thumbnail, a.description) + "\n";
-      if (b) table += generateCard(b.repo, b.thumbnail, b.description) + "\n";
-      else table += `    <td width="50%" valign="top"></td>\n`;
+      for (let j = 0; j < 3; j++) {
+        const item = withThumbs[i + j];
+        if (item) table += generateCard(item.repo, item.thumbnail, item.description) + "\n";
+        else table += `    <td width="33.33%" valign="top" style="padding:8px;"></td>\n`;
+      }
       table += "  </tr>\n";
     }
     table += "</table>\n";
