@@ -11,7 +11,9 @@
           <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">A small, dependency-free **scientific unit &amp; dimensional-analysis engine** for TypeScript.</div>
         </div>
         <div>
-<div style="font-size:11px; color:#7a7a7a; margin:6px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span> · <span>⭐ 1</span> · <span>Updated Jul 13, 2026</span></div>          <a href="https://github.com/VeTwo-dev/units" style="font-size:12px; color:#8957e5; text-decoration:none;">View Repository →</a>
+          <div style="font-size:11px; color:#7a7a7a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span> · <span>⭐ 1</span></div>
+          <div style="font-size:10px; color:#484f58; margin-top:2px;">🕓 Jul 13, 2026</div>
+          <a href="https://github.com/VeTwo-dev/units" style="font-size:12px; color:#8957e5; text-decoration:none; display:inline-block; margin-top:4px;">View Repository →</a>
         </div>
       </div>
     </td>
@@ -23,7 +25,9 @@
           <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">Nutrition &amp; feed-formulation calculation rules, built on top of</div>
         </div>
         <div>
-<div style="font-size:11px; color:#7a7a7a; margin:6px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span> · <span>⭐ 1</span> · <span>Updated Jul 12, 2026</span></div>          <a href="https://github.com/VeTwo-dev/nutrition-units" style="font-size:12px; color:#8957e5; text-decoration:none;">View Repository →</a>
+          <div style="font-size:11px; color:#7a7a7a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span> · <span>⭐ 1</span></div>
+          <div style="font-size:10px; color:#484f58; margin-top:2px;">🕓 Jul 12, 2026</div>
+          <a href="https://github.com/VeTwo-dev/nutrition-units" style="font-size:12px; color:#8957e5; text-decoration:none; display:inline-block; margin-top:4px;">View Repository →</a>
         </div>
       </div>
     </td>
@@ -35,7 +39,9 @@
           <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api...</div>
         </div>
         <div>
-<div style="font-size:11px; color:#7a7a7a; margin:6px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span> · <span>⭐ 1</span> · <span>Updated Jul 9, 2026</span></div>          <a href="https://github.com/VeTwo-dev/Feed-Formulation" style="font-size:12px; color:#8957e5; text-decoration:none;">View Repository →</a>
+          <div style="font-size:11px; color:#7a7a7a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span> · <span>⭐ 1</span></div>
+          <div style="font-size:10px; color:#484f58; margin-top:2px;">🕓 Jul 9, 2026</div>
+          <a href="https://github.com/VeTwo-dev/Feed-Formulation" style="font-size:12px; color:#8957e5; text-decoration:none; display:inline-block; margin-top:4px;">View Repository →</a>
         </div>
       </div>
     </td>
