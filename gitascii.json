@@ -1,28 +1,11 @@
 {
   "widgets": [
     {
-      "widgetId": "header",
-      "name": "Header Widget",
-      "position": {
-        "x": 0,
-        "y": 2
-      },
-      "size": {
-        "width": 800,
-        "height": 90
-      },
-      "config": {},
-      "locked": false,
-      "visible": true,
-      "zIndex": 1,
-      "instanceId": "widget_1790304398106_0"
-    },
-    {
       "widgetId": "ascii-art",
       "name": "Ascii-art Widget",
       "position": {
         "x": 0,
-        "y": 106
+        "y": 0
       },
       "size": {
         "width": 280,
@@ -11526,7 +11509,7 @@
       "name": "Ascii-text Widget",
       "position": {
         "x": 0,
-        "y": 432
+        "y": 342
       },
       "size": {
         "width": 800,
@@ -11557,7 +11540,7 @@
       "name": "Divider Widget",
       "position": {
         "x": 0,
-        "y": 394
+        "y": 296
       },
       "size": {
         "width": 800,
@@ -11574,7 +11557,7 @@
       "name": "Terminal-info Widget",
       "position": {
         "x": 288,
-        "y": 106
+        "y": 16
       },
       "size": {
         "width": 504,
