@@ -1,115 +1,83 @@
-import { execSync } from "node:child_process";
+import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
+const scriptsDir = path.join(root, "scripts");
 
-function run(cmd, opts = {}) {
-  console.log(`\n$ ${cmd}`);
-  execSync(cmd, { cwd: root, stdio: "inherit", ...opts });
+function sanitize(str) {
+  const token = process.env.GITHUB_TOKEN || "";
+  if (!token || !str) return str;
+  if (typeof str !== "string") str = String(str);
+  return str.split(token).join("[REDACTED]");
 }
 
-function runSafe(cmd) {
-  try {
-    run(cmd);
-    return true;
-  } catch (e) {
-    return false;
-  }
+function discoverScripts() {
+  return readdir(scriptsDir)
+    .then((files) =>
+      files
+        .filter((f) => f.startsWith("generate-") && f.endsWith(".mjs"))
+        .filter((f) => f !== "ci.mjs")
+        .sort()
+    )
+    .catch(() => []);
 }
 
 async function main() {
-  const hasToken = !!process.env.GITHUB_TOKEN;
-  console.log("🚀 CI pipeline: generate → commit → push\n");
+  const token = process.env.GITHUB_TOKEN || "";
+  const generators = await discoverScripts();
+  const hasBuilder = generators.includes("build-readme.mjs") ? false : true;
 
-  // 1. Snake (requires token)
-  if (hasToken) {
-    console.log("▶ Generating snake (VeTwo-dev, purple #8957e5) ...");
-    try {
-      run("node scripts/generate-snake.mjs");
-    } catch {
-      console.error("❌ Snake generation failed. Aborting CI.");
+  // Ensure build-readme runs last, even if it matches generate-*
+  const orderedGenerators = generators.filter((f) => f !== "build-readme.mjs").sort();
+  const all = [...orderedGenerators, "build-readme.mjs"];
+
+  // Verify build-readme exists
+  let hasReadme = false;
+  try {
+    const files = await readdir(scriptsDir);
+    hasReadme = files.includes("build-readme.mjs");
+  } catch {}
+
+  if (!hasReadme) {
+    console.error("[CI] build-readme.mjs not found");
+    process.exit(1);
+  }
+
+  console.log(`[CI] Discovered ${orderedGenerators.length} generator(s): ${orderedGenerators.join(", ") || "none"}`);
+  console.log(`[CI] Will run build-readme.mjs last`);
+
+  for (const script of all) {
+    // Skip if not exists (for build-readme check)
+    if (script === "build-readme.mjs" && !hasReadme) continue;
+    // For generators, ensure file exists
+    const full = path.join(scriptsDir, script);
+    // Use spawnSync for sequential execution
+    console.log(`\n[CI] Running ${script} ...`);
+    const result = spawnSync("node", [full], {
+      cwd: root,
+      stdio: "inherit",
+      env: process.env,
+    });
+
+    if (result.error) {
+      const msg = sanitize(result.error.message, token);
+      console.error(`[CI] ✗ ${script} failed to spawn: ${msg}`);
       process.exit(1);
     }
-  } else {
-    console.warn("⚠️ GITHUB_TOKEN not set — skipping snake generation");
-    console.warn("   Set GITHUB_TOKEN to regenerate assets/github/*.svg");
-  }
 
-  // 2. README (always)
-  console.log("\n▶ Building README from profile/*.md ...");
-  try {
-    run("node scripts/build-readme.mjs");
-  } catch {
-    console.error("❌ README build failed.");
-    process.exit(1);
-  }
-
-  // 2.5 Clear GitHub Actions cache (so gitascii is fresh on next push)
-  if (hasToken) {
-    console.log("\n▶ Clearing GitHub Actions cache (gitascii) ...");
-    try {
-      // Use gh CLI if available, fallback to API via curl
-      try {
-        execSync('gh cache list --json key,id 2>/dev/null | jq -r \'.[].id\' | while read -r id; do [ -n "$id" ] && gh cache delete "$id" --confirm 2>/dev/null || true; done', {
-          cwd: root,
-          stdio: "inherit",
-          env: { ...process.env, GH_TOKEN: process.env.GITHUB_TOKEN },
-        });
-        console.log("✓ Cache clear attempted via gh CLI");
-      } catch {
-        // Fallback via GitHub API
-        const apiCmd = `curl -s -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/VeTwo-dev/VeTwo-dev/actions/caches" | jq -r '.actions_caches[].id' | while read -r id; do [ -n "$id" ] && curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/VeTwo-dev/VeTwo-dev/actions/caches/$id" >/dev/null || true; done`;
-        execSync(apiCmd, { cwd: root, stdio: "inherit", shell: "/bin/bash" });
-        console.log("✓ Cache clear attempted via API");
-      }
-    } catch (e) {
-      console.warn("⚠️ Cache clear failed (continuing):", e instanceof Error ? e.message : e);
-    }
-  } else {
-    console.log("\nℹ Skipping cache clear (no GITHUB_TOKEN)");
-  }
-
-  // 3. Git add / commit / push
-  console.log("\n▶ Checking git status ...");
-  try {
-    const status = execSync("git status --porcelain", { cwd: root, encoding: "utf8" });
-    if (!status.trim()) {
-      console.log("✓ No changes to commit.");
-      return;
-    }
-    console.log(status.trim());
-
-    console.log("\n▶ Staging changes ...");
-    run("git add -A");
-
-    const cached = execSync("git diff --cached --name-only", { cwd: root, encoding: "utf8" }).trim();
-    if (!cached) {
-      console.log("✓ Nothing staged.");
-      return;
-    }
-    console.log("Staged:\n" + cached.split("\n").map((f) => ` - ${f}`).join("\n"));
-
-    // Commit if there is something to commit
-    const diffCached = execSync("git diff --cached --quiet; echo $?", { cwd: root, encoding: "utf8", shell: "/bin/bash" }).trim();
-    // Actually simpler: try commit, if no changes git will error; we handle
-    const msg = process.argv[2] || "chore: update profile (snake + readme)";
-    console.log(`\n▶ Committing: "${msg}" ...`);
-    try {
-      execSync(`git commit -m "${msg.replace(/"/g, '\\"')}"`, { cwd: root, stdio: "inherit" });
-    } catch {
-      console.log("ℹ No new commit (maybe already committed).");
+    if (result.status !== 0) {
+      console.error(`[CI] ✗ ${script} failed with exit code ${result.status}`);
+      process.exit(result.status ?? 1);
     }
 
-    console.log("\n▶ Pushing to origin ...");
-    run("git push");
-    console.log("\n✅ CI pipeline complete. Snake + README pushed.");
-  } catch (e) {
-    console.error("❌ Git step failed:", e instanceof Error ? e.message : e);
-    process.exit(1);
+    console.log(`[CI] ✓ ${script}`);
   }
+
+  console.log("\n[CI] All profile automation completed successfully.");
 }
 
 await main();

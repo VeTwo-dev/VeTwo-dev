@@ -7,6 +7,7 @@
     "snk": "node scripts/generate-snake.mjs",
     "readme": "node scripts/build-readme.mjs",
     "projects": "node scripts/generate-project-cards.mjs",
+    "stars": "node scripts/generate-starred-projects.mjs",
     "ci": "node scripts/ci.mjs",
     "ship": "node scripts/ci.mjs"
   },
