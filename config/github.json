@@ -1,0 +1,17 @@
+{
+  "$comment": "GitHub REST API settings shared by all generators. No secrets here — GITHUB_TOKEN is only ever read from the environment at runtime.",
+  "userAgent": "VeTwo-dev-profile-generator",
+  "apiVersion": "2022-11-28",
+  "reposPerPage": 100,
+  "sort": "pushed",
+  "repoType": "all",
+  "maxRepos": 300,
+  "timeoutsMs": {
+    "repos": 8000,
+    "readme": 4000,
+    "contentHead": 3000,
+    "thumbnailHead": 3000,
+    "thumbnailDownload": 8000
+  },
+  "maxThumbnailBytes": 819200
+}

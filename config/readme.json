@@ -1,0 +1,17 @@
+{
+  "$comment": "README composition. Primary section order lives in config/sequence.json (position + filename numbers); the order array below is only a fallback. Unknown files append alphabetically.",
+  "profileDir": "profile",
+  "output": "README.md",
+  "header": "<!-- This file is generated from profile/*.md — do not edit directly. Run `pnpm readme` to regenerate. -->",
+  "order": [
+    "01-hero.md",
+    "02-about.md",
+    "03-vetwo.md",
+    "04-projects.md",
+    "05-technologies.md",
+    "06-github.md",
+    "projects-generated.md",
+    "starred-projects-generated.md",
+    "07-console.md"
+  ]
+}

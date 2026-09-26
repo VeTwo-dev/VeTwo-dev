@@ -1,0 +1,20 @@
+{
+  "$comment": "Shared identity and repository paths. Single source of truth for the GitHub username — all generators read this instead of hardcoding it.",
+  "username": "VeTwo-dev",
+  "excludeProfileRepo": true,
+  "paths": {
+    "profileDir": "profile",
+    "readmeOutput": "README.md",
+    "assetsGithubDir": "assets/github",
+    "assetsThumbnailDir": "assets/thumbnail",
+    "thumbnailPlaceholder": "assets/thumbnail/placeholder.svg",
+    "logo": "assets/logo/Logo.png"
+  },
+  "filter": {
+    "excludeForks": true,
+    "excludeArchived": true,
+    "excludePrivate": true,
+    "fallbackToPublic": true,
+    "fallbackToAll": true
+  }
+}

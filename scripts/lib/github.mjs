@@ -1,4 +1,41 @@
-const USERNAME = "VeTwo-dev";
+import { loadConfig } from "./config.mjs";
+
+const profileConfig = loadConfig("profile", {
+  username: "VeTwo-dev",
+  paths: { thumbnailPlaceholder: "assets/thumbnail/placeholder.svg" },
+});
+const githubConfig = loadConfig("github", {
+  userAgent: "VeTwo-dev-profile-generator",
+  apiVersion: "2022-11-28",
+  reposPerPage: 100,
+  sort: "pushed",
+  repoType: "all",
+  maxRepos: 300,
+  timeoutsMs: { repos: 8000, readme: 4000, contentHead: 3000, thumbnailHead: 3000, thumbnailDownload: 8000 },
+  maxThumbnailBytes: 819200,
+});
+const thumbnailsConfig = loadConfig("thumbnails", {
+  imageExts: [".png", ".jpg", ".svg"],
+  commonDirs: ["", "assets/"],
+  commonNames: ["thumbnail", "preview", "banner", "cover"],
+  thumbnailKeywords: ["thumbnail", "preview", "banner", "cover", "hero", "screenshot"],
+  badgeMarkers: [
+    "shields.io",
+    "badge",
+    "skillicons.dev",
+    "komarev.com",
+    "github-readme-stats",
+    "github-readme-streak",
+    "capsule-render",
+    "readme-typing-svg",
+    "github-readme-activity-graph",
+    "star-history",
+    "contrib.rocks",
+    "img.shields.io",
+  ],
+});
+
+const USERNAME = profileConfig.username || "VeTwo-dev";
 
 export function sanitize(str, token) {
   if (!str || !token) return str;
@@ -9,8 +46,8 @@ export function sanitize(str, token) {
 export function getHeaders(token) {
   const headers = {
     Accept: "application/vnd.github+json",
-    "User-Agent": "VeTwo-dev-profile-generator",
-    "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": githubConfig.userAgent || "VeTwo-dev-profile-generator",
+    "X-GitHub-Api-Version": githubConfig.apiVersion || "2022-11-28",
   };
   if (token) headers.Authorization = `Bearer ${token}`;
   return headers;
@@ -35,10 +72,15 @@ export async function fetchWithTimeout(url, opts = {}, ms = 4000) {
 
 export async function fetchAllRepos(token) {
   const headers = getHeaders(token);
-  let url = `https://api.github.com/users/${USERNAME}/repos?per_page=100&sort=pushed&type=all`;
+  const perPage = githubConfig.reposPerPage || 100;
+  const sort = githubConfig.sort || "pushed";
+  const type = githubConfig.repoType || "all";
+  const maxRepos = githubConfig.maxRepos || 300;
+  const timeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.repos) || 8000;
+  let url = `https://api.github.com/users/${USERNAME}/repos?per_page=${perPage}&sort=${sort}&type=${type}`;
   let all = [];
   while (url) {
-    const res = await fetchWithTimeout(url, { headers }, 8000);
+    const res = await fetchWithTimeout(url, { headers }, timeout);
     if (!res.ok) {
       const text = await res.text().catch(() => res.statusText);
       const sanitized = token ? sanitize(text, token) : text;
@@ -52,32 +94,21 @@ export async function fetchAllRepos(token) {
     all = all.concat(data);
     const next = parseLinkHeader(res.headers.get("link"));
     url = next;
-    if (all.length > 300) break;
+    if (all.length > maxRepos) break;
   }
   return all;
 }
 
-// Thumbnail helpers - shared
-export const IMAGE_EXTS = [".png", ".jpg", ".svg"];
-export const COMMON_DIRS = ["", "assets/"];
-export const COMMON_NAMES = ["thumbnail", "preview", "banner", "cover"];
+// Thumbnail helpers - shared (values from config/thumbnails.json)
+export const IMAGE_EXTS = thumbnailsConfig.imageExts || [".png", ".jpg", ".svg"];
+export const COMMON_DIRS = thumbnailsConfig.commonDirs || ["", "assets/"];
+export const COMMON_NAMES = thumbnailsConfig.commonNames || ["thumbnail", "preview", "banner", "cover"];
 
 export function isBadgeUrl(url) {
+  const markers =
+    thumbnailsConfig.badgeMarkers || [];
   const lower = url.toLowerCase();
-  return (
-    lower.includes("shields.io") ||
-    lower.includes("badge") ||
-    lower.includes("skillicons.dev") ||
-    lower.includes("komarev.com") ||
-    lower.includes("github-readme-stats") ||
-    lower.includes("github-readme-streak") ||
-    lower.includes("capsule-render") ||
-    lower.includes("readme-typing-svg") ||
-    lower.includes("github-readme-activity-graph") ||
-    lower.includes("star-history") ||
-    lower.includes("contrib.rocks") ||
-    lower.includes("img.shields.io")
-  );
+  return markers.some((m) => lower.includes(String(m).toLowerCase()));
 }
 
 export function isLikelyThumbnailUrl(url) {
@@ -90,8 +121,9 @@ export function isLikelyThumbnailUrl(url) {
 
 export async function fetchReadmeImages(repo, token) {
   const headers = getHeaders(token);
+  const timeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.readme) || 4000;
   try {
-    const res = await fetchWithTimeout(`https://api.github.com/repos/${USERNAME}/${repo.name}/readme`, { headers }, 4000);
+    const res = await fetchWithTimeout(`https://api.github.com/repos/${USERNAME}/${repo.name}/readme`, { headers }, timeout);
     if (!res.ok) return [];
     const data = await res.json();
     if (!data.content) return [];
@@ -117,7 +149,8 @@ export async function checkCommonImageFiles(repo, token) {
         const filePath = `${dir}${name}${ext}`;
         try {
           const url = `https://api.github.com/repos/${USERNAME}/${repo.name}/contents/${filePath}?ref=${branch}`;
-          const res = await fetchWithTimeout(url, { headers }, 3000);
+          const headTimeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.contentHead) || 3000;
+          const res = await fetchWithTimeout(url, { headers }, headTimeout);
           if (res.ok) {
             return `https://raw.githubusercontent.com/${USERNAME}/${repo.name}/${branch}/${filePath}`;
           }
@@ -131,11 +164,12 @@ export async function checkCommonImageFiles(repo, token) {
 }
 
 export async function detectThumbnail(repo, token) {
+  const keywords = thumbnailsConfig.thumbnailKeywords || ["thumbnail", "preview", "banner", "cover", "hero", "screenshot"];
   const readmeUrls = await fetchReadmeImages(repo, token);
   const likely = readmeUrls.filter(isLikelyThumbnailUrl);
   const prioritized = likely.filter((u) => {
     const l = u.toLowerCase();
-    return ["thumbnail", "preview", "banner", "cover", "hero", "screenshot"].some((k) => l.includes(k));
+    return keywords.some((k) => l.includes(String(k).toLowerCase()));
   });
   if (prioritized.length > 0) {
     let url = prioritized[0].trim();
@@ -160,7 +194,8 @@ export async function detectThumbnail(repo, token) {
   if (common) return common;
   try {
     const ogUrl = `https://opengraph.githubassets.com/1/${USERNAME}/${repo.name}`;
-    const res = await fetchWithTimeout(ogUrl, { method: "HEAD" }, 3000);
+    const thumbTimeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.thumbnailHead) || 3000;
+    const res = await fetchWithTimeout(ogUrl, { method: "HEAD" }, thumbTimeout);
     if (res.ok) return ogUrl;
   } catch {}
   return null;
@@ -188,7 +223,8 @@ export async function getRepoDescription(repo, token) {
   // Try to extract first meaningful paragraph from README
   try {
     const headers = getHeaders(token);
-    const res = await fetchWithTimeout(`https://api.github.com/repos/${USERNAME}/${repo.name}/readme`, { headers }, 4000);
+    const readmeTimeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.readme) || 4000;
+    const res = await fetchWithTimeout(`https://api.github.com/repos/${USERNAME}/${repo.name}/readme`, { headers }, readmeTimeout);
     if (res.ok) {
       const data = await res.json();
       if (data.content) {
@@ -220,7 +256,7 @@ export async function getRepoDescription(repo, token) {
 }
 
 export function getLocalPlaceholder() {
-  return "./assets/thumbnail/placeholder.svg";
+  return `./${profileConfig.paths?.thumbnailPlaceholder || "assets/thumbnail/placeholder.svg"}`;
 }
 
 export async function ensureLocalThumbnail(thumbnailUrl, repoName) {
@@ -252,10 +288,12 @@ export async function ensureLocalThumbnail(thumbnailUrl, repoName) {
     } catch {}
 
     // Download
-    const res = await fetchWithTimeout(thumbnailUrl, {}, 8000);
+    const dlTimeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.thumbnailDownload) || 8000;
+    const maxBytes = githubConfig.maxThumbnailBytes || 819200;
+    const res = await fetchWithTimeout(thumbnailUrl, {}, dlTimeout);
     if (!res.ok) return placeholder;
     const buf = Buffer.from(await res.arrayBuffer());
-    if (buf.length === 0 || buf.length > 800 * 1024) return thumbnailUrl; // keep original if too large
+    if (buf.length === 0 || buf.length > maxBytes) return thumbnailUrl; // keep original if too large
     await mkdir(thumbDir, { recursive: true });
     await writeFile(fullPath, buf);
     return localUrl;

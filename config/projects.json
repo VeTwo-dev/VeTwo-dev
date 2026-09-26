@@ -1,0 +1,39 @@
+{
+  "$comment": "Project-card generation. Change counts/titles/layout here and re-run generators — output files update dynamically with no code edits.",
+  "recent": {
+    "count": 4,
+    "output": "profile/projects-generated.md",
+    "title": "Recent Projects",
+    "columns": 2,
+    "sortBy": "pushed_at",
+    "showTopics": 3
+  },
+  "starred": {
+    "count": 3,
+    "output": "profile/starred-projects-generated.md",
+    "title": "⭐ Featured by Stars",
+    "columns": 3,
+    "sortBy": "stargazers_count",
+    "showTopics": 3,
+    "showStars": true,
+    "showForks": true
+  },
+  "card": {
+    "heightPx": 280,
+    "thumbnailHeightPx": 120,
+    "descriptionLines": 2,
+    "descriptionLineHeightPx": 18,
+    "colors": {
+      "border": "#252525",
+      "background": "#0d1117",
+      "name": "#58a6ff",
+      "description": "#c9d1d9",
+      "meta": "#7a7a7a",
+      "date": "#484f58",
+      "link": "#8957e5"
+    },
+    "linkText": "View Repository →",
+    "dateIcon": "🕓",
+    "fallbackDescription": "No description provided."
+  }
+}

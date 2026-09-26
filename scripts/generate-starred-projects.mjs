@@ -9,20 +9,49 @@ import {
   formatDate,
   getRepoDescription,
 } from "./lib/github.mjs";
-import { getLocalThumbnailPath, getPlaceholderPath, localThumbnailExists } from "./lib/thumbnails.mjs";
+import { resolveCardThumbnail, getPlaceholderPath as getLocalPlaceholder } from "./lib/thumbnails.mjs";
+import { loadConfig } from "./lib/config.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
-const outFile = path.join(root, "profile", "06-starred-projects-generated.md");
-const COUNT = 3;
+const projectsConfig = loadConfig("projects", {
+  starred: { count: 3, output: "profile/starred-projects-generated.md", title: "⭐ Featured by Stars" },
+  card: {
+    heightPx: 280,
+    thumbnailHeightPx: 120,
+    descriptionLines: 2,
+    descriptionLineHeightPx: 18,
+    colors: { border: "#252525", background: "#0d1117", name: "#58a6ff", description: "#c9d1d9", meta: "#7a7a7a", date: "#484f58", link: "#8957e5" },
+    linkText: "View Repository →",
+    dateIcon: "🕓",
+  },
+});
+const profileConfig = loadConfig("profile", {
+  filter: { excludeForks: true, excludeArchived: true, excludePrivate: true, fallbackToPublic: true, fallbackToAll: true },
+});
+const outFile = path.join(root, projectsConfig.starred?.output || "profile/starred-projects-generated.md");
+const COUNT = projectsConfig.starred?.count || 3;
 
 function selectStarredRepos(repos) {
-  const withoutProfile = repos.filter((r) => r.name.toLowerCase() !== USER.toLowerCase());
+  const filter = profileConfig.filter || {};
+  const excludeProfile = profileConfig.excludeProfileRepo !== false;
+  const withoutProfile = excludeProfile
+    ? repos.filter((r) => r.name.toLowerCase() !== USER.toLowerCase())
+    : repos;
   const base = withoutProfile.length >= COUNT ? withoutProfile : repos;
-  const publicRepos = base.filter((r) => !r.private);
-  const candidatesPrimary = base.filter((r) => !r.fork && !r.archived && !r.private);
-  let candidates = candidatesPrimary.length >= COUNT ? candidatesPrimary : publicRepos.length >= COUNT ? publicRepos : base;
+  const publicRepos = filter.excludePrivate !== false ? base.filter((r) => !r.private) : base;
+  const candidatesPrimary = base.filter(
+    (r) => !(filter.excludeForks !== false && r.fork) && !(filter.excludeArchived !== false && r.archived) && !(filter.excludePrivate !== false && r.private)
+  );
+  let candidates =
+    candidatesPrimary.length >= COUNT
+      ? candidatesPrimary
+      : filter.fallbackToPublic !== false && publicRepos.length >= COUNT
+        ? publicRepos
+        : filter.fallbackToAll !== false
+          ? base
+          : candidatesPrimary;
   candidates.sort((a, b) => {
     const sa = a.stargazers_count ?? 0;
     const sb = b.stargazers_count ?? 0;
@@ -50,8 +79,26 @@ async function getDescriptionWithFallback(repo, token) {
 }
 
 function generateCard(repo, thumbnail, description) {
+  const card = projectsConfig.card || {};
+  const colors = card.colors || {};
+  const border = colors.border || "#252525";
+  const background = colors.background || "#0d1117";
+  const nameColor = colors.name || "#58a6ff";
+  const descColor = colors.description || "#c9d1d9";
+  const metaColor = colors.meta || "#7a7a7a";
+  const dateColor = colors.date || "#484f58";
+  const linkColor = colors.link || "#8957e5";
+  const heightPx = card.heightPx || 280;
+  const thumbPx = card.thumbnailHeightPx || 120;
+  const descLines = card.descriptionLines || 2;
+  const descLineHeight = card.descriptionLineHeightPx || 18;
+  const linkText = card.linkText || "View Repository →";
+  const dateIcon = card.dateIcon || "🕓";
+  const showStars = projectsConfig.starred?.showStars !== false;
+  const showForks = projectsConfig.starred?.showForks !== false;
+
   const name = escapeHtml(repo.name);
-  const desc = description || "No description provided.";
+  const desc = description || card.fallbackDescription || "No description provided.";
   const url = repo.html_url;
   const stars = repo.stargazers_count ?? 0;
   const forks = repo.forks_count ?? 0;
@@ -60,26 +107,27 @@ function generateCard(repo, thumbnail, description) {
 
   const thumbSrc = thumbnail || getLocalPlaceholder();
   const safeThumb = escapeHtml(thumbSrc);
-  const thumbHtml = `        <a href="${url}"><img src="${safeThumb}" alt="${name}" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>`;
+  const thumbHtml = `        <a href="${url}"><img src="${safeThumb}" alt="${name}" width="100%" height="${thumbPx}" style="border-radius:6px; height:${thumbPx}px; object-fit:cover; display:block;" /></a>`;
 
   const langStarsParts = [];
   if (lang) langStarsParts.push(`<span>${lang}</span>`);
-  langStarsParts.push(`<span>⭐ ${stars}</span>`);
-  if (forks > 0) langStarsParts.push(`<span>⑂ ${forks}</span>`);
-  const langStarsHtml = langStarsParts.length ? `<div style="font-size:11px; color:#7a7a7a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${langStarsParts.join(" · ")}</div>` : "";
-  const dateHtml = pushed ? `<div style="font-size:10px; color:#484f58; margin-top:2px;">🕓 ${escapeHtml(pushed)}</div>` : "";
+  if (showStars) langStarsParts.push(`<span>⭐ ${stars}</span>`);
+  if (showForks && forks > 0) langStarsParts.push(`<span>⑂ ${forks}</span>`);
+  const langStarsHtml = langStarsParts.length ? `<div style="font-size:11px; color:${metaColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${langStarsParts.join(" · ")}</div>` : "";
+  const dateHtml = pushed ? `<div style="font-size:10px; color:${dateColor}; margin-top:2px;">${dateIcon} ${escapeHtml(pushed)}</div>` : "";
+  const descHeight = descLines * descLineHeight;
 
   return `    <td width="33.33%" valign="top" style="padding:8px;">
-      <div style="border:1px solid #252525; border-radius:8px; padding:12px; background:#0d1117; height:280px; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
+      <div style="border:1px solid ${border}; border-radius:8px; padding:12px; background:${background}; height:${heightPx}px; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
 ${thumbHtml}
-          <div style="margin-top:8px;"><strong style="font-size:14px;"><a href="${url}" style="text-decoration:none; color:#58a6ff;">${name}</a></strong></div>
-          <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">${desc}</div>
+          <div style="margin-top:8px;"><strong style="font-size:14px;"><a href="${url}" style="text-decoration:none; color:${nameColor};">${name}</a></strong></div>
+          <div style="font-size:12px; color:${descColor}; height:${descHeight}px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:${descLines}; -webkit-box-orient:vertical; line-height:${descLineHeight}px; margin:4px 0;">${desc}</div>
         </div>
         <div>
           ${langStarsHtml}
           ${dateHtml}
-          <a href="${url}" style="font-size:12px; color:#8957e5; text-decoration:none; display:inline-block; margin-top:4px;">View Repository →</a>
+          <a href="${url}" style="font-size:12px; color:${linkColor}; text-decoration:none; display:inline-block; margin-top:4px;">${linkText}</a>
         </div>
       </div>
     </td>`;
@@ -100,36 +148,17 @@ async function main() {
 
     const withThumbs = [];
     for (const repo of top) {
-      const localSvg = getLocalThumbnailPath(repo.name, "svg");
-      const localPng = getLocalThumbnailPath(repo.name, "png");
-      let finalThumb = getPlaceholderPath();
-      try {
-        const { stat } = await import("node:fs/promises");
-        try {
-          await stat(path.join(root, localSvg.replace("./", "")));
-          finalThumb = localSvg;
-          console.log(`[stars] Thumbnail for ${repo.name}: ${finalThumb} (local SVG)`);
-        } catch {
-          await stat(path.join(root, localPng.replace("./", "")));
-          finalThumb = localPng;
-          console.log(`[stars] Thumbnail for ${repo.name}: ${finalThumb} (local PNG)`);
-        }
-      } catch {
-        const existing = await localThumbnailExists(repo.name);
-        if (existing) {
-          finalThumb = existing;
-          console.log(`[stars] Thumbnail for ${repo.name}: ${finalThumb} (cached)`);
-        } else {
-          console.log(`[stars] Thumbnail for ${repo.name}: placeholder`);
-          finalThumb = getPlaceholderPath();
-        }
-      }
+      // Each card fetches its own repo assets/thumbnail/ (or keeps the default)
+      const finalThumb = await resolveCardThumbnail(repo, token, (msg) =>
+        console.log(`[stars] ${msg}`)
+      );
       const desc = await getRepoDescription(repo, token).then(escapeHtml);
       withThumbs.push({ repo, thumbnail: finalThumb, description: desc });
     }
 
+    const title = projectsConfig.starred?.title || "⭐ Featured by Stars";
     let table = "<!-- This section is generated automatically. Do not edit directly. -->\n";
-    table += "## ⭐ Featured by Stars\n\n";
+    table += `## ${title}\n\n`;
     table += '<table style="width:100%; table-layout:fixed;">\n';
     table += "  <tr>\n";
     for (const item of withThumbs) {

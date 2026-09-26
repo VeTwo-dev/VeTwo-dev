@@ -1,0 +1,58 @@
+{
+  "$comment": "Contribution-snake generation. The snake color and palettes live here — change color_snake and re-run pnpm ready.",
+  "username": "VeTwo-dev",
+  "outputDir": "assets/github",
+  "lightOutput": "assets/github/github-contribution-grid-snake.svg",
+  "darkOutput": "assets/github/github-contribution-grid-snake-dark.svg",
+  "sizes": {
+    "sizeCell": 16,
+    "sizeDot": 12,
+    "sizeDotBorderRadius": 2
+  },
+  "animation": {
+    "stepDurationMs": 100,
+    "frameByStep": 1
+  },
+  "outputs": [
+    {
+      "format": "svg",
+      "drawOptions": {
+        "palette": "github",
+        "color_snake": "#8957e5"
+      }
+    },
+    {
+      "format": "svg",
+      "drawOptions": {
+        "palette": "github-dark",
+        "color_snake": "#8957e5"
+      }
+    }
+  ],
+  "palettes": {
+    "github": {
+      "colorDots": {
+        "0": "#ebedf0",
+        "1": "#9be9a8",
+        "2": "#40c463",
+        "3": "#30a14e",
+        "4": "#216e39"
+      },
+      "colorEmpty": "#ebedf0",
+      "colorDotBorder": "#1b1f230a",
+      "colorSnake": "#8957e5"
+    },
+    "github-dark": {
+      "colorDots": {
+        "0": "#161b22",
+        "1": "#01311f",
+        "2": "#034525",
+        "3": "#0f6d31",
+        "4": "#00c647"
+      },
+      "colorEmpty": "#161b22",
+      "colorDotBorder": "#1b1f230a",
+      "colorSnake": "#8957e5"
+    }
+  }
+}

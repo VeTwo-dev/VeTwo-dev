@@ -1,0 +1,79 @@
+{
+  "$comment": "Single source of truth for README section order. Each entry maps a profile source file to its sequence position and filename number. Generated files carry number: null by design (see previous rename) and stay pinned by position. To reorder sections, move entries here and re-run pnpm readme — no code edits needed. Files present in profile/*.md but missing here are appended alphabetically by build-readme.mjs.",
+  "sequence": [
+    {
+      "position": 1,
+      "number": "01",
+      "file": "01-hero.md",
+      "title": "Hero — Ahmed Kamal",
+      "generated": false,
+      "description": "Identity header: visitor badge, capsule banner, logo, name, social badges, typing animation"
+    },
+    {
+      "position": 2,
+      "number": "02",
+      "file": "02-about.md",
+      "title": "🧬 About",
+      "generated": false,
+      "description": "Short intro and VeTwo focus areas"
+    },
+    {
+      "position": 3,
+      "number": "03",
+      "file": "03-vetwo.md",
+      "title": "🧪 What is VeTwo? + 🌱 VeTwo Ecosystem",
+      "generated": false,
+      "description": "VeTwo concept tables and ecosystem package map"
+    },
+    {
+      "position": 4,
+      "number": "04",
+      "file": "04-projects.md",
+      "title": "⭐ Featured Projects + ⚡ Recent Work",
+      "generated": false,
+      "description": "Hand-curated featured projects and recent work tables"
+    },
+    {
+      "position": 5,
+      "number": "05",
+      "file": "05-technologies.md",
+      "title": "💻 Technology Landscape",
+      "generated": false,
+      "description": "Language and tool skill icons"
+    },
+    {
+      "position": 6,
+      "number": "06",
+      "file": "06-github.md",
+      "title": "📊 GitHub Activity + 🔥 Streak Stats",
+      "generated": false,
+      "description": "Activity graph, contribution snake (local SVG), stats cards, streak"
+    },
+    {
+      "position": 7,
+      "number": null,
+      "file": "projects-generated.md",
+      "title": "Recent Projects",
+      "generated": true,
+      "generator": "scripts/generate-project-cards.mjs",
+      "description": "Auto-generated cards for the 4 most recently pushed repositories"
+    },
+    {
+      "position": 8,
+      "number": null,
+      "file": "starred-projects-generated.md",
+      "title": "⭐ Featured by Stars",
+      "generated": true,
+      "generator": "scripts/generate-starred-projects.mjs",
+      "description": "Auto-generated cards for the top 3 starred repositories"
+    },
+    {
+      "position": 9,
+      "number": "07",
+      "file": "07-console.md",
+      "title": "Console — welcome.sh",
+      "generated": false,
+      "description": "Terminal-style welcome and bug-catching ASCII blocks"
+    }
+  ]
+}

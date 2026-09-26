@@ -9,13 +9,19 @@ import {
   generatePlaceholder,
   getLocalThumbnailPath,
 } from "./lib/thumbnails.mjs";
+import { loadConfig } from "./lib/config.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
+const projectsConfig = loadConfig("projects", {
+  recent: { count: 4 },
+  starred: { count: 3 },
+});
+const thumbsConfig = loadConfig("thumbnails", { dir: "assets/thumbnail" });
 
-const COUNT_RECENT = 4;
-const COUNT_STARRED = 3;
+const COUNT_RECENT = projectsConfig.recent?.count || 4;
+const COUNT_STARRED = projectsConfig.starred?.count || 3;
 
 function selectLatestRepos(repos, count) {
   const withoutProfile = repos.filter((r) => r.name.toLowerCase() !== USER.toLowerCase());
@@ -78,7 +84,7 @@ async function main() {
     const allSelected = Array.from(map.values());
     console.log(`[thumbnails] Found ${allRepos.length} repos, need thumbnails for ${allSelected.length} unique: ${allSelected.map((r) => r.name).join(", ")}`);
 
-    await mkdir(path.join(root, "assets", "thumbnail"), { recursive: true });
+    await mkdir(path.join(root, thumbsConfig.dir || "assets/thumbnail"), { recursive: true });
 
     for (const repo of allSelected) {
       console.log(`[thumbnails] Processing ${repo.name}...`);
@@ -108,7 +114,7 @@ async function main() {
     // It's already created by generatePlaceholder if needed, but ensure the generic placeholder exists
     // The placeholder.svg we created earlier is the generic one, but our generated placeholders are per-repo
     // We should keep the generic placeholder.svg as fallback
-    console.log(`\n[thumbnails] ✓ Ensured ${allSelected.length} thumbnails in assets/thumbnail/`);
+    console.log(`\n[thumbnails] ✓ Ensured ${allSelected.length} thumbnails in ${thumbsConfig.dir || "assets/thumbnail"}/`);
     for (const repo of allSelected) {
       const p = getLocalThumbnailPath(repo.name);
       console.log(` - ${repo.name}: ${p}`);

@@ -385,7 +385,7 @@ Recently updated · 27d ago, Aug 2026
         <div>
         <a href="https://github.com/VeTwo-dev/Units-manager"><img src="./assets/thumbnail/units-manager.svg" alt="Units-manager" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
           <div style="margin-top:8px;"><strong style="font-size:14px;"><a href="https://github.com/VeTwo-dev/Units-manager" style="text-decoration:none; color:#58a6ff;">Units-manager</a></strong></div>
-          <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">A pnpm workspace for the **VeTwo unit engine** family — a dependency-free</div>
+          <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">Units-manager — TypeScript project.</div>
         </div>
         <div>
           <div style="font-size:11px; color:#7a7a7a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span></div>
@@ -399,7 +399,7 @@ Recently updated · 27d ago, Aug 2026
         <div>
         <a href="https://github.com/VeTwo-dev/marketplace-fetch-pack"><img src="./assets/thumbnail/marketplace-fetch-pack.svg" alt="marketplace-fetch-pack" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
           <div style="margin-top:8px;"><strong style="font-size:14px;"><a href="https://github.com/VeTwo-dev/marketplace-fetch-pack" style="text-decoration:none; color:#58a6ff;">marketplace-fetch-pack</a></strong></div>
-          <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">Official Package Manager for the VeTwo ecosystem. Registry-driven, plugin-first, extensible.</div>
+          <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">marketplace-fetch-pack — TypeScript project.</div>
         </div>
         <div>
           <div style="font-size:11px; color:#7a7a7a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span></div>
@@ -415,7 +415,7 @@ Recently updated · 27d ago, Aug 2026
         <div>
         <a href="https://github.com/VeTwo-dev/Cli"><img src="./assets/thumbnail/cli.svg" alt="Cli" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
           <div style="margin-top:8px;"><strong style="font-size:14px;"><a href="https://github.com/VeTwo-dev/Cli" style="text-decoration:none; color:#58a6ff;">Cli</a></strong></div>
-          <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">A monorepo managed with pnpm workspaces and pnpm.</div>
+          <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">Cli — TypeScript project.</div>
         </div>
         <div>
           <div style="font-size:11px; color:#7a7a7a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span></div>
@@ -429,7 +429,7 @@ Recently updated · 27d ago, Aug 2026
         <div>
         <a href="https://github.com/VeTwo-dev/Docs"><img src="./assets/thumbnail/docs.svg" alt="Docs" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
           <div style="margin-top:8px;"><strong style="font-size:14px;"><a href="https://github.com/VeTwo-dev/Docs" style="text-decoration:none; color:#58a6ff;">Docs</a></strong></div>
-          <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">The easiest and most powerful documentation generator for JavaScript and TypeScript. Generate beautiful, performant d...</div>
+          <div style="font-size:12px; color:#c9d1d9; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:4px 0;">Docs — TypeScript project.</div>
         </div>
         <div>
           <div style="font-size:11px; color:#7a7a7a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span></div>

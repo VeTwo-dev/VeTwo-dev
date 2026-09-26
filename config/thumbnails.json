@@ -1,0 +1,41 @@
+{
+  "$comment": "Thumbnail discovery and placeholder design system. Sources, naming priorities, and generated-art styling all live here.",
+  "dir": "assets/thumbnail",
+  "placeholder": "assets/thumbnail/placeholder.svg",
+  "sourceDir": "assets/thumbnail",
+  "imageExts": [".png", ".jpg", ".svg"],
+  "commonDirs": ["", "assets/"],
+  "commonNames": ["thumbnail", "preview", "banner", "cover"],
+  "thumbnailKeywords": ["thumbnail", "preview", "banner", "cover", "hero", "screenshot"],
+  "badgeMarkers": [
+    "shields.io",
+    "badge",
+    "skillicons.dev",
+    "komarev.com",
+    "github-readme-stats",
+    "github-readme-streak",
+    "capsule-render",
+    "readme-typing-svg",
+    "github-readme-activity-graph",
+    "star-history",
+    "contrib.rocks",
+    "img.shields.io"
+  ],
+  "sourceNamePriority": ["thumbnail", "preview", "cover", "banner", "hero", "project"],
+  "sourceExtPriority": {
+    "svg": 0,
+    "png": 1,
+    "webp": 2,
+    "jpg": 3,
+    "jpeg": 3
+  },
+  "design": {
+    "canvasWidth": 1200,
+    "canvasHeight": 675,
+    "compositionCount": 5,
+    "accentColors": ["#8957e5", "#58a6ff", "#2ea043", "#f778ba", "#ff7b72"],
+    "backgroundColors": ["#0d1117", "#161b22", "#0f172a", "#1a1a2e", "#0d1117"],
+    "maxDescriptionChars": 80,
+    "fallbackLanguage": "TypeScript"
+  }
+}

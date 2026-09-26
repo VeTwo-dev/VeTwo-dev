@@ -2,10 +2,30 @@ import { mkdir, writeFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getHeaders, fetchWithTimeout, USER } from "./github.mjs";
+import { loadConfig } from "./config.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "../..");
+
+const thumbsConfig = loadConfig("thumbnails", {
+  dir: "assets/thumbnail",
+  placeholder: "assets/thumbnail/placeholder.svg",
+  sourceDir: "assets/thumbnail",
+  sourceNamePriority: ["thumbnail", "preview", "cover", "banner", "hero", "project"],
+  sourceExtPriority: { svg: 0, png: 1, webp: 2, jpg: 3, jpeg: 3 },
+  design: {
+    canvasWidth: 1200,
+    canvasHeight: 675,
+    compositionCount: 5,
+    accentColors: ["#8957e5", "#58a6ff", "#2ea043", "#f778ba", "#ff7b72"],
+    backgroundColors: ["#0d1117", "#161b22", "#0f172a", "#1a1a2e", "#0d1117"],
+    maxDescriptionChars: 80,
+    fallbackLanguage: "TypeScript",
+  },
+});
+
+const THUMB_DIR = thumbsConfig.dir || "assets/thumbnail";
 
 export function normalizeRepoName(name) {
   return name
@@ -17,16 +37,16 @@ export function normalizeRepoName(name) {
 
 export function getLocalThumbnailPath(repoName, ext = "svg") {
   const safe = normalizeRepoName(repoName);
-  return `./assets/thumbnail/${safe}.${ext}`;
+  return `./${THUMB_DIR}/${safe}.${ext}`;
 }
 
 export function getLocalThumbnailFullPath(repoName, ext = "svg") {
   const safe = normalizeRepoName(repoName);
-  return path.join(root, "assets", "thumbnail", `${safe}.${ext}`);
+  return path.join(root, THUMB_DIR, `${safe}.${ext}`);
 }
 
 export function getPlaceholderPath() {
-  return "./assets/thumbnail/placeholder.svg";
+  return `./${thumbsConfig.placeholder || "assets/thumbnail/placeholder.svg"}`;
 }
 
 // Deterministic hash for composition selection
@@ -39,14 +59,15 @@ function hashString(str) {
 }
 
 function getCompositionIndex(repoName) {
-  return hashString(repoName) % 5;
+  const count = thumbsConfig.design?.compositionCount || 5;
+  return hashString(repoName) % count;
 }
 
 // Find best thumbnail in source repo's assets/thumbnail
 export async function findSourceThumbnail(repo, token) {
   const headers = getHeaders(token);
   const branch = repo.default_branch || "main";
-  const dirPath = "assets/thumbnail";
+  const dirPath = thumbsConfig.sourceDir || "assets/thumbnail";
 
   try {
     const url = `https://api.github.com/repos/${USER}/${repo.name}/contents/${dirPath}?ref=${branch}`;
@@ -60,8 +81,8 @@ export async function findSourceThumbnail(repo, token) {
     if (images.length === 0) return null;
 
     // Prefer thumbnail.*, preview.*, cover.*, banner.*, hero.*, project.*
-    const priority = ["thumbnail", "preview", "cover", "banner", "hero", "project"];
-    const extPriority = { svg: 0, png: 1, webp: 2, jpg: 3, jpeg: 3 };
+    const priority = thumbsConfig.sourceNamePriority || ["thumbnail", "preview", "cover", "banner", "hero", "project"];
+    const extPriority = thumbsConfig.sourceExtPriority || { svg: 0, png: 1, webp: 2, jpg: 3, jpeg: 3 };
 
     images.sort((a, b) => {
       const aLower = a.name.toLowerCase();
@@ -105,8 +126,8 @@ export async function downloadThumbnail(sourceUrl, repoName, token) {
 
     const safeName = normalizeRepoName(repoName);
     const localFile = `${safeName}.${ext}`;
-    const localPath = path.join(root, "assets", "thumbnail", localFile);
-    const localUrl = `./assets/thumbnail/${localFile}`;
+    const localPath = path.join(root, THUMB_DIR, localFile);
+    const localUrl = `./${THUMB_DIR}/${localFile}`;
 
     await mkdir(path.dirname(localPath), { recursive: true });
     await writeFile(localPath, buf);
@@ -116,20 +137,50 @@ export async function downloadThumbnail(sourceUrl, repoName, token) {
   }
 }
 
+// Resolve the thumbnail for one repository card:
+//   1. Reuse the local assets/thumbnail/<repo>.<ext> file when present.
+//   2. Otherwise fetch that repo's own assets/thumbnail/ folder via the API,
+//      download the best image into assets/thumbnail/ and use it.
+//   3. When the repo has no thumbnail, fall back to the default placeholder.
+// Never throws for missing thumbnails — a repo without one simply gets the default.
+export async function resolveCardThumbnail(repo, token, logger) {
+  const log = typeof logger === "function" ? logger : () => {};
+  // 1. Local file wins (already fetched by generate-project-thumbnails.mjs)
+  const existing = await localThumbnailExists(repo.name);
+  if (existing) {
+    log(`thumbnail for ${repo.name}: ${existing} (local)`);
+    return existing;
+  }
+  // 2. Fetch the repo's own assets/thumbnail/ folder
+  const sourceUrl = await findSourceThumbnail(repo, token);
+  if (sourceUrl) {
+    const downloaded = await downloadThumbnail(sourceUrl, repo.name, token);
+    if (downloaded) {
+      log(`thumbnail for ${repo.name}: ${downloaded} (from repo assets/thumbnail)`);
+      return downloaded;
+    }
+    log(`thumbnail for ${repo.name}: download failed, using default`);
+  } else {
+    log(`thumbnail for ${repo.name}: no assets/thumbnail in repo, using default`);
+  }
+  // 3. Default placeholder for repos without their own thumbnail
+  return getPlaceholderPath();
+}
+
 // Check if local thumbnail already exists and is up to date (simple existence check)
 export async function localThumbnailExists(repoName) {
   const exts = ["svg", "png", "jpg", "webp"];
   for (const ext of exts) {
     const safe = normalizeRepoName(repoName);
-    const full = path.join(root, "assets", "thumbnail", `${safe}.${ext}`);
+    const full = path.join(root, THUMB_DIR, `${safe}.${ext}`);
     try {
       await stat(full);
-      return `./assets/thumbnail/${safe}.${ext}`;
+      return `./${THUMB_DIR}/${safe}.${ext}`;
     } catch {}
   }
   // Check placeholder
   try {
-    await stat(path.join(root, "assets", "thumbnail", "placeholder.svg"));
+    await stat(path.join(root, thumbsConfig.placeholder || "assets/thumbnail/placeholder.svg"));
   } catch {}
   return null;
 }
@@ -151,30 +202,33 @@ export async function generatePlaceholder(repo) {
     return localUrl;
   } catch {}
 
+  const design = thumbsConfig.design || {};
+  const fallbackLang = design.fallbackLanguage || "TypeScript";
+  const maxDesc = design.maxDescriptionChars || 80;
   const name = repo.name;
-  const desc = repo.description || `${repo.language || "TypeScript"} project`;
-  const lang = repo.language || "TypeScript";
+  const desc = repo.description || `${repo.language || fallbackLang} project`;
+  const lang = repo.language || fallbackLang;
   const topics = Array.isArray(repo.topics) ? repo.topics.slice(0, 3).join(" · ") : "";
   const stars = repo.stargazers_count ?? 0;
 
   const compIndex = getCompositionIndex(name);
-  const accentColors = ["#8957e5", "#58a6ff", "#2ea043", "#f778ba", "#ff7b72"];
+  const accentColors = design.accentColors || ["#8957e5"];
   const accent = accentColors[compIndex % accentColors.length];
-  const bgColors = ["#0d1117", "#161b22", "#0f172a", "#1a1a2e", "#0d1117"];
+  const bgColors = design.backgroundColors || ["#0d1117"];
   const bg = bgColors[compIndex % bgColors.length];
 
   // Truncate description
   let shortDesc = desc;
-  if (shortDesc.length > 80) shortDesc = shortDesc.slice(0, 77) + "...";
+  if (shortDesc.length > maxDesc) shortDesc = shortDesc.slice(0, maxDesc - 3) + "...";
 
   // Escape for SVG
   const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
   let svg = "";
 
-  // 5 compositions, each 1200x675 (16:9)
-  const width = 1200;
-  const height = 675;
+  // Compositions share one canvas (16:9 by default)
+  const width = design.canvasWidth || 1200;
+  const height = design.canvasHeight || 675;
 
   if (compIndex === 0) {
     // Composition A: Large project name, description, language indicator, geometric background

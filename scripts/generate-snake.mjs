@@ -4,57 +4,50 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 import { generateSnakeAnimation } from "generate-snake-animation";
+import { loadConfig } from "./lib/config.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
-const outputDir = path.join(root, "assets", "github");
+const snakeConfig = loadConfig("snake", {
+  username: "VeTwo-dev",
+  outputDir: "assets/github",
+  lightOutput: "assets/github/github-contribution-grid-snake.svg",
+  darkOutput: "assets/github/github-contribution-grid-snake-dark.svg",
+  sizes: { sizeCell: 16, sizeDot: 12, sizeDotBorderRadius: 2 },
+  animation: { stepDurationMs: 100, frameByStep: 1 },
+  outputs: [
+    { format: "svg", drawOptions: { palette: "github", color_snake: "#8957e5" } },
+    { format: "svg", drawOptions: { palette: "github-dark", color_snake: "#8957e5" } },
+  ],
+  palettes: {},
+});
+const profileConfig = loadConfig("profile", { username: "VeTwo-dev" });
+const outputDir = path.join(root, snakeConfig.outputDir || "assets/github");
 
-const lightOutput = path.join(outputDir, "github-contribution-grid-snake.svg");
-const darkOutput = path.join(outputDir, "github-contribution-grid-snake-dark.svg");
+const lightOutput = path.join(root, snakeConfig.lightOutput || "assets/github/github-contribution-grid-snake.svg");
+const darkOutput = path.join(root, snakeConfig.darkOutput || "assets/github/github-contribution-grid-snake-dark.svg");
 
-// Palette definitions mirroring generate-snake-animation cli palettes
+// Palette definitions from config/snake.json (mirroring generate-snake-animation cli palettes).
 // Needed at runtime because the library's DrawOptions expects full color objects,
 // while the spec requires keeping `palette: "github"` literals in the outputs.
-const palettes = {
-  github: {
-    colorDots: {
-      0: "#ebedf0",
-      1: "#9be9a8",
-      2: "#40c463",
-      3: "#30a14e",
-      4: "#216e39",
-    },
-    colorEmpty: "#ebedf0",
-    colorDotBorder: "#1b1f230a",
-    colorSnake: "#8957e5",
-  },
-  "github-dark": {
-    colorDots: {
-      0: "#161b22",
-      1: "#01311f",
-      2: "#034525",
-      3: "#0f6d31",
-      4: "#00c647",
-    },
-    colorEmpty: "#161b22",
-    colorDotBorder: "#1b1f230a",
-    colorSnake: "#8957e5",
-  },
-};
+const palettes = snakeConfig.palettes || {};
+const defaultSnakeColor =
+  snakeConfig.outputs?.[0]?.drawOptions?.color_snake || "#8957e5";
 
 function resolveDrawOptions(drawOptions) {
   const palette = palettes[drawOptions.palette] ?? {};
+  const sizes = snakeConfig.sizes || {};
   return {
-    sizeCell: 16,
-    sizeDot: 12,
-    sizeDotBorderRadius: 2,
+    sizeCell: sizes.sizeCell ?? 16,
+    sizeDot: sizes.sizeDot ?? 12,
+    sizeDotBorderRadius: sizes.sizeDotBorderRadius ?? 2,
     ...palette,
     ...drawOptions,
     // Ensure both naming conventions are satisfied:
     // spec requires color_snake, library requires colorSnake
-    colorSnake: drawOptions.color_snake ?? drawOptions.colorSnake ?? palette.colorSnake ?? "#8957e5",
-    color_snake: drawOptions.color_snake ?? drawOptions.colorSnake ?? "#8957e5",
+    colorSnake: drawOptions.color_snake ?? drawOptions.colorSnake ?? palette.colorSnake ?? defaultSnakeColor,
+    color_snake: drawOptions.color_snake ?? drawOptions.colorSnake ?? defaultSnakeColor,
     // Ensure palette stays present for spec compliance
     palette: drawOptions.palette,
   };
@@ -277,34 +270,23 @@ async function main() {
 
     await mkdir(outputDir, { recursive: true });
 
-    const outputs = [
-      {
-        format: "svg",
-        drawOptions: {
-          palette: "github",
-          color_snake: "#8957e5",
-        },
-      },
-      {
-        format: "svg",
-        drawOptions: {
-          palette: "github-dark",
-          color_snake: "#8957e5",
-        },
-      },
+    const outputs = snakeConfig.outputs || [
+      { format: "svg", drawOptions: { palette: "github", color_snake: defaultSnakeColor } },
+      { format: "svg", drawOptions: { palette: "github-dark", color_snake: defaultSnakeColor } },
     ];
 
     // Resolve palette shorthands to full DrawOptions for runtime compatibility
+    const animationDefaults = snakeConfig.animation || { stepDurationMs: 100, frameByStep: 1 };
     const resolvedOutputs = outputs.map((o) => ({
       format: o.format,
       drawOptions: resolveDrawOptions(o.drawOptions),
-      animationOptions: o.animationOptions ?? { stepDurationMs: 100, frameByStep: 1 },
+      animationOptions: o.animationOptions ?? animationDefaults,
     }));
 
     const results = await generateSnakeAnimation(
       {
         platform: "github",
-        username: "VeTwo-dev",
+        username: snakeConfig.username || profileConfig.username || "VeTwo-dev",
         githubToken: token,
       },
       resolvedOutputs,
