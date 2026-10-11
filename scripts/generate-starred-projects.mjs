@@ -8,6 +8,7 @@ import {
   escapeHtml,
   formatDate,
   getRepoDescription,
+  selectRepos,
 } from "./lib/github.mjs";
 import { resolveCardThumbnail, getPlaceholderPath as getLocalPlaceholder } from "./lib/thumbnails.mjs";
 import { loadConfig } from "./lib/config.mjs";
@@ -34,43 +35,13 @@ const outFile = path.join(root, projectsConfig.starred?.output || "profile/starr
 const COUNT = projectsConfig.starred?.count || 3;
 
 function selectStarredRepos(repos) {
-  const filter = profileConfig.filter || {};
-  const excludeProfile = profileConfig.excludeProfileRepo !== false;
-  const withoutProfile = excludeProfile
-    ? repos.filter((r) => r.name.toLowerCase() !== USER.toLowerCase())
-    : repos;
-  const base = withoutProfile.length >= COUNT ? withoutProfile : repos;
-  const publicRepos = filter.excludePrivate !== false ? base.filter((r) => !r.private) : base;
-  const candidatesPrimary = base.filter(
-    (r) => !(filter.excludeForks !== false && r.fork) && !(filter.excludeArchived !== false && r.archived) && !(filter.excludePrivate !== false && r.private)
-  );
-  let candidates =
-    candidatesPrimary.length >= COUNT
-      ? candidatesPrimary
-      : filter.fallbackToPublic !== false && publicRepos.length >= COUNT
-        ? publicRepos
-        : filter.fallbackToAll !== false
-          ? base
-          : candidatesPrimary;
-  candidates.sort((a, b) => {
-    const sa = a.stargazers_count ?? 0;
-    const sb = b.stargazers_count ?? 0;
-    if (sb !== sa) return sb - sa;
-    const pa = a.pushed_at ? new Date(a.pushed_at).getTime() : 0;
-    const pb = b.pushed_at ? new Date(b.pushed_at).getTime() : 0;
-    if (pb !== pa) return pb - pa;
-    return a.name.localeCompare(b.name);
+  return selectRepos(repos, {
+    count: COUNT,
+    sortBy: "stars",
+    username: USER,
+    excludeProfile: profileConfig.excludeProfileRepo !== false,
+    filter: profileConfig.filter || {},
   });
-  const seen = new Set();
-  const result = [];
-  for (const r of candidates) {
-    if (!seen.has(r.id)) {
-      seen.add(r.id);
-      result.push(r);
-    }
-    if (result.length >= COUNT) break;
-  }
-  return result;
 }
 
 async function getDescriptionWithFallback(repo, token) {

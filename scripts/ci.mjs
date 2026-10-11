@@ -1,6 +1,6 @@
 import { readdir } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,8 +15,8 @@ function sanitize(str) {
   return str.split(token).join("[REDACTED]");
 }
 
-function discoverScripts() {
-  return readdir(scriptsDir)
+export function discoverScripts(dir = scriptsDir) {
+  return readdir(dir)
     .then((files) =>
       files
         .filter((f) => f.startsWith("generate-") && f.endsWith(".mjs"))
@@ -26,19 +26,24 @@ function discoverScripts() {
     .catch(() => []);
 }
 
+// Deterministic pipeline order: generators alphabetically with thumbnails
+// first (cards/starred consume its outputs), README builder always last.
+export function orderScripts(names) {
+  const ordered = names.filter((f) => f !== "build-readme.mjs").sort();
+  const thumbIdx = ordered.indexOf("generate-project-thumbnails.mjs");
+  if (thumbIdx > 0) {
+    const [thumb] = ordered.splice(thumbIdx, 1);
+    ordered.unshift(thumb);
+  }
+  return [...ordered, "build-readme.mjs"];
+}
+
 async function main() {
   const token = process.env.GITHUB_TOKEN || "";
   const generators = await discoverScripts();
-  const hasBuilder = generators.includes("build-readme.mjs") ? false : true;
 
   // Ensure build-readme runs last, even if it matches generate-*
-  let orderedGenerators = generators.filter((f) => f !== "build-readme.mjs").sort();
-  // Ensure thumbnails runs before cards/starred (dependency order)
-  const thumbIdx = orderedGenerators.indexOf("generate-project-thumbnails.mjs");
-  if (thumbIdx > 0) {
-    const [thumb] = orderedGenerators.splice(thumbIdx, 1);
-    orderedGenerators.unshift(thumb);
-  }
+  const orderedGenerators = orderScripts(generators).filter((f) => f !== "build-readme.mjs");
   const all = [...orderedGenerators, "build-readme.mjs"];
 
   // Verify build-readme exists
@@ -86,4 +91,5 @@ async function main() {
   console.log("\n[CI] All profile automation completed successfully.");
 }
 
-await main();
+const isDirectRun = !!process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+if (isDirectRun) await main();

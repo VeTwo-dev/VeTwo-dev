@@ -49,6 +49,46 @@ export function getPlaceholderPath() {
   return `./${thumbsConfig.placeholder || "assets/thumbnail/placeholder.svg"}`;
 }
 
+const THUMB_IMAGE_EXTS = [".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif"];
+
+// Pure helper: which directory entries are stale same-repo siblings that must
+// go so exactly one thumbnail file exists per normalized repository name.
+// Matching is case-insensitive (catches pre-normalization files like Cli.png
+// vs cli.svg); the file being kept is never listed.
+export function staleSiblingsFor(dirEntries, repoName, keepFile) {
+  const safe = normalizeRepoName(repoName);
+  const keep = String(keepFile || "").toLowerCase();
+  return (dirEntries || []).filter((name) => {
+    if (typeof name !== "string") return false;
+    const lower = name.toLowerCase();
+    if (lower === keep) return false;
+    const dot = lower.lastIndexOf(".");
+    if (dot <= 0) return false;
+    return lower.slice(0, dot) === safe && THUMB_IMAGE_EXTS.includes(lower.slice(dot));
+  });
+}
+
+// Delete stale same-repo siblings, keeping exactly one thumbnail per repo.
+// Returns the removed filenames. Never throws.
+export async function removeSiblingThumbnails(repoName, keepFile) {
+  const { readdir, unlink } = await import("node:fs/promises");
+  let entries;
+  try {
+    entries = await readdir(path.join(root, THUMB_DIR));
+  } catch {
+    return [];
+  }
+  const doomed = staleSiblingsFor(entries, repoName, keepFile);
+  const removed = [];
+  for (const name of doomed) {
+    try {
+      await unlink(path.join(root, THUMB_DIR, name));
+      removed.push(name);
+    } catch {}
+  }
+  return removed;
+}
+
 // Deterministic hash for composition selection
 function hashString(str) {
   let hash = 0;
@@ -131,6 +171,8 @@ export async function downloadThumbnail(sourceUrl, repoName, token) {
 
     await mkdir(path.dirname(localPath), { recursive: true });
     await writeFile(localPath, buf);
+    // Enforce one file per repo so an older sibling can never shadow this one.
+    await removeSiblingThumbnails(repoName, localFile);
     return localUrl;
   } catch {
     return null;
@@ -141,8 +183,10 @@ export async function downloadThumbnail(sourceUrl, repoName, token) {
 //   1. Reuse the local assets/thumbnail/<repo>.<ext> file when present.
 //   2. Otherwise fetch that repo's own assets/thumbnail/ folder via the API,
 //      download the best image into assets/thumbnail/ and use it.
-//   3. When the repo has no thumbnail, fall back to the default placeholder.
-// Never throws for missing thumbnails — a repo without one simply gets the default.
+//   3. When the repo has no thumbnail, regenerate a per-repo placeholder
+//      into assets/thumbnail/ and use it (generic placeholder only as a
+//      last resort if generation itself fails).
+// Never throws for missing thumbnails — every card ends up with an image.
 export async function resolveCardThumbnail(repo, token, logger) {
   const log = typeof logger === "function" ? logger : () => {};
   // 1. Local file wins (already fetched by generate-project-thumbnails.mjs)
@@ -159,12 +203,19 @@ export async function resolveCardThumbnail(repo, token, logger) {
       log(`thumbnail for ${repo.name}: ${downloaded} (from repo assets/thumbnail)`);
       return downloaded;
     }
-    log(`thumbnail for ${repo.name}: download failed, using default`);
+    log(`thumbnail for ${repo.name}: download failed, regenerating`);
   } else {
-    log(`thumbnail for ${repo.name}: no assets/thumbnail in repo, using default`);
+    log(`thumbnail for ${repo.name}: no assets/thumbnail in repo, regenerating`);
   }
-  // 3. Default placeholder for repos without their own thumbnail
-  return getPlaceholderPath();
+  // 3. Regenerate a per-repo placeholder so the card never uses the generic one
+  try {
+    const generated = await generatePlaceholder(repo);
+    log(`thumbnail for ${repo.name}: ${generated} (regenerated)`);
+    return generated;
+  } catch {
+    log(`thumbnail for ${repo.name}: regeneration failed, using default`);
+    return getPlaceholderPath();
+  }
 }
 
 // Check if local thumbnail already exists and is up to date (simple existence check)
@@ -185,22 +236,16 @@ export async function localThumbnailExists(repoName) {
   return null;
 }
 
-// Generate placeholder SVG with multiple compositions
+// Generate placeholder SVG with multiple compositions.
+// Never shadows a real thumbnail: if any sibling file for this repo already
+// exists (e.g. a previously downloaded image), it is reused untouched.
 export async function generatePlaceholder(repo) {
+  const existing = await localThumbnailExists(repo.name);
+  if (existing) return existing;
   const safeName = normalizeRepoName(repo.name);
   const fileName = `${safeName}.svg`;
-  const fullPath = path.join(root, "assets", "thumbnail", fileName);
-  const localUrl = `./assets/thumbnail/${fileName}`;
-
-  // Check if already exists (avoid regeneration if not needed)
-  try {
-    await stat(fullPath);
-    // If exists, check if it's a generated placeholder (by checking if it contains the repo name)
-    // For now, we regenerate only if needed; to keep deterministic, we can check if file is older
-    // For simplicity, we will regenerate if the file doesn't exist or we want to ensure it's up to date
-    // But to avoid unnecessary writes, we can return existing
-    return localUrl;
-  } catch {}
+  const fullPath = path.join(root, THUMB_DIR, fileName);
+  const localUrl = `./${THUMB_DIR}/${fileName}`;
 
   const design = thumbsConfig.design || {};
   const fallbackLang = design.fallbackLanguage || "TypeScript";
@@ -300,5 +345,7 @@ export async function generatePlaceholder(repo) {
 
   await mkdir(path.dirname(fullPath), { recursive: true });
   await writeFile(fullPath, svg, "utf8");
+  // Enforce one file per repo so no stale sibling can shadow this one.
+  await removeSiblingThumbnails(repo.name, fileName);
   return localUrl;
 }

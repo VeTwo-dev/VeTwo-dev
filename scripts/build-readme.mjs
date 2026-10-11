@@ -1,6 +1,6 @@
 import { readFile, writeFile, readdir } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { loadConfig } from "./lib/config.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -46,12 +46,7 @@ async function main() {
             .map((e) => e.file)
         : readmeConfig.order || [];
     const allMd = files.filter((f) => f.endsWith(".md"));
-    const mdFiles = [
-      ...ORDER.filter((f) => allMd.includes(f)),
-      ...allMd
-        .filter((f) => !ORDER.includes(f))
-        .sort(),
-    ];
+    const mdFiles = resolveOrder(allMd, ORDER);
 
     if (mdFiles.length === 0) {
       console.error("No Markdown files found in profile/");
@@ -90,4 +85,17 @@ async function main() {
   }
 }
 
-await main();
+// Pure ordering: pinned sequence first (skipping missing files),
+// anything unknown appended alphabetically for forward compatibility.
+export function resolveOrder(allMd, order) {
+  const list = Array.isArray(order) ? order : [];
+  return [
+    ...list.filter((f) => allMd.includes(f)),
+    ...allMd
+      .filter((f) => !list.includes(f))
+      .sort(),
+  ];
+}
+
+const isDirectRun = !!process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+if (isDirectRun) await main();

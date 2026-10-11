@@ -10,7 +10,8 @@
     "stars": "node scripts/generate-starred-projects.mjs",
     "thumbnails": "node scripts/generate-project-thumbnails.mjs",
     "ci": "node scripts/ci.mjs",
-    "ship": "node scripts/ci.mjs"
+    "ship": "node scripts/ci.mjs",
+    "test": "node --test \"tests/*.test.mjs\""
   },
   "dependencies": {
     "generate-snake-animation": "^3.5.0"

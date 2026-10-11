@@ -6,7 +6,7 @@
 
 <br />
 
-<img src="./assets/logo/Logo.png" alt="VeTwo" width="110" height="110" />
+<img src="./assets/logo/Vetwo-logo-cropped.webp" alt="VeTwo" width="110" height="110" />
 
 <br />
 

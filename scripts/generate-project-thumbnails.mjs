@@ -1,7 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { fetchAllRepos, sanitize, USER } from "./lib/github.mjs";
+import { fetchAllRepos, sanitize, USER, selectRepos } from "./lib/github.mjs";
 import {
   normalizeRepoName,
   findSourceThumbnail,
@@ -24,48 +24,11 @@ const COUNT_RECENT = projectsConfig.recent?.count || 4;
 const COUNT_STARRED = projectsConfig.starred?.count || 3;
 
 function selectLatestRepos(repos, count) {
-  const withoutProfile = repos.filter((r) => r.name.toLowerCase() !== USER.toLowerCase());
-  const base = withoutProfile.length >= count ? withoutProfile : repos;
-  const publicRepos = base.filter((r) => !r.private);
-  const candidatesPrimary = base.filter((r) => !r.fork && !r.archived && !r.private);
-  let candidates = candidatesPrimary.length >= count ? candidatesPrimary : publicRepos.length >= count ? publicRepos : base;
-  candidates.sort((a, b) => {
-    const pa = a.pushed_at ? new Date(a.pushed_at).getTime() : 0;
-    const pb = b.pushed_at ? new Date(b.pushed_at).getTime() : 0;
-    if (pb !== pa) return pb - pa;
-    const ua = a.updated_at ? new Date(a.updated_at).getTime() : 0;
-    const ub = b.updated_at ? new Date(b.updated_at).getTime() : 0;
-    if (ub !== ua) return ub - ua;
-    return a.name.localeCompare(b.name);
-  });
-  return candidates.slice(0, count);
+  return selectRepos(repos, { count, sortBy: "pushed", username: USER });
 }
 
 function selectStarredRepos(repos, count) {
-  const withoutProfile = repos.filter((r) => r.name.toLowerCase() !== USER.toLowerCase());
-  const base = withoutProfile.length >= count ? withoutProfile : repos;
-  const publicRepos = base.filter((r) => !r.private);
-  const candidatesPrimary = base.filter((r) => !r.fork && !r.archived && !r.private);
-  let candidates = candidatesPrimary.length >= count ? candidatesPrimary : publicRepos.length >= count ? publicRepos : base;
-  candidates.sort((a, b) => {
-    const sa = a.stargazers_count ?? 0;
-    const sb = b.stargazers_count ?? 0;
-    if (sb !== sa) return sb - sa;
-    const pa = a.pushed_at ? new Date(a.pushed_at).getTime() : 0;
-    const pb = b.pushed_at ? new Date(b.pushed_at).getTime() : 0;
-    if (pb !== pa) return pb - pa;
-    return a.name.localeCompare(b.name);
-  });
-  const seen = new Set();
-  const result = [];
-  for (const r of candidates) {
-    if (!seen.has(r.id)) {
-      seen.add(r.id);
-      result.push(r);
-    }
-    if (result.length >= count) break;
-  }
-  return result;
+  return selectRepos(repos, { count, sortBy: "stars", username: USER });
 }
 
 async function main() {

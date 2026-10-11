@@ -8,6 +8,7 @@ import {
   escapeHtml,
   formatDate,
   getRepoDescription,
+  selectRepos,
 } from "./lib/github.mjs";
 import { resolveCardThumbnail, getPlaceholderPath as getLocalPlaceholder } from "./lib/thumbnails.mjs";
 import { loadConfig } from "./lib/config.mjs";
@@ -34,34 +35,13 @@ const outFile = path.join(root, projectsConfig.recent?.output || "profile/projec
 const COUNT = projectsConfig.recent?.count || 4;
 
 function selectLatestRepos(repos) {
-  const filter = profileConfig.filter || {};
-  const excludeProfile = profileConfig.excludeProfileRepo !== false;
-  const withoutProfile = excludeProfile
-    ? repos.filter((r) => r.name.toLowerCase() !== USER.toLowerCase())
-    : repos;
-  const base = withoutProfile.length >= COUNT ? withoutProfile : repos;
-  const publicRepos = filter.excludePrivate !== false ? base.filter((r) => !r.private) : base;
-  const candidatesPrimary = base.filter(
-    (r) => !(filter.excludeForks !== false && r.fork) && !(filter.excludeArchived !== false && r.archived) && !(filter.excludePrivate !== false && r.private)
-  );
-  let candidates =
-    candidatesPrimary.length >= COUNT
-      ? candidatesPrimary
-      : filter.fallbackToPublic !== false && publicRepos.length >= COUNT
-        ? publicRepos
-        : filter.fallbackToAll !== false
-          ? base
-          : candidatesPrimary;
-  candidates.sort((a, b) => {
-    const pa = a.pushed_at ? new Date(a.pushed_at).getTime() : 0;
-    const pb = b.pushed_at ? new Date(b.pushed_at).getTime() : 0;
-    if (pb !== pa) return pb - pa;
-    const ua = a.updated_at ? new Date(a.updated_at).getTime() : 0;
-    const ub = b.updated_at ? new Date(b.updated_at).getTime() : 0;
-    if (ub !== ua) return ub - ua;
-    return a.name.localeCompare(b.name);
+  return selectRepos(repos, {
+    count: COUNT,
+    sortBy: "pushed",
+    username: USER,
+    excludeProfile: profileConfig.excludeProfileRepo !== false,
+    filter: profileConfig.filter || {},
   });
-  return candidates.slice(0, COUNT);
 }
 
 async function getDescriptionWithFallback(repo, token) {
@@ -69,8 +49,9 @@ async function getDescriptionWithFallback(repo, token) {
   return escapeHtml(desc);
 }
 
-function generateCard(repo, thumbnail, description) {
+function generateCard(repo, thumbnail, description, colWidth) {
   const card = projectsConfig.card || {};
+  const widthAttr = colWidth || "50%";
   const colors = card.colors || {};
   const border = colors.border || "#252525";
   const background = colors.background || "#0d1117";
@@ -105,8 +86,8 @@ function generateCard(repo, thumbnail, description) {
   const dateHtml = pushed ? `<div style="font-size:10px; color:${dateColor}; margin-top:2px;">${dateIcon} ${escapeHtml(pushed)}</div>` : "";
   const descHeight = descLines * descLineHeight;
 
-  return `    <td width="50%" valign="top" style="padding:8px;">
-      <div style="border:1px solid ${border}; border-radius:8px; padding:12px; background:${background}; height:${heightPx}px; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
+  return `    <td width="${widthAttr}" valign="top" style="padding:8px;">
+      <div style="border:1px solid ${border}; border-radius:8px; padding:12px; background:${background}; height:${heightPx}px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
 ${thumbHtml}
           <div style="margin-top:8px;"><strong style="font-size:14px;"><a href="${url}" style="text-decoration:none; color:${nameColor};">${name}</a></strong></div>
@@ -145,15 +126,17 @@ async function main() {
     }
 
     const title = projectsConfig.recent?.title || "Recent Projects";
+    const columns = Math.max(1, projectsConfig.recent?.columns || 2);
+    const colWidth = `${parseFloat((100 / columns).toFixed(2))}%`;
     let table = "<!-- This section is generated automatically. Do not edit directly. -->\n";
     table += `## ${title}\n\n`;
-    table += '<table style="width:100%; table-layout:fixed;">\n';
-    for (let i = 0; i < withThumbs.length; i += 2) {
+    table += '<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; max-width:100%; table-layout:fixed; border-collapse:collapse;">\n';
+    for (let i = 0; i < withThumbs.length; i += columns) {
       table += "  <tr>\n";
-      for (let j = 0; j < 2; j++) {
+      for (let j = 0; j < columns; j++) {
         const item = withThumbs[i + j];
-        if (item) table += generateCard(item.repo, item.thumbnail, item.description) + "\n";
-        else table += `    <td width="50%" valign="top" style="padding:8px;"></td>\n`;
+        if (item) table += generateCard(item.repo, item.thumbnail, item.description, colWidth) + "\n";
+        else table += `    <td width="${colWidth}" valign="top" style="padding:8px;"></td>\n`;
       }
       table += "  </tr>\n";
     }

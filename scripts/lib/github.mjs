@@ -14,27 +14,6 @@ const githubConfig = loadConfig("github", {
   timeoutsMs: { repos: 8000, readme: 4000, contentHead: 3000, thumbnailHead: 3000, thumbnailDownload: 8000 },
   maxThumbnailBytes: 819200,
 });
-const thumbnailsConfig = loadConfig("thumbnails", {
-  imageExts: [".png", ".jpg", ".svg"],
-  commonDirs: ["", "assets/"],
-  commonNames: ["thumbnail", "preview", "banner", "cover"],
-  thumbnailKeywords: ["thumbnail", "preview", "banner", "cover", "hero", "screenshot"],
-  badgeMarkers: [
-    "shields.io",
-    "badge",
-    "skillicons.dev",
-    "komarev.com",
-    "github-readme-stats",
-    "github-readme-streak",
-    "capsule-render",
-    "readme-typing-svg",
-    "github-readme-activity-graph",
-    "star-history",
-    "contrib.rocks",
-    "img.shields.io",
-  ],
-});
-
 const USERNAME = profileConfig.username || "VeTwo-dev";
 
 export function sanitize(str, token) {
@@ -99,106 +78,69 @@ export async function fetchAllRepos(token) {
   return all;
 }
 
-// Thumbnail helpers - shared (values from config/thumbnails.json)
-export const IMAGE_EXTS = thumbnailsConfig.imageExts || [".png", ".jpg", ".svg"];
-export const COMMON_DIRS = thumbnailsConfig.commonDirs || ["", "assets/"];
-export const COMMON_NAMES = thumbnailsConfig.commonNames || ["thumbnail", "preview", "banner", "cover"];
-
-export function isBadgeUrl(url) {
-  const markers =
-    thumbnailsConfig.badgeMarkers || [];
-  const lower = url.toLowerCase();
-  return markers.some((m) => lower.includes(String(m).toLowerCase()));
-}
-
-export function isLikelyThumbnailUrl(url) {
-  const lower = url.toLowerCase();
-  const hasExt = IMAGE_EXTS.some((ext) => lower.includes(ext));
-  if (!hasExt) return false;
-  if (isBadgeUrl(url)) return false;
-  return true;
-}
-
-export async function fetchReadmeImages(repo, token) {
-  const headers = getHeaders(token);
-  const timeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.readme) || 4000;
-  try {
-    const res = await fetchWithTimeout(`https://api.github.com/repos/${USERNAME}/${repo.name}/readme`, { headers }, timeout);
-    if (!res.ok) return [];
-    const data = await res.json();
-    if (!data.content) return [];
-    const decoded = Buffer.from(data.content, "base64").toString("utf8");
-    const mdRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
-    const htmlRegex = /<img[^>]+src=["']([^"']+)["']/gi;
-    const urls = [];
-    let m;
-    while ((m = mdRegex.exec(decoded)) !== null) urls.push(m[1]);
-    while ((m = htmlRegex.exec(decoded)) !== null) urls.push(m[1]);
-    return urls;
-  } catch {
-    return [];
+// Shared repository selection used by all project generators.
+// Same semantics everywhere: profile-repo exclusion, fork/archived/private
+// filtering with public/all fallbacks, deterministic sort, id deduplication.
+export function selectRepos(repos, options = {}) {
+  const {
+    count = 4,
+    sortBy = "pushed",
+    username = USERNAME,
+    excludeProfile = true,
+    filter = {},
+  } = options;
+  const withoutProfile = excludeProfile
+    ? repos.filter((r) => String(r.name || "").toLowerCase() !== String(username || "").toLowerCase())
+    : repos;
+  const base = withoutProfile.length >= count ? withoutProfile : repos;
+  const excludePrivate = filter.excludePrivate !== false;
+  const excludeForks = filter.excludeForks !== false;
+  const excludeArchived = filter.excludeArchived !== false;
+  const publicRepos = excludePrivate ? base.filter((r) => !r.private) : base;
+  const candidatesPrimary = base.filter(
+    (r) => !(excludeForks && r.fork) && !(excludeArchived && r.archived) && !(excludePrivate && r.private)
+  );
+  const candidates =
+    candidatesPrimary.length >= count
+      ? candidatesPrimary
+      : filter.fallbackToPublic !== false && publicRepos.length >= count
+        ? publicRepos
+        : filter.fallbackToAll !== false
+          ? base
+          : candidatesPrimary;
+  const pushedTime = (r) => (r.pushed_at ? new Date(r.pushed_at).getTime() : 0);
+  if (sortBy === "stars") {
+    candidates.sort((a, b) => {
+      const sa = a.stargazers_count ?? 0;
+      const sb = b.stargazers_count ?? 0;
+      if (sb !== sa) return sb - sa;
+      const pa = pushedTime(a);
+      const pb = pushedTime(b);
+      if (pb !== pa) return pb - pa;
+      return String(a.name).localeCompare(String(b.name));
+    });
+  } else {
+    candidates.sort((a, b) => {
+      const pa = pushedTime(a);
+      const pb = pushedTime(b);
+      if (pb !== pa) return pb - pa;
+      const ua = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+      const ub = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+      if (ub !== ua) return ub - ua;
+      return String(a.name).localeCompare(String(b.name));
+    });
   }
-}
-
-export async function checkCommonImageFiles(repo, token) {
-  const headers = getHeaders(token);
-  const branch = repo.default_branch || "main";
-  for (const dir of COMMON_DIRS) {
-    for (const name of COMMON_NAMES) {
-      for (const ext of IMAGE_EXTS) {
-        const filePath = `${dir}${name}${ext}`;
-        try {
-          const url = `https://api.github.com/repos/${USERNAME}/${repo.name}/contents/${filePath}?ref=${branch}`;
-          const headTimeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.contentHead) || 3000;
-          const res = await fetchWithTimeout(url, { headers }, headTimeout);
-          if (res.ok) {
-            return `https://raw.githubusercontent.com/${USERNAME}/${repo.name}/${branch}/${filePath}`;
-          }
-        } catch {
-          continue;
-        }
-      }
+  const seen = new Set();
+  const result = [];
+  for (const r of candidates) {
+    const key = r.id ?? r.name;
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push(r);
     }
+    if (result.length >= count) break;
   }
-  return null;
-}
-
-export async function detectThumbnail(repo, token) {
-  const keywords = thumbnailsConfig.thumbnailKeywords || ["thumbnail", "preview", "banner", "cover", "hero", "screenshot"];
-  const readmeUrls = await fetchReadmeImages(repo, token);
-  const likely = readmeUrls.filter(isLikelyThumbnailUrl);
-  const prioritized = likely.filter((u) => {
-    const l = u.toLowerCase();
-    return keywords.some((k) => l.includes(String(k).toLowerCase()));
-  });
-  if (prioritized.length > 0) {
-    let url = prioritized[0].trim();
-    if (url.startsWith("./") || url.startsWith("/") || url.startsWith("assets/") || url.startsWith("images/")) {
-      const branch = repo.default_branch || "main";
-      const clean = url.replace(/^\.\//, "").replace(/^\//, "");
-      return `https://raw.githubusercontent.com/${USERNAME}/${repo.name}/${branch}/${clean}`;
-    }
-    if (url.startsWith("http")) return url;
-    return url;
-  }
-  if (likely.length > 0) {
-    let url = likely[0].trim();
-    if (url.startsWith("http") && !isBadgeUrl(url)) return url;
-    if (url.startsWith("./") || url.startsWith("assets/") || url.startsWith("images/")) {
-      const branch = repo.default_branch || "main";
-      const clean = url.replace(/^\.\//, "");
-      return `https://raw.githubusercontent.com/${USERNAME}/${repo.name}/${branch}/${clean}`;
-    }
-  }
-  const common = await checkCommonImageFiles(repo, token);
-  if (common) return common;
-  try {
-    const ogUrl = `https://opengraph.githubassets.com/1/${USERNAME}/${repo.name}`;
-    const thumbTimeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.thumbnailHead) || 3000;
-    const res = await fetchWithTimeout(ogUrl, { method: "HEAD" }, thumbTimeout);
-    if (res.ok) return ogUrl;
-  } catch {}
-  return null;
+  return result;
 }
 
 export function escapeHtml(str) {
@@ -216,90 +158,64 @@ export function formatDate(dateStr) {
   }
 }
 
+// Pure helper: first meaningful paragraph of a README string, or null.
+// Badges, images, headings and tables are skipped so decorative content
+// never becomes a card description.
+export function extractFirstParagraph(markdown, maxLen = 120) {
+  if (!markdown) return null;
+  const cleaned = String(markdown)
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
+    .replace(/<img[^>]*>/gi, "")
+    .replace(/\[!\[[^\]]*\]\([^)]+\)\]\([^)]+\)/g, "")
+    .replace(/#+\s.*\n/g, "")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 20 && !l.startsWith("!") && !l.startsWith("[") && !l.startsWith("<") && !l.startsWith("|"));
+  if (cleaned.length === 0) return null;
+  const first = cleaned[0];
+  return first.length > maxLen ? first.slice(0, maxLen - 3) + "..." : first;
+}
+
 export async function getRepoDescription(repo, token) {
   if (repo.description && repo.description.trim()) {
     return repo.description.trim();
   }
-  // Try to extract first meaningful paragraph from README
+  const headers = getHeaders(token);
+  const readmeTimeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.readme) || 4000;
+  // 1. Try the API README endpoint (base64 payload).
   try {
-    const headers = getHeaders(token);
-    const readmeTimeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.readme) || 4000;
     const res = await fetchWithTimeout(`https://api.github.com/repos/${USERNAME}/${repo.name}/readme`, { headers }, readmeTimeout);
     if (res.ok) {
       const data = await res.json();
       if (data.content) {
-        const decoded = Buffer.from(data.content, "base64").toString("utf8");
-        // Remove badges and images, get first paragraph
-        const cleaned = decoded
-          .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
-          .replace(/<img[^>]*>/gi, "")
-          .replace(/\[!\[[^\]]*\]\([^)]+\)\]\([^)]+\)/g, "")
-          .replace(/#+\s.*\n/g, "")
-          .split("\n")
-          .map((l) => l.trim())
-          .filter((l) => l.length > 20 && !l.startsWith("!") && !l.startsWith("[") && !l.startsWith("<") && !l.startsWith("|"));
-        if (cleaned.length > 0) {
-          let first = cleaned[0];
-          if (first.length > 120) first = first.slice(0, 117) + "...";
-          return first;
-        }
+        const first = extractFirstParagraph(Buffer.from(data.content, "base64").toString("utf8"));
+        if (first) return first;
       }
     }
   } catch {}
-  // Fallback based on language/topics
+  // 2. Fall back to the raw file (no API quota). This keeps unauthenticated
+  // or rate-limited runs producing the same rich excerpts instead of
+  // degrading to the generic fallback and overwriting good descriptions.
+  const branch = repo.default_branch || "main";
+  for (const readmeName of ["README.md", "readme.md"]) {
+    try {
+      const rawUrl = `https://raw.githubusercontent.com/${USERNAME}/${repo.name}/${branch}/${readmeName}`;
+      const rawRes = await fetchWithTimeout(rawUrl, {}, readmeTimeout);
+      if (!rawRes.ok) continue;
+      const first = extractFirstParagraph(await rawRes.text());
+      if (first) return first;
+      break;
+    } catch {
+      continue;
+    }
+  }
+  // 3. Generic fallback based on language/topics (deterministic, no network).
   const lang = repo.language ? ` ${repo.language}` : "";
   const topics = Array.isArray(repo.topics) && repo.topics.length > 0 ? ` · ${repo.topics.slice(0, 2).join(", ")}` : "";
   if (lang || topics) {
     return `${repo.name} —${lang} project${topics}.`;
   }
   return `${repo.name} — open-source repository.`;
-}
-
-export function getLocalPlaceholder() {
-  return `./${profileConfig.paths?.thumbnailPlaceholder || "assets/thumbnail/placeholder.svg"}`;
-}
-
-export async function ensureLocalThumbnail(thumbnailUrl, repoName) {
-  const placeholder = getLocalPlaceholder();
-  if (!thumbnailUrl) return placeholder;
-  if (thumbnailUrl.startsWith("./assets/thumbnail/")) return thumbnailUrl;
-  // Try to cache externally hosted thumbnails locally under assets/thumbnail
-  try {
-    const extMatch = thumbnailUrl.match(/\.(png|jpg|jpeg|svg|webp|gif)(\?|$)/i);
-    const ext = extMatch ? extMatch[1].toLowerCase() : "png";
-    const safeExt = ext === "jpeg" ? "jpg" : ext === "svg" ? "svg" : "png";
-    const localFileName = `${repoName}.${safeExt}`;
-    const localUrl = `./assets/thumbnail/${localFileName}`;
-
-    // Resolve filesystem path
-    const { mkdir, writeFile, stat } = await import("node:fs/promises");
-    const path = await import("node:path");
-    const { fileURLToPath } = await import("node:url");
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const root = path.resolve(__dirname, "../..");
-    const thumbDir = path.join(root, "assets", "thumbnail");
-    const fullPath = path.join(thumbDir, localFileName);
-
-    // If already cached, return local
-    try {
-      await stat(fullPath);
-      return localUrl;
-    } catch {}
-
-    // Download
-    const dlTimeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.thumbnailDownload) || 8000;
-    const maxBytes = githubConfig.maxThumbnailBytes || 819200;
-    const res = await fetchWithTimeout(thumbnailUrl, {}, dlTimeout);
-    if (!res.ok) return placeholder;
-    const buf = Buffer.from(await res.arrayBuffer());
-    if (buf.length === 0 || buf.length > maxBytes) return thumbnailUrl; // keep original if too large
-    await mkdir(thumbDir, { recursive: true });
-    await writeFile(fullPath, buf);
-    return localUrl;
-  } catch {
-    return placeholder;
-  }
 }
 
 export const USER = USERNAME;

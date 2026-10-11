@@ -8,7 +8,7 @@
     "assetsGithubDir": "assets/github",
     "assetsThumbnailDir": "assets/thumbnail",
     "thumbnailPlaceholder": "assets/thumbnail/placeholder.svg",
-    "logo": "assets/logo/Logo.png"
+    "logo": "assets/logo/Vetwo-logo-cropped.webp"
   },
   "filter": {
     "excludeForks": true,
