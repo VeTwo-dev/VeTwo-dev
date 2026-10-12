@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { sanitize } from "../scripts/lib/github.mjs";
-import { ROOT, snapshotFiles, snapshotDir, assertSnapshotsEqual } from "./helpers.mjs";
+import { ROOT, snapshotFiles, snapshotDir, assertSnapshotsEqual, withReadmeLock } from "./helpers.mjs";
 
 const GENERATORS = [
   "scripts/generate-project-cards.mjs",
@@ -17,8 +17,8 @@ const GENERATORS = [
 ];
 
 const OWNED_OUTPUTS = [
-  "profile/projects-generated.md",
-  "profile/starred-projects-generated.md",
+  "profile/05-projects-generated.md",
+  "profile/06-starred-projects-generated.md",
   "README.md",
   "assets/github/github-contribution-grid-snake.svg",
   "assets/github/github-contribution-grid-snake-dark.svg",
@@ -65,24 +65,33 @@ describe("generator filesystem boundaries", () => {
 
 describe("failure behavior (no silent stale writes)", () => {
   let baseline;
-  before(() => {
-    baseline = {
-      files: snapshotFiles(OWNED_OUTPUTS),
-      thumbs: snapshotDir("assets/thumbnail"),
-    };
+  before(async () => {
+    // Normalize the shared README fixture first: rebuild deterministically so
+    // a stale worktree README can never make these snapshots flaky. Rebuilds
+    // are byte-identical, and the lock serializes against other test files.
+    await withReadmeLock(async () => {
+      const build = spawnSync("node", ["scripts/build-readme.mjs"], { cwd: ROOT, encoding: "utf8" });
+      assert.equal(build.status, 0, `prerequisite README rebuild must succeed: ${build.stderr}`);
+      baseline = {
+        files: snapshotFiles(OWNED_OUTPUTS),
+        thumbs: snapshotDir("assets/thumbnail"),
+      };
+    });
   });
 
-  it("missing GITHUB_TOKEN stops the snake run before any write", () => {
+  it("missing GITHUB_TOKEN stops the snake run before any write", async () => {
     const env = { ...process.env };
     delete env.GITHUB_TOKEN;
     const r = spawnSync("node", ["scripts/generate-snake.mjs"], { cwd: ROOT, env, encoding: "utf8" });
     assert.notEqual(r.status, 0, "must exit non-zero without a token");
     assert.match(r.stderr, /GITHUB_TOKEN is required/);
-    assertSnapshotsEqual(baseline.files, snapshotFiles(OWNED_OUTPUTS), "snake outputs");
-    assertSnapshotsEqual(baseline.thumbs, snapshotDir("assets/thumbnail"), "thumbnails");
+    await withReadmeLock(async () => {
+      assertSnapshotsEqual(baseline.files, snapshotFiles(OWNED_OUTPUTS), "snake outputs");
+      assertSnapshotsEqual(baseline.thumbs, snapshotDir("assets/thumbnail"), "thumbnails");
+    });
   });
 
-  it("an invalid token fails the projects run without touching any output", () => {
+  it("an invalid token fails the projects run without touching any output", async () => {
     const r = spawnSync("node", ["scripts/generate-project-cards.mjs"], {
       cwd: ROOT,
       env: { ...process.env, GITHUB_TOKEN: "test-invalid-token-for-regression-000" },
@@ -91,7 +100,9 @@ describe("failure behavior (no silent stale writes)", () => {
     assert.notEqual(r.status, 0, "must exit non-zero on API failure");
     const combined = `${r.stdout || ""}\n${r.stderr || ""}`;
     assert.ok(!combined.includes("test-invalid-token-for-regression-000"), "token must not leak into output");
-    assertSnapshotsEqual(baseline.files, snapshotFiles(OWNED_OUTPUTS), "project outputs");
-    assertSnapshotsEqual(baseline.thumbs, snapshotDir("assets/thumbnail"), "thumbnails");
+    await withReadmeLock(async () => {
+      assertSnapshotsEqual(baseline.files, snapshotFiles(OWNED_OUTPUTS), "project outputs");
+      assertSnapshotsEqual(baseline.thumbs, snapshotDir("assets/thumbnail"), "thumbnails");
+    });
   });
 });

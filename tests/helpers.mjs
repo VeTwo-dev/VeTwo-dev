@@ -1,6 +1,8 @@
 import { strict as assert } from "node:assert";
 import { createHash } from "node:crypto";
 import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { mkdir, rm } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -36,4 +38,31 @@ export function assertSnapshotsEqual(before, after, label) {
     [...before.entries()],
     `${label}: files changed unexpectedly`
   );
+}
+
+// Cross-process mutex for README.md. Test files run in parallel processes
+// and several rebuild README.md; without serialization, concurrent writes
+// (O_TRUNC + write) can interleave and a concurrent read can observe torn
+// bytes, producing flakes. All README reads/writes in tests go through this.
+// Lock lives in os.tmpdir() so it works regardless of checkout location.
+const README_LOCK_DIR = path.join(os.tmpdir(), "vetwo-profile-readme.lock");
+
+export async function withReadmeLock(fn, { timeoutMs = 60000 } = {}) {
+  const start = Date.now();
+  for (;;) {
+    try {
+      await mkdir(README_LOCK_DIR);
+      break;
+    } catch {
+      if (Date.now() - start > timeoutMs) {
+        throw new Error(`timed out waiting for README lock after ${timeoutMs}ms`);
+      }
+      await new Promise((r) => setTimeout(r, 25));
+    }
+  }
+  try {
+    return await fn();
+  } finally {
+    await rm(README_LOCK_DIR, { recursive: true, force: true });
+  }
 }

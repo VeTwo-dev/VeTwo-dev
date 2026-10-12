@@ -49,7 +49,6 @@ describe("config/sequence.json (source of truth for section order)", () => {
     const generated = seq.filter((e) => e.generated);
     assert.ok(generated.length > 0, "expected at least one generated section");
     for (const e of generated) {
-      assert.equal(e.number, null, `${e.file} must carry no filename number`);
       assert.ok(e.generator, `${e.file} must name its generator`);
       assert.ok(
         existsSync(path.join(ROOT, e.generator)),

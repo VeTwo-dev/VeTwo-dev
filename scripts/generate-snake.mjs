@@ -1,5 +1,5 @@
 import { mkdir, writeFile, readFile, stat } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
@@ -60,6 +60,40 @@ function sanitize(str, token) {
   return str.split(token).join("[REDACTED]");
 }
 
+// Local convenience: read GITHUB_TOKEN from an untracked env file when it is
+// not already set in the environment, so `pnpm snk` works without exporting
+// the variable every time. Only the GITHUB_TOKEN key is read; everything else
+// in the file is ignored. The value is never logged.
+function loadTokenFromEnvFiles() {
+  for (const file of [".env.local", ".env"]) {
+    let content;
+    try {
+      const fullPath = path.join(root, file);
+      if (!existsSync(fullPath)) continue;
+      content = readFileSync(fullPath, "utf8");
+    } catch {
+      continue;
+    }
+    for (const rawLine of content.split("\n")) {
+      const line = rawLine.trim();
+      if (!line || line.startsWith("#")) continue;
+      const match = line.match(/^(?:export\s+)?GITHUB_TOKEN\s*=\s*(.*)$/);
+      if (!match) continue;
+      let value = match[1].trim();
+      const quote = value[0];
+      if ((quote === '"' || quote === "'") && value.length >= 2) {
+        const end = value.indexOf(quote, 1);
+        value = end === -1 ? value.slice(1) : value.slice(1, end);
+      } else {
+        const hash = value.indexOf("#");
+        if (hash !== -1) value = value.slice(0, hash).trim();
+      }
+      if (value) return value;
+    }
+  }
+  return undefined;
+}
+
 function getTrackedFiles() {
   try {
     const out = execSync("git ls-files", { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
@@ -82,8 +116,12 @@ function isExcluded(file) {
 
 function isPlaceholderTokenValue(match) {
   const lower = match.toLowerCase();
-  // Common placeholders that should NOT be treated as credentials
-  const placeholders = ["your_token", "yourtoken", "<token>", "example", "placeholder"];
+  // Common placeholders that should NOT be treated as credentials.
+  // Fixture-style markers (fake/test/dummy/...) are included so test files
+  // carrying dummy tokens can never block generation. This only affects the
+  // credential-PATTERN check: the exact-token check above always runs and
+  // still catches the real GITHUB_TOKEN value wherever it appears.
+  const placeholders = ["your_token", "yourtoken", "<token>", "example", "placeholder", "fake", "test", "dummy", "mock", "sample", "fixture", "demo"];
   for (const p of placeholders) {
     if (lower.includes(p)) return true;
   }
@@ -209,9 +247,14 @@ async function checkTokenExposure(token) {
 
 async function main() {
   try {
+    if (!process.env.GITHUB_TOKEN) {
+      const fileToken = loadTokenFromEnvFiles();
+      if (fileToken) process.env.GITHUB_TOKEN = fileToken;
+    }
     const token = process.env.GITHUB_TOKEN;
     if (!token) {
       console.error("GITHUB_TOKEN is required to generate the GitHub contribution snake.");
+      console.error("Set it in the environment or in a local untracked .env file as GITHUB_TOKEN=<token>.");
       process.exit(1);
     }
 

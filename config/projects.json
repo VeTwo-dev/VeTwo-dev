@@ -2,16 +2,18 @@
   "$comment": "Project-card generation. Change counts/titles/layout here and re-run generators — output files update dynamically with no code edits.",
   "recent": {
     "count": 4,
-    "output": "profile/projects-generated.md",
+    "output": "profile/05-projects-generated.md",
     "title": "Recent Projects",
+    "headerHtml": "<div align=\"center\">\n  <h2>🚀 Featured Ecosystem Repositories</h2>\n</div>",
     "columns": 2,
     "sortBy": "pushed_at",
     "showTopics": 3
   },
   "starred": {
     "count": 3,
-    "output": "profile/starred-projects-generated.md",
+    "output": "profile/06-starred-projects-generated.md",
     "title": "⭐ Featured by Stars",
+    "headerHtml": "<div align=\"center\">\n  <h2>⭐ Featured by Stars</h2>\n</div>",
     "columns": 3,
     "sortBy": "stargazers_count",
     "showTopics": 3,
@@ -24,13 +26,13 @@
     "descriptionLines": 2,
     "descriptionLineHeightPx": 18,
     "colors": {
-      "border": "#252525",
-      "background": "#0d1117",
-      "name": "#58a6ff",
-      "description": "#c9d1d9",
-      "meta": "#7a7a7a",
-      "date": "#484f58",
-      "link": "#8957e5"
+      "border": "#10B98133",
+      "background": "#0A0F0D",
+      "name": "#10B981",
+      "description": "#ECFDF5",
+      "meta": "#6EE7B7",
+      "date": "#4B5563",
+      "link": "#10B981"
     },
     "linkText": "View Repository →",
     "dateIcon": "🕓",

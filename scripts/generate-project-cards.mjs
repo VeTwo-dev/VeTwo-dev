@@ -17,13 +17,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
 const projectsConfig = loadConfig("projects", {
-  recent: { count: 4, output: "profile/projects-generated.md", title: "Recent Projects", columns: 2, showTopics: 3 },
+  recent: { count: 4, output: "profile/05-projects-generated.md", title: "Recent Projects", headerHtml: "<div align=\"center\">\n  <h2>🚀 Featured Ecosystem Repositories</h2>\n</div>", columns: 2, showTopics: 3 },
   card: {
     heightPx: 280,
     thumbnailHeightPx: 120,
     descriptionLines: 2,
     descriptionLineHeightPx: 18,
-    colors: { border: "#252525", background: "#0d1117", name: "#58a6ff", description: "#c9d1d9", meta: "#7a7a7a", date: "#484f58", link: "#8957e5" },
+    colors: { border: "#10B98133", background: "#0A0F0D", name: "#10B981", description: "#ECFDF5", meta: "#6EE7B7", date: "#4B5563", link: "#10B981" },
     linkText: "View Repository →",
     dateIcon: "🕓",
   },
@@ -31,7 +31,7 @@ const projectsConfig = loadConfig("projects", {
 const profileConfig = loadConfig("profile", {
   filter: { excludeForks: true, excludeArchived: true, excludePrivate: true, fallbackToPublic: true, fallbackToAll: true },
 });
-const outFile = path.join(root, projectsConfig.recent?.output || "profile/projects-generated.md");
+const outFile = path.join(root, projectsConfig.recent?.output || "profile/05-projects-generated.md");
 const COUNT = projectsConfig.recent?.count || 4;
 
 function selectLatestRepos(repos) {
@@ -90,13 +90,17 @@ function generateCard(repo, thumbnail, description, colWidth) {
       <div style="border:1px solid ${border}; border-radius:8px; padding:12px; background:${background}; height:${heightPx}px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
 ${thumbHtml}
-          <div style="margin-top:8px;"><strong style="font-size:14px;"><a href="${url}" style="text-decoration:none; color:${nameColor};">${name}</a></strong></div>
-          <div style="font-size:12px; color:${descColor}; height:${descHeight}px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:${descLines}; -webkit-box-orient:vertical; line-height:${descLineHeight}px; margin:4px 0;">${desc}</div>
+          <div style="margin-top:10px;">
+            <strong style="font-size:15px;">
+              <a href="${url}" style="text-decoration:none; color:${nameColor};">${name}</a>
+            </strong>
+          </div>
+          <div style="font-size:12px; color:${descColor}; height:${descHeight}px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:${descLines}; -webkit-box-orient:vertical; line-height:${descLineHeight}px; margin:6px 0;">${desc}</div>
         </div>
         <div>
           ${langTopicHtml}
           ${dateHtml}
-          <a href="${url}" style="font-size:12px; color:${linkColor}; text-decoration:none; display:inline-block; margin-top:4px;">${linkText}</a>
+          <a href="${url}" style="font-size:12px; color:${linkColor}; font-weight:600; text-decoration:none; display:inline-block; margin-top:6px;">${linkText}</a>
         </div>
       </div>
     </td>`;
@@ -126,17 +130,22 @@ async function main() {
     }
 
     const title = projectsConfig.recent?.title || "Recent Projects";
+    const headerHtml = projectsConfig.recent?.headerHtml;
     const columns = Math.max(1, projectsConfig.recent?.columns || 2);
     const colWidth = `${parseFloat((100 / columns).toFixed(2))}%`;
     let table = "<!-- This section is generated automatically. Do not edit directly. -->\n";
-    table += `## ${title}\n\n`;
-    table += '<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; max-width:100%; table-layout:fixed; border-collapse:collapse;">\n';
+    table += headerHtml ? `${headerHtml}\n\n` : `## ${title}\n\n`;
+    table += '<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse;">\n';
+    let cardNumber = 0;
     for (let i = 0; i < withThumbs.length; i += columns) {
       table += "  <tr>\n";
       for (let j = 0; j < columns; j++) {
         const item = withThumbs[i + j];
-        if (item) table += generateCard(item.repo, item.thumbnail, item.description, colWidth) + "\n";
-        else table += `    <td width="${colWidth}" valign="top" style="padding:8px;"></td>\n`;
+        if (item) {
+          cardNumber += 1;
+          table += `    <!-- Project Card ${cardNumber} -->\n`;
+          table += generateCard(item.repo, item.thumbnail, item.description, colWidth) + "\n";
+        } else table += `    <td width="${colWidth}" valign="top" style="padding:8px;"></td>\n`;
       }
       table += "  </tr>\n";
     }

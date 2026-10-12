@@ -160,7 +160,8 @@ export function formatDate(dateStr) {
 
 // Pure helper: first meaningful paragraph of a README string, or null.
 // Badges, images, headings and tables are skipped so decorative content
-// never becomes a card description.
+// never becomes a card description. Inline markdown is stripped to plain
+// text because cards render as HTML, where `**` and `[t](u)` would show raw.
 export function extractFirstParagraph(markdown, maxLen = 120) {
   if (!markdown) return null;
   const cleaned = String(markdown)
@@ -169,7 +170,18 @@ export function extractFirstParagraph(markdown, maxLen = 120) {
     .replace(/\[!\[[^\]]*\]\([^)]+\)\]\([^)]+\)/g, "")
     .replace(/#+\s.*\n/g, "")
     .split("\n")
-    .map((l) => l.trim())
+    .map((l) =>
+      l
+        .trim()
+        .replace(/^([-*+]|\d+\.)\s+/, "")
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+        .replace(/(`{1,3})([^`]+)\1/g, "$2")
+        .replace(/(\*\*|__)(.+?)\1/g, "$2")
+        .replace(/(^|\W)\*([^*\n]+)\*/g, "$1$2")
+        .replace(/(^|\W)_([^_\n]+)_/g, "$1$2")
+        .replace(/\s{2,}/g, " ")
+        .trim()
+    )
     .filter((l) => l.length > 20 && !l.startsWith("!") && !l.startsWith("[") && !l.startsWith("<") && !l.startsWith("|"));
   if (cleaned.length === 0) return null;
   const first = cleaned[0];

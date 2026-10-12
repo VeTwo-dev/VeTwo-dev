@@ -17,7 +17,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
 const projectsConfig = loadConfig("projects", {
-  starred: { count: 3, output: "profile/starred-projects-generated.md", title: "⭐ Featured by Stars" },
+  starred: { count: 3, output: "profile/06-starred-projects-generated.md", title: "⭐ Featured by Stars", headerHtml: "<div align=\"center\">\n  <h2>⭐ Featured by Stars</h2>\n</div>" },
   card: {
     heightPx: 280,
     thumbnailHeightPx: 120,
@@ -31,7 +31,7 @@ const projectsConfig = loadConfig("projects", {
 const profileConfig = loadConfig("profile", {
   filter: { excludeForks: true, excludeArchived: true, excludePrivate: true, fallbackToPublic: true, fallbackToAll: true },
 });
-const outFile = path.join(root, projectsConfig.starred?.output || "profile/starred-projects-generated.md");
+const outFile = path.join(root, projectsConfig.starred?.output || "profile/06-starred-projects-generated.md");
 const COUNT = projectsConfig.starred?.count || 3;
 
 function selectStarredRepos(repos) {
@@ -89,16 +89,20 @@ function generateCard(repo, thumbnail, description) {
   const descHeight = descLines * descLineHeight;
 
   return `    <td width="33.33%" valign="top" style="padding:8px;">
-      <div style="border:1px solid ${border}; border-radius:8px; padding:12px; background:${background}; height:${heightPx}px; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
+      <div style="border:1px solid ${border}; border-radius:8px; padding:12px; background:${background}; height:${heightPx}px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
 ${thumbHtml}
-          <div style="margin-top:8px;"><strong style="font-size:14px;"><a href="${url}" style="text-decoration:none; color:${nameColor};">${name}</a></strong></div>
-          <div style="font-size:12px; color:${descColor}; height:${descHeight}px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:${descLines}; -webkit-box-orient:vertical; line-height:${descLineHeight}px; margin:4px 0;">${desc}</div>
+          <div style="margin-top:10px;">
+            <strong style="font-size:15px;">
+              <a href="${url}" style="text-decoration:none; color:${nameColor};">${name}</a>
+            </strong>
+          </div>
+          <div style="font-size:12px; color:${descColor}; height:${descHeight}px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:${descLines}; -webkit-box-orient:vertical; line-height:${descLineHeight}px; margin:6px 0;">${desc}</div>
         </div>
         <div>
           ${langStarsHtml}
           ${dateHtml}
-          <a href="${url}" style="font-size:12px; color:${linkColor}; text-decoration:none; display:inline-block; margin-top:4px;">${linkText}</a>
+          <a href="${url}" style="font-size:12px; color:${linkColor}; font-weight:600; text-decoration:none; display:inline-block; margin-top:6px;">${linkText}</a>
         </div>
       </div>
     </td>`;
@@ -128,11 +132,15 @@ async function main() {
     }
 
     const title = projectsConfig.starred?.title || "⭐ Featured by Stars";
+    const headerHtml = projectsConfig.starred?.headerHtml;
     let table = "<!-- This section is generated automatically. Do not edit directly. -->\n";
-    table += `## ${title}\n\n`;
-    table += '<table style="width:100%; table-layout:fixed;">\n';
+    table += headerHtml ? `${headerHtml}\n\n` : `## ${title}\n\n`;
+    table += '<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse;">\n';
     table += "  <tr>\n";
+    let cardNumber = 0;
     for (const item of withThumbs) {
+      cardNumber += 1;
+      table += `    <!-- Project Card ${cardNumber} -->\n`;
       table += generateCard(item.repo, item.thumbnail, item.description) + "\n";
     }
     table += "  </tr>\n";

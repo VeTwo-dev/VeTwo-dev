@@ -1,38 +1,55 @@
-<p align="right"><img src="https://komarev.com/ghpvc/?username=VeTwo-dev&label=visitors%20&color=129e00&style=plastic" alt="visitors" /></p>
-
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&height=220&color=0:0b1510,45:12351f,75:0f4c25,100:07100b&text=VeTwo.Dev&section=header&fontColor=FFFFFF&fontSize=56&fontAlign=50&fontAlignY=36&animation=fadeIn&stroke=00c37a&strokeWidth=1&desc=Veterinary%20Medicine%20%C3%97%20Software%20Engineering&descAlign=50&descAlignY=59&descSize=17" width="100%" />
+  <!-- Header Banner -->
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=220&color=0:0A0F0D,40:121A16,75:10B981,100:0A0F0D&text=VeTwo.dev&section=header&fontColor=ECFDF5&fontSize=56&fontAlign=50&fontAlignY=36&animation=fadeIn&stroke=10B981&strokeWidth=1&desc=Veterinary%20Medicine%20%C3%97%20Open-Source%20Software&descAlign=50&descAlignY=59&descSize=17" width="100%" alt="VeTwo Banner" />
 
-<br />
+  <br />
 
-<img src="./assets/logo/Vetwo-logo-cropped.webp" alt="VeTwo" width="110" height="110" />
+  <!-- Logo Mark -->
+  <div align="center">
 
-<br />
+  <!-- Logo (مسار مباشر مضم مضمون الظهور مع إمكانية التبديل برابط Raw) -->
 
-# Ahmed Kamal
+<img src="./assets/logo/Vetwo-logo-cropped.webp" alt="VeTwo" width="200" height="200" />
 
-### Veterinary Student · Software Engineer · Founder of VeTwo
+  <br />
+  <br />
 
-<a href="https://vetwo.dev">
-  <img src="https://img.shields.io/badge/VeTwo-0F4C25?style=for-the-badge&logoColor=white" alt="VeTwo" />
-</a>
-<a href="https://github.com/VeTwo-dev">
-  <img src="https://img.shields.io/badge/GitHub-0D1117?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
-</a>
-<a href="https://www.instagram.com/vetwo.dev/">
-  <img src="https://img.shields.io/badge/Instagram-1A1F1C?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" />
-</a>
 
-<br />
-<br />
+  ### Bridging Veterinary Clinical Precision & Modern Software Engineering
 
-> **Building the software layer for veterinary medicine, animal nutrition, and the tools around them.**
+  <br />
 
-<br />
+  <!-- Minimal & Clean Badges -->
+  <a href="https://vetwo.dev">
+    <img src="https://img.shields.io/badge/website-vetwo.dev-10B981?style=flat-square&logo=googlechrome&logoColor=white" alt="Website" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/VeTwo-dev">
+    <img src="https://img.shields.io/badge/github-VeTwo--dev-0A0F0D?style=flat-square&logo=github&logoColor=white" alt="GitHub" />
+  </a>
+  &nbsp;
+  <a href="https://www.instagram.com/vetwo.dev/">
+    <img src="https://img.shields.io/badge/instagram-@vetwo.dev-121A16?style=flat-square&logo=instagram&logoColor=white" alt="Instagram" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/VeTwo-dev">
+    <img src="https://komarev.com/ghpvc/?username=VeTwo-dev&label=VISITS&color=10B981&style=flat-square" alt="Visitors" />
+  </a>
 
 </div>
 
+ **Building the open-source software layer for veterinary medicine, animal nutrition systems, and IoT health monitors.**
+
+  <br />
+
+</div>
+
+<!-- Animated Typing Subtitles -->
 <p align="center">
-  <a href="https://github.com/VeTwo-dev/readme-typing-svg"><img src="https://readme-typing-svg.herokuapp.com?lines=Full-Stack+Web+Developer;DS%20|%20AI%20|%20ML%20Enthusiast;Graphic%20Designer;Always%20learning%20new%20things&center=true&width=500&height=50&font=georgia"></a>
+  <a href="https://github.com/VeTwo-dev">
+    <img src="https://readme-typing-svg.herokuapp.com?font=Audiowide&size=18&duration=3000&pause=1000&color=10B981&center=true&width=550&height=50&lines=Open-Source+VetTech+Ecosystem;Precision+Feed+Formulation+Tools;IoT+Poultry+%26+Livestock+Monitoring;Modern+Web+%26+Mobile+Vet+Software" alt="VeTwo Capabilities Typing SVG" />
+  </a>
 </p>
+
+---

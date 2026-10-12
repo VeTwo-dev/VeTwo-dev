@@ -6,12 +6,10 @@
   "order": [
     "01-hero.md",
     "02-about.md",
-    "03-vetwo.md",
-    "04-projects.md",
-    "05-technologies.md",
-    "06-github.md",
-    "projects-generated.md",
-    "starred-projects-generated.md",
-    "07-console.md"
+    "03-github.md",
+    "04-technologies.md",
+    "05-projects-generated.md",
+    "06-starred-projects-generated.md",
+    "07-footer.md"
   ]
 }

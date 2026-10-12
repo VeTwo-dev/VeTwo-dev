@@ -23,8 +23,8 @@ authoritative input set. When in doubt, this file wins over assumptions.
 | Output | Sole writer | Authoritative inputs |
 |---|---|---|
 | `README.md` | `scripts/build-readme.mjs` | `profile/*.md` in `config/sequence.json` order |
-| `profile/projects-generated.md` | `scripts/generate-project-cards.mjs` | GitHub repos API + `config/projects.json` + `assets/thumbnail/*` |
-| `profile/starred-projects-generated.md` | `scripts/generate-starred-projects.mjs` | GitHub repos API + `config/projects.json` + `assets/thumbnail/*` |
+| `profile/05-projects-generated.md` | `scripts/generate-project-cards.mjs` | GitHub repos API + `config/projects.json` + `assets/thumbnail/*` |
+| `profile/06-starred-projects-generated.md` | `scripts/generate-starred-projects.mjs` | GitHub repos API + `config/projects.json` + `assets/thumbnail/*` |
 | `assets/github/*.svg` | `scripts/generate-snake.mjs` | GitHub contributions API + `config/snake.json` |
 | `assets/thumbnail/<repo>.<ext>` | `scripts/lib/thumbnails.mjs` helpers, called by the three project generators above | Source repo `assets/thumbnail/` via API, else repo metadata (generated placeholder) |
 | `assets/thumbnail/placeholder.svg` | tracked fallback asset, committed by hand | — (never auto-written) |
