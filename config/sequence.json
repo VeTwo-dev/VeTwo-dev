@@ -46,7 +46,7 @@
       "position": 6,
       "number": "06",
       "file": "06-starred-projects-generated.md",
-      "title": "⭐ Featured by Stars",
+      "title": "⭐ Featured Repositories",
       "generated": true,
       "generator": "scripts/generate-starred-projects.mjs",
       "description": "Auto-generated cards for the top 3 starred repositories"

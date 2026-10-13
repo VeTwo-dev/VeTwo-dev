@@ -148,6 +148,33 @@ export function escapeHtml(str) {
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+// Card-URL allowlist: local profile assets ("./...") or absolute HTTPS only.
+// Blocks javascript:, data:, http:, protocol-relative and other schemes so
+// untrusted repository metadata can never inject an unsafe link or image.
+export function isSafeCardUrl(url) {
+  if (typeof url !== "string") return false;
+  const v = url.trim();
+  if (v.startsWith("./")) return true;
+  try {
+    return new URL(v).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+// Deterministic word-boundary truncation for card text. GitHub sanitizes
+// CSS line-clamping, so the generator itself guarantees short text. The
+// result never exceeds maxChars (ellipsis included).
+export function truncateText(text, maxChars = 110) {
+  const s = String(text ?? "").trim().replace(/\s+/g, " ");
+  if (s.length <= maxChars) return s;
+  if (maxChars <= 3) return s.slice(0, maxChars);
+  const cut = s.slice(0, maxChars - 3);
+  const lastSpace = cut.lastIndexOf(" ");
+  const base = lastSpace > cut.length * 0.5 ? cut.slice(0, lastSpace) : cut;
+  return `${base.trimEnd()}...`;
+}
+
 export function formatDate(dateStr) {
   if (!dateStr) return "";
   try {
@@ -158,39 +185,74 @@ export function formatDate(dateStr) {
   }
 }
 
+// Pure helper: strip inline markdown to plain text for card rendering.
+// Cards render as HTML, where `**` and `[t](u)` would otherwise show raw.
+// Also applied to API repository descriptions, which may contain markdown.
+export function stripMarkdownInline(text) {
+  return String(text ?? "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/(`{1,3})([^`]+)\1/g, "$2")
+    .replace(/(\*\*|__)(.+?)\1/g, "$2")
+    .replace(/(^|\W)\*([^*\n]+)\*/g, "$1$2")
+    .replace(/(^|\W)_([^_\n]+)_/g, "$1$2")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function isBoundaryLine(rawLine, textLine) {
+  return (
+    textLine.length === 0 ||
+    rawLine.startsWith("!") ||
+    rawLine.startsWith("[") ||
+    rawLine.startsWith("<") ||
+    rawLine.startsWith("|")
+  );
+}
+
 // Pure helper: first meaningful paragraph of a README string, or null.
 // Badges, images, headings and tables are skipped so decorative content
-// never becomes a card description. Inline markdown is stripped to plain
-// text because cards render as HTML, where `**` and `[t](u)` would show raw.
+// never becomes a card description. Consecutive content lines are joined
+// into one paragraph so descriptions never end mid-thought; an ellipsis is
+// added only when the paragraph was cut off by following content. Boundary
+// detection uses the pre-strip text so a lone link line never leaks its
+// bare link text into the paragraph.
 export function extractFirstParagraph(markdown, maxLen = 120) {
   if (!markdown) return null;
-  const cleaned = String(markdown)
+  const rawLines = String(markdown)
     .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
     .replace(/<img[^>]*>/gi, "")
     .replace(/\[!\[[^\]]*\]\([^)]+\)\]\([^)]+\)/g, "")
     .replace(/#+\s.*\n/g, "")
     .split("\n")
-    .map((l) =>
-      l
-        .trim()
-        .replace(/^([-*+]|\d+\.)\s+/, "")
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-        .replace(/(`{1,3})([^`]+)\1/g, "$2")
-        .replace(/(\*\*|__)(.+?)\1/g, "$2")
-        .replace(/(^|\W)\*([^*\n]+)\*/g, "$1$2")
-        .replace(/(^|\W)_([^_\n]+)_/g, "$1$2")
-        .replace(/\s{2,}/g, " ")
-        .trim()
-    )
-    .filter((l) => l.length > 20 && !l.startsWith("!") && !l.startsWith("[") && !l.startsWith("<") && !l.startsWith("|"));
-  if (cleaned.length === 0) return null;
-  const first = cleaned[0];
-  return first.length > maxLen ? first.slice(0, maxLen - 3) + "..." : first;
+    .map((l) => l.trim().replace(/^([-*+]|\d+\.)\s+/, ""));
+  const lines = rawLines.map(stripMarkdownInline);
+  for (let i = 0; i < lines.length; i++) {
+    if (isBoundaryLine(rawLines[i], lines[i])) continue;
+    const parts = [];
+    let j = i;
+    // A boundary line ends the paragraph; anything else joins it.
+    while (j < lines.length && !isBoundaryLine(rawLines[j], lines[j])) {
+      parts.push(lines[j]);
+      j++;
+    }
+    const paragraph = parts.join(" ");
+    if (paragraph.length <= 20) {
+      i = j;
+      continue;
+    }
+    const cutOff = lines.slice(j).some((_, k) => !isBoundaryLine(rawLines[j + k], lines[j + k]));
+    let text = paragraph;
+    if (text.length > maxLen) text = `${text.slice(0, maxLen - 3).trimEnd()}...`;
+    else if (cutOff && !/[.!?…:]$/.test(text)) text = `${text}...`;
+    return text;
+  }
+  return null;
 }
 
 export async function getRepoDescription(repo, token) {
   if (repo.description && repo.description.trim()) {
-    return repo.description.trim();
+    // API descriptions may contain markdown — strip it like README excerpts.
+    return stripMarkdownInline(repo.description);
   }
   const headers = getHeaders(token);
   const readmeTimeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.readme) || 4000;

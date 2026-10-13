@@ -6,7 +6,7 @@
   <img src="https://capsule-render.vercel.app/api?type=waving&height=220&color=0:0A0F0D,40:121A16,75:10B981,100:0A0F0D&text=VeTwo.dev&section=header&fontColor=ECFDF5&fontSize=56&fontAlign=50&fontAlignY=36&animation=fadeIn&stroke=10B981&strokeWidth=1&desc=Veterinary%20Medicine%20%C3%97%20Open-Source%20Software&descAlign=50&descAlignY=59&descSize=17" width="100%" alt="VeTwo Banner" />
 
   <br />
-
+  
   <!-- Logo Mark -->
   <div align="center">
 
@@ -223,102 +223,87 @@ Instead of monolithic systems, we architect a **modular, high-performance ecosys
 </div>
 
 <table width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse;">
-  <tr>
-    <!-- Project Card 1 -->
+  <tbody>
+    <tr>
+      <!-- Project Card 1 -->
     <td width="50%" valign="top" style="padding:8px;">
-      <div style="border:1px solid #10B98133; border-radius:8px; padding:12px; background:#0A0F0D; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
+      <div style="border:1px solid #121A16; border-radius:8px; padding:12px; background:#0D1511; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
-        <a href="https://github.com/VeTwo-dev/Website"><img src="./assets/thumbnail/website.svg" alt="Website" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
-          <div style="margin-top:10px;">
-            <strong style="font-size:15px;">
-              <a href="https://github.com/VeTwo-dev/Website" style="text-decoration:none; color:#10B981;">Website</a>
-            </strong>
-          </div>
-          <div style="font-size:12px; color:#ECFDF5; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:6px 0;">Website — open-source repository.</div>
+        <a href="https://github.com/VeTwo-dev/Website"><img src="./assets/thumbnail/website.svg" alt="Website project thumbnail" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
+          <h3 style="font-size:15px; margin:10px 0 4px 0;"><a href="https://github.com/VeTwo-dev/Website" style="text-decoration:none; color:#10B981;">Website</a></h3>
+          <div style="font-size:12px; color:#ECFDF5; height:36px; overflow:hidden; line-height:18px; margin:6px 0;">Website — open-source repository.</div>
         </div>
         <div>
-          
-          <div style="font-size:10px; color:#4B5563; margin-top:2px;">🕓 Oct 9, 2026</div>
+          <div style="font-size:10px; color:#6EE7B7; margin-top:2px;">🕓 Oct 9, 2026</div>
           <a href="https://github.com/VeTwo-dev/Website" style="font-size:12px; color:#10B981; font-weight:600; text-decoration:none; display:inline-block; margin-top:6px;">View Repository →</a>
         </div>
       </div>
     </td>
-    <!-- Project Card 2 -->
+      <!-- Project Card 2 -->
     <td width="50%" valign="top" style="padding:8px;">
-      <div style="border:1px solid #10B98133; border-radius:8px; padding:12px; background:#0A0F0D; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
+      <div style="border:1px solid #121A16; border-radius:8px; padding:12px; background:#0D1511; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
-        <a href="https://github.com/VeTwo-dev/Units-manager"><img src="./assets/thumbnail/units-manager.svg" alt="Units-manager" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
-          <div style="margin-top:10px;">
-            <strong style="font-size:15px;">
-              <a href="https://github.com/VeTwo-dev/Units-manager" style="text-decoration:none; color:#10B981;">Units-manager</a>
-            </strong>
-          </div>
-          <div style="font-size:12px; color:#ECFDF5; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:6px 0;">A pnpm workspace for the VeTwo unit engine family — a dependency-free</div>
+        <a href="https://github.com/VeTwo-dev/Units-manager"><img src="./assets/thumbnail/units-manager.svg" alt="Units-manager project thumbnail" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
+          <h3 style="font-size:15px; margin:10px 0 4px 0;"><a href="https://github.com/VeTwo-dev/Units-manager" style="text-decoration:none; color:#10B981;">Units-manager</a></h3>
+          <div style="font-size:12px; color:#ECFDF5; height:36px; overflow:hidden; line-height:18px; margin:6px 0;">A pnpm workspace for the VeTwo unit engine family — a dependency-free scientific unit &amp;...</div>
         </div>
         <div>
-          <div style="font-size:11px; color:#6EE7B7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span></div>
-          <div style="font-size:10px; color:#4B5563; margin-top:2px;">🕓 Oct 8, 2026</div>
+          <div style="font-size:11px; color:#A7B8AF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span></div>
+          <div style="font-size:10px; color:#6EE7B7; margin-top:2px;">🕓 Oct 8, 2026</div>
           <a href="https://github.com/VeTwo-dev/Units-manager" style="font-size:12px; color:#10B981; font-weight:600; text-decoration:none; display:inline-block; margin-top:6px;">View Repository →</a>
         </div>
       </div>
     </td>
-  </tr>
-  <tr>
-    <!-- Project Card 3 -->
+    </tr>
+    <tr>
+      <!-- Project Card 3 -->
     <td width="50%" valign="top" style="padding:8px;">
-      <div style="border:1px solid #10B98133; border-radius:8px; padding:12px; background:#0A0F0D; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
+      <div style="border:1px solid #121A16; border-radius:8px; padding:12px; background:#0D1511; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
-        <a href="https://github.com/VeTwo-dev/marketplace-fetch-pack"><img src="./assets/thumbnail/marketplace-fetch-pack.svg" alt="marketplace-fetch-pack" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
-          <div style="margin-top:10px;">
-            <strong style="font-size:15px;">
-              <a href="https://github.com/VeTwo-dev/marketplace-fetch-pack" style="text-decoration:none; color:#10B981;">marketplace-fetch-pack</a>
-            </strong>
-          </div>
-          <div style="font-size:12px; color:#ECFDF5; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:6px 0;">Official Package Manager for the VeTwo ecosystem. Registry-driven, plugin-first, extensible.</div>
+        <a href="https://github.com/VeTwo-dev/marketplace-fetch-pack"><img src="./assets/thumbnail/marketplace-fetch-pack.svg" alt="marketplace-fetch-pack project thumbnail" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
+          <h3 style="font-size:15px; margin:10px 0 4px 0;"><a href="https://github.com/VeTwo-dev/marketplace-fetch-pack" style="text-decoration:none; color:#10B981;">marketplace-fetch-pack</a></h3>
+          <div style="font-size:12px; color:#ECFDF5; height:36px; overflow:hidden; line-height:18px; margin:6px 0;">Official Package Manager for the VeTwo ecosystem. Registry-driven, plugin-first, extensible.</div>
         </div>
         <div>
-          <div style="font-size:11px; color:#6EE7B7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span></div>
-          <div style="font-size:10px; color:#4B5563; margin-top:2px;">🕓 Sep 24, 2026</div>
+          <div style="font-size:11px; color:#A7B8AF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span></div>
+          <div style="font-size:10px; color:#6EE7B7; margin-top:2px;">🕓 Sep 24, 2026</div>
           <a href="https://github.com/VeTwo-dev/marketplace-fetch-pack" style="font-size:12px; color:#10B981; font-weight:600; text-decoration:none; display:inline-block; margin-top:6px;">View Repository →</a>
         </div>
       </div>
     </td>
-    <!-- Project Card 4 -->
+      <!-- Project Card 4 -->
     <td width="50%" valign="top" style="padding:8px;">
-      <div style="border:1px solid #10B98133; border-radius:8px; padding:12px; background:#0A0F0D; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
+      <div style="border:1px solid #121A16; border-radius:8px; padding:12px; background:#0D1511; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
-        <a href="https://github.com/VeTwo-dev/Cli"><img src="./assets/thumbnail/cli.svg" alt="Cli" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
-          <div style="margin-top:10px;">
-            <strong style="font-size:15px;">
-              <a href="https://github.com/VeTwo-dev/Cli" style="text-decoration:none; color:#10B981;">Cli</a>
-            </strong>
-          </div>
-          <div style="font-size:12px; color:#ECFDF5; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:6px 0;">A monorepo managed with pnpm workspaces and pnpm.</div>
+        <a href="https://github.com/VeTwo-dev/Cli"><img src="./assets/thumbnail/cli.svg" alt="Cli project thumbnail" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
+          <h3 style="font-size:15px; margin:10px 0 4px 0;"><a href="https://github.com/VeTwo-dev/Cli" style="text-decoration:none; color:#10B981;">Cli</a></h3>
+          <div style="font-size:12px; color:#ECFDF5; height:36px; overflow:hidden; line-height:18px; margin:6px 0;">A monorepo managed with pnpm workspaces and pnpm.</div>
         </div>
         <div>
-          <div style="font-size:11px; color:#6EE7B7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span></div>
-          <div style="font-size:10px; color:#4B5563; margin-top:2px;">🕓 Sep 23, 2026</div>
+          <div style="font-size:11px; color:#A7B8AF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span></div>
+          <div style="font-size:10px; color:#6EE7B7; margin-top:2px;">🕓 Sep 23, 2026</div>
           <a href="https://github.com/VeTwo-dev/Cli" style="font-size:12px; color:#10B981; font-weight:600; text-decoration:none; display:inline-block; margin-top:6px;">View Repository →</a>
         </div>
       </div>
     </td>
-  </tr>
+    </tr>
+  </tbody>
 </table>
 
 <!-- This section is generated automatically. Do not edit directly. -->
 <div align="center">
-  <h2>⭐ Featured by Stars</h2>
+  <h2>⭐ Featured Repositories</h2>
 </div>
 
-<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse;">
+<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse; table-layout:fixed;">
   <tr>
-    <!-- Project Card 1 -->
-    <td width="33.33%" valign="top" style="padding:8px;">
+    <!-- Starred Project Card 1 -->
+    <td width="33.33%" valign="top" style="padding:6px;">
       <div style="border:1px solid #10B98133; border-radius:8px; padding:12px; background:#0A0F0D; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
         <a href="https://github.com/VeTwo-dev/units"><img src="./assets/thumbnail/units.svg" alt="units" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
           <div style="margin-top:10px;">
-            <strong style="font-size:15px;">
+            <strong style="font-size:14px;">
               <a href="https://github.com/VeTwo-dev/units" style="text-decoration:none; color:#10B981;">units</a>
             </strong>
           </div>
@@ -331,13 +316,13 @@ Instead of monolithic systems, we architect a **modular, high-performance ecosys
         </div>
       </div>
     </td>
-    <!-- Project Card 2 -->
-    <td width="33.33%" valign="top" style="padding:8px;">
+    <!-- Starred Project Card 2 -->
+    <td width="33.33%" valign="top" style="padding:6px;">
       <div style="border:1px solid #10B98133; border-radius:8px; padding:12px; background:#0A0F0D; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
         <a href="https://github.com/VeTwo-dev/nutrition-units"><img src="./assets/thumbnail/nutrition-units.svg" alt="nutrition-units" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
           <div style="margin-top:10px;">
-            <strong style="font-size:15px;">
+            <strong style="font-size:14px;">
               <a href="https://github.com/VeTwo-dev/nutrition-units" style="text-decoration:none; color:#10B981;">nutrition-units</a>
             </strong>
           </div>
@@ -350,13 +335,13 @@ Instead of monolithic systems, we architect a **modular, high-performance ecosys
         </div>
       </div>
     </td>
-    <!-- Project Card 3 -->
-    <td width="33.33%" valign="top" style="padding:8px;">
+    <!-- Starred Project Card 3 -->
+    <td width="33.33%" valign="top" style="padding:6px;">
       <div style="border:1px solid #10B98133; border-radius:8px; padding:12px; background:#0A0F0D; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
         <a href="https://github.com/VeTwo-dev/Feed-Formulation"><img src="./assets/thumbnail/feed-formulation.svg" alt="Feed-Formulation" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
           <div style="margin-top:10px;">
-            <strong style="font-size:15px;">
+            <strong style="font-size:14px;">
               <a href="https://github.com/VeTwo-dev/Feed-Formulation" style="text-decoration:none; color:#10B981;">Feed-Formulation</a>
             </strong>
           </div>
@@ -372,4 +357,64 @@ Instead of monolithic systems, we architect a **modular, high-performance ecosys
   </tr>
 </table>
 
+<br />
+<br />
 
+<div align="center">
+
+  <!-- Section Divider / Brand Glow -->
+  <img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=10B981&section=footer" width="100%" alt="Divider" />
+
+  <br />
+  <br />
+
+  <!-- Footer Heading -->
+  <h3>📬 Connect & Collaborate with VeTwo</h3>
+  <p>We are always open to community contributions, scientific discussions, and open-source collaborations.</p>
+
+  <br />
+
+  <!-- Professional Communication & Governance Badges -->
+  <a href="https://vetwo.dev">
+    <img src="https://img.shields.io/badge/Official_Website-vetwo.dev-10B981?style=flat-square&logo=googlechrome&logoColor=white" alt="Website" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/VeTwo-dev">
+    <img src="https://img.shields.io/badge/GitHub-VeTwo--dev-0A0F0D?style=flat-square&logo=github&logoColor=white" alt="GitHub" />
+  </a>
+  &nbsp;
+  <a href="https://www.instagram.com/vetwo.dev/">
+    <img src="https://img.shields.io/badge/Instagram-@vetwo.dev-121A16?style=flat-square&logo=instagram&logoColor=white" alt="Instagram" />
+  </a>
+  &nbsp;
+  <a href="mailto:contact@vetwo.dev">
+    <img src="https://img.shields.io/badge/Email-contact@vetwo.dev-10B981?style=flat-square&logo=gmail&logoColor=white" alt="Email" />
+  </a>
+
+  <br />
+  <br />
+
+  <!-- Governance, Security & Licensing Protocols -->
+  <a href="https://github.com/VeTwo-dev/.github/blob/main/SECURITY.md">
+    <img src="https://img.shields.io/badge/Security-Policy-10B981?style=flat-square&logo=shield&logoColor=white" alt="Security Policy" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/VeTwo-dev/.github/blob/main/CONTRIBUTING.md">
+    <img src="https://img.shields.io/badge/Contributions-Welcome-0A0F0D?style=flat-square&logo=githubsponsors&logoColor=white" alt="Contributing Guide" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/VeTwo-dev/.github/blob/main/CODE_OF_CONDUCT.md">
+    <img src="https://img.shields.io/badge/Code_of_Conduct-Contributor-121A16?style=flat-square&logo=handshake&logoColor=white" alt="Code of Conduct" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/VeTwo-dev/.github/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-10B981?style=flat-square&logo=open-source-initiative&logoColor=white" alt="License" />
+  </a>
+
+  <br />
+  <br />
+
+  <!-- Copyright & Philosophical Quote -->
+  <p><sub><b>VeTwo Ecosystem</b> © 2026 — Precision Software Layer for Veterinary & Animal Health.</sub></p>
+
+</div>

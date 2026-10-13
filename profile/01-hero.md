@@ -4,7 +4,7 @@
   <img src="https://capsule-render.vercel.app/api?type=waving&height=220&color=0:0A0F0D,40:121A16,75:10B981,100:0A0F0D&text=VeTwo.dev&section=header&fontColor=ECFDF5&fontSize=56&fontAlign=50&fontAlignY=36&animation=fadeIn&stroke=10B981&strokeWidth=1&desc=Veterinary%20Medicine%20%C3%97%20Open-Source%20Software&descAlign=50&descAlignY=59&descSize=17" width="100%" alt="VeTwo Banner" />
 
   <br />
-
+  
   <!-- Logo Mark -->
   <div align="center">
 

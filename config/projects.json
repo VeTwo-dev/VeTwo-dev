@@ -7,13 +7,22 @@
     "headerHtml": "<div align=\"center\">\n  <h2>🚀 Featured Ecosystem Repositories</h2>\n</div>",
     "columns": 2,
     "sortBy": "pushed_at",
-    "showTopics": 3
+    "showTopics": 3,
+    "descriptionMaxChars": 110,
+    "card": {
+      "colors": {
+        "background": "#0D1511",
+        "border": "#121A16",
+        "meta": "#A7B8AF",
+        "date": "#6EE7B7"
+      }
+    }
   },
   "starred": {
     "count": 3,
     "output": "profile/06-starred-projects-generated.md",
-    "title": "⭐ Featured by Stars",
-    "headerHtml": "<div align=\"center\">\n  <h2>⭐ Featured by Stars</h2>\n</div>",
+    "title": "⭐ Featured Repositories",
+    "headerHtml": "<div align=\"center\">\n  <h2>⭐ Featured Repositories</h2>\n</div>",
     "columns": 3,
     "sortBy": "stargazers_count",
     "showTopics": 3,

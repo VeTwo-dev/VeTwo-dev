@@ -1,6 +1,6 @@
 import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   USER,
   sanitize,
@@ -17,13 +17,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
 const projectsConfig = loadConfig("projects", {
-  starred: { count: 3, output: "profile/06-starred-projects-generated.md", title: "⭐ Featured by Stars", headerHtml: "<div align=\"center\">\n  <h2>⭐ Featured by Stars</h2>\n</div>" },
+  starred: { count: 3, output: "profile/06-starred-projects-generated.md", title: "⭐ Featured Repositories", headerHtml: "<div align=\"center\">\n  <h2>⭐ Featured Repositories</h2>\n</div>" },
   card: {
     heightPx: 280,
     thumbnailHeightPx: 120,
     descriptionLines: 2,
     descriptionLineHeightPx: 18,
-    colors: { border: "#252525", background: "#0d1117", name: "#58a6ff", description: "#c9d1d9", meta: "#7a7a7a", date: "#484f58", link: "#8957e5" },
+    colors: { border: "#10B98133", background: "#0A0F0D", name: "#10B981", description: "#ECFDF5", meta: "#6EE7B7", date: "#4B5563", link: "#10B981" },
     linkText: "View Repository →",
     dateIcon: "🕓",
   },
@@ -49,7 +49,7 @@ async function getDescriptionWithFallback(repo, token) {
   return escapeHtml(desc);
 }
 
-function generateCard(repo, thumbnail, description) {
+export function generateCard(repo, thumbnail, description) {
   const card = projectsConfig.card || {};
   const colors = card.colors || {};
   const border = colors.border || "#252525";
@@ -87,22 +87,24 @@ function generateCard(repo, thumbnail, description) {
   const langStarsHtml = langStarsParts.length ? `<div style="font-size:11px; color:${metaColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${langStarsParts.join(" · ")}</div>` : "";
   const dateHtml = pushed ? `<div style="font-size:10px; color:${dateColor}; margin-top:2px;">${dateIcon} ${escapeHtml(pushed)}</div>` : "";
   const descHeight = descLines * descLineHeight;
+  // Same guard as the recent cards: never emit a whitespace-only or empty
+  // line inside the table (see generate-project-cards.mjs).
+  const metaLines = [langStarsHtml, dateHtml].filter((s) => typeof s === "string" && s.trim() !== "");
+  const actionLine = `          <a href="${url}" style="font-size:12px; color:${linkColor}; font-weight:600; text-decoration:none; display:inline-block; margin-top:6px;">${linkText}</a>`;
 
-  return `    <td width="33.33%" valign="top" style="padding:8px;">
+  return `    <td width="33.33%" valign="top" style="padding:6px;">
       <div style="border:1px solid ${border}; border-radius:8px; padding:12px; background:${background}; height:${heightPx}px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
 ${thumbHtml}
           <div style="margin-top:10px;">
-            <strong style="font-size:15px;">
+            <strong style="font-size:14px;">
               <a href="${url}" style="text-decoration:none; color:${nameColor};">${name}</a>
             </strong>
           </div>
           <div style="font-size:12px; color:${descColor}; height:${descHeight}px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:${descLines}; -webkit-box-orient:vertical; line-height:${descLineHeight}px; margin:6px 0;">${desc}</div>
         </div>
         <div>
-          ${langStarsHtml}
-          ${dateHtml}
-          <a href="${url}" style="font-size:12px; color:${linkColor}; font-weight:600; text-decoration:none; display:inline-block; margin-top:6px;">${linkText}</a>
+${[...metaLines.map((s) => `          ${s}`), actionLine].join("\n")}
         </div>
       </div>
     </td>`;
@@ -131,16 +133,16 @@ async function main() {
       withThumbs.push({ repo, thumbnail: finalThumb, description: desc });
     }
 
-    const title = projectsConfig.starred?.title || "⭐ Featured by Stars";
+    const title = projectsConfig.starred?.title || "⭐ Featured Repositories";
     const headerHtml = projectsConfig.starred?.headerHtml;
     let table = "<!-- This section is generated automatically. Do not edit directly. -->\n";
     table += headerHtml ? `${headerHtml}\n\n` : `## ${title}\n\n`;
-    table += '<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse;">\n';
+    table += '<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse; table-layout:fixed;">\n';
     table += "  <tr>\n";
     let cardNumber = 0;
     for (const item of withThumbs) {
       cardNumber += 1;
-      table += `    <!-- Project Card ${cardNumber} -->\n`;
+      table += `    <!-- Starred Project Card ${cardNumber} -->\n`;
       table += generateCard(item.repo, item.thumbnail, item.description) + "\n";
     }
     table += "  </tr>\n";
@@ -159,4 +161,5 @@ async function main() {
   }
 }
 
-await main();
+const isDirectRun = !!process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+if (isDirectRun) await main();

@@ -1,17 +1,17 @@
 <!-- This section is generated automatically. Do not edit directly. -->
 <div align="center">
-  <h2>⭐ Featured by Stars</h2>
+  <h2>⭐ Featured Repositories</h2>
 </div>
 
-<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse;">
+<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse; table-layout:fixed;">
   <tr>
-    <!-- Project Card 1 -->
-    <td width="33.33%" valign="top" style="padding:8px;">
+    <!-- Starred Project Card 1 -->
+    <td width="33.33%" valign="top" style="padding:6px;">
       <div style="border:1px solid #10B98133; border-radius:8px; padding:12px; background:#0A0F0D; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
         <a href="https://github.com/VeTwo-dev/units"><img src="./assets/thumbnail/units.svg" alt="units" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
           <div style="margin-top:10px;">
-            <strong style="font-size:15px;">
+            <strong style="font-size:14px;">
               <a href="https://github.com/VeTwo-dev/units" style="text-decoration:none; color:#10B981;">units</a>
             </strong>
           </div>
@@ -24,13 +24,13 @@
         </div>
       </div>
     </td>
-    <!-- Project Card 2 -->
-    <td width="33.33%" valign="top" style="padding:8px;">
+    <!-- Starred Project Card 2 -->
+    <td width="33.33%" valign="top" style="padding:6px;">
       <div style="border:1px solid #10B98133; border-radius:8px; padding:12px; background:#0A0F0D; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
         <a href="https://github.com/VeTwo-dev/nutrition-units"><img src="./assets/thumbnail/nutrition-units.svg" alt="nutrition-units" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
           <div style="margin-top:10px;">
-            <strong style="font-size:15px;">
+            <strong style="font-size:14px;">
               <a href="https://github.com/VeTwo-dev/nutrition-units" style="text-decoration:none; color:#10B981;">nutrition-units</a>
             </strong>
           </div>
@@ -43,13 +43,13 @@
         </div>
       </div>
     </td>
-    <!-- Project Card 3 -->
-    <td width="33.33%" valign="top" style="padding:8px;">
+    <!-- Starred Project Card 3 -->
+    <td width="33.33%" valign="top" style="padding:6px;">
       <div style="border:1px solid #10B98133; border-radius:8px; padding:12px; background:#0A0F0D; height:280px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
         <a href="https://github.com/VeTwo-dev/Feed-Formulation"><img src="./assets/thumbnail/feed-formulation.svg" alt="Feed-Formulation" width="100%" height="120" style="border-radius:6px; height:120px; object-fit:cover; display:block;" /></a>
           <div style="margin-top:10px;">
-            <strong style="font-size:15px;">
+            <strong style="font-size:14px;">
               <a href="https://github.com/VeTwo-dev/Feed-Formulation" style="text-decoration:none; color:#10B981;">Feed-Formulation</a>
             </strong>
           </div>

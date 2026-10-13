@@ -1,6 +1,6 @@
 import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   USER,
   sanitize,
@@ -9,6 +9,8 @@ import {
   formatDate,
   getRepoDescription,
   selectRepos,
+  isSafeCardUrl,
+  truncateText,
 } from "./lib/github.mjs";
 import { resolveCardThumbnail, getPlaceholderPath as getLocalPlaceholder } from "./lib/thumbnails.mjs";
 import { loadConfig } from "./lib/config.mjs";
@@ -17,7 +19,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
 const projectsConfig = loadConfig("projects", {
-  recent: { count: 4, output: "profile/05-projects-generated.md", title: "Recent Projects", headerHtml: "<div align=\"center\">\n  <h2>🚀 Featured Ecosystem Repositories</h2>\n</div>", columns: 2, showTopics: 3 },
+  recent: { count: 4, output: "profile/05-projects-generated.md", title: "Recent Projects", headerHtml: "<div align=\"center\">\n  <h2>🚀 Featured Ecosystem Repositories</h2>\n</div>", columns: 2, showTopics: 3, descriptionMaxChars: 110, card: { colors: { background: "#0D1511", border: "#121A16", meta: "#A7B8AF", date: "#6EE7B7" } } },
   card: {
     heightPx: 280,
     thumbnailHeightPx: 120,
@@ -33,6 +35,17 @@ const profileConfig = loadConfig("profile", {
 });
 const outFile = path.join(root, projectsConfig.recent?.output || "profile/05-projects-generated.md");
 const COUNT = projectsConfig.recent?.count || 4;
+// Recent-only visual overrides merge over the shared card block, so the
+// starred section keeps its own approved styling untouched.
+const sharedCard = projectsConfig.card || {};
+const recentCardOverride = (projectsConfig.recent || {}).card || {};
+const card = {
+  ...sharedCard,
+  ...recentCardOverride,
+  colors: { ...(sharedCard.colors || {}), ...(recentCardOverride.colors || {}) },
+};
+const DESCRIPTION_MAX_CHARS = projectsConfig.recent?.descriptionMaxChars ?? 110;
+const ORG_URL = `https://github.com/${USER}`;
 
 function selectLatestRepos(repos) {
   return selectRepos(repos, {
@@ -46,11 +59,10 @@ function selectLatestRepos(repos) {
 
 async function getDescriptionWithFallback(repo, token) {
   const desc = await getRepoDescription(repo, token);
-  return escapeHtml(desc);
+  return escapeHtml(truncateText(desc, DESCRIPTION_MAX_CHARS));
 }
 
-function generateCard(repo, thumbnail, description, colWidth) {
-  const card = projectsConfig.card || {};
+export function generateCard(repo, thumbnail, description, colWidth) {
   const widthAttr = colWidth || "50%";
   const colors = card.colors || {};
   const border = colors.border || "#252525";
@@ -69,15 +81,17 @@ function generateCard(repo, thumbnail, description, colWidth) {
   const showTopics = projectsConfig.recent?.showTopics ?? 3;
 
   const name = escapeHtml(repo.name);
-  const desc = description || projectsConfig.card?.fallbackDescription || "No description provided.";
-  const url = repo.html_url;
+  const desc = description || card.fallbackDescription || "No description provided.";
+  const rawUrl = repo.html_url;
+  const url = isSafeCardUrl(rawUrl) ? rawUrl : ORG_URL;
   const lang = repo.language ? escapeHtml(repo.language) : null;
   const topics = Array.isArray(repo.topics) && repo.topics.length > 0 ? repo.topics.slice(0, showTopics) : [];
   const pushed = repo.pushed_at ? formatDate(repo.pushed_at) : null;
 
-  const thumbSrc = thumbnail || getLocalPlaceholder();
+  const rawThumb = thumbnail || getLocalPlaceholder();
+  const thumbSrc = isSafeCardUrl(rawThumb) ? rawThumb : getLocalPlaceholder();
   const safeThumb = escapeHtml(thumbSrc);
-  const thumbHtml = `        <a href="${url}"><img src="${safeThumb}" alt="${name}" width="100%" height="${thumbPx}" style="border-radius:6px; height:${thumbPx}px; object-fit:cover; display:block;" /></a>`;
+  const thumbHtml = `        <a href="${url}"><img src="${safeThumb}" alt="${name} project thumbnail" width="100%" height="${thumbPx}" style="border-radius:6px; height:${thumbPx}px; object-fit:cover; display:block;" /></a>`;
 
   const langTopicParts = [];
   if (lang) langTopicParts.push(`<span>${lang}</span>`);
@@ -85,22 +99,22 @@ function generateCard(repo, thumbnail, description, colWidth) {
   const langTopicHtml = langTopicParts.length ? `<div style="font-size:11px; color:${metaColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${langTopicParts.join(" · ")}</div>` : "";
   const dateHtml = pushed ? `<div style="font-size:10px; color:${dateColor}; margin-top:2px;">${dateIcon} ${escapeHtml(pushed)}</div>` : "";
   const descHeight = descLines * descLineHeight;
+  // Emit only non-empty meta lines, always followed by the action link on
+  // its own line. A whitespace-only or empty line would terminate GitHub's
+  // HTML block, and every following indented line would then render as a
+  // literal code block instead of repository cards.
+  const metaLines = [langTopicHtml, dateHtml].filter((s) => typeof s === "string" && s.trim() !== "");
+  const actionLine = `          <a href="${url}" style="font-size:12px; color:${linkColor}; font-weight:600; text-decoration:none; display:inline-block; margin-top:6px;">${linkText}</a>`;
 
   return `    <td width="${widthAttr}" valign="top" style="padding:8px;">
       <div style="border:1px solid ${border}; border-radius:8px; padding:12px; background:${background}; height:${heightPx}px; width:100%; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;">
         <div>
 ${thumbHtml}
-          <div style="margin-top:10px;">
-            <strong style="font-size:15px;">
-              <a href="${url}" style="text-decoration:none; color:${nameColor};">${name}</a>
-            </strong>
-          </div>
-          <div style="font-size:12px; color:${descColor}; height:${descHeight}px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:${descLines}; -webkit-box-orient:vertical; line-height:${descLineHeight}px; margin:6px 0;">${desc}</div>
+          <h3 style="font-size:15px; margin:10px 0 4px 0;"><a href="${url}" style="text-decoration:none; color:${nameColor};">${name}</a></h3>
+          <div style="font-size:12px; color:${descColor}; height:${descHeight}px; overflow:hidden; line-height:${descLineHeight}px; margin:6px 0;">${desc}</div>
         </div>
         <div>
-          ${langTopicHtml}
-          ${dateHtml}
-          <a href="${url}" style="font-size:12px; color:${linkColor}; font-weight:600; text-decoration:none; display:inline-block; margin-top:6px;">${linkText}</a>
+${[...metaLines.map((s) => `          ${s}`), actionLine].join("\n")}
         </div>
       </div>
     </td>`;
@@ -136,19 +150,21 @@ async function main() {
     let table = "<!-- This section is generated automatically. Do not edit directly. -->\n";
     table += headerHtml ? `${headerHtml}\n\n` : `## ${title}\n\n`;
     table += '<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse;">\n';
+    table += "  <tbody>\n";
     let cardNumber = 0;
     for (let i = 0; i < withThumbs.length; i += columns) {
-      table += "  <tr>\n";
+      table += "    <tr>\n";
       for (let j = 0; j < columns; j++) {
         const item = withThumbs[i + j];
         if (item) {
           cardNumber += 1;
-          table += `    <!-- Project Card ${cardNumber} -->\n`;
+          table += `      <!-- Project Card ${cardNumber} -->\n`;
           table += generateCard(item.repo, item.thumbnail, item.description, colWidth) + "\n";
-        } else table += `    <td width="${colWidth}" valign="top" style="padding:8px;"></td>\n`;
+        } else table += `      <td width="${colWidth}" valign="top" style="padding:8px;"></td>\n`;
       }
-      table += "  </tr>\n";
+      table += "    </tr>\n";
     }
+    table += "  </tbody>\n";
     table += "</table>\n";
 
     await mkdir(path.dirname(outFile), { recursive: true });
@@ -164,4 +180,5 @@ async function main() {
   }
 }
 
-await main();
+const isDirectRun = !!process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+if (isDirectRun) await main();
