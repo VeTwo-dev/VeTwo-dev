@@ -12,7 +12,7 @@ import {
   isSafeCardUrl,
   truncateText,
 } from "./lib/github.mjs";
-import { resolveCardThumbnail, getPlaceholderPath as getLocalPlaceholder } from "./lib/thumbnails.mjs";
+import { resolveLocalThumbnail, getPlaceholderPath as getLocalPlaceholder } from "./lib/thumbnails.mjs";
 import { loadConfig } from "./lib/config.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -135,10 +135,12 @@ async function main() {
 
     const withThumbs = [];
     for (const repo of latest) {
-      // Each card fetches its own repo assets/thumbnail/ (or keeps the default)
-      const finalThumb = await resolveCardThumbnail(repo, token, (msg) =>
-        console.log(`[projects] ${msg}`)
-      );
+      // Thumbnails are manually supplied local assets under assets/thumbnail/;
+      // repos without one share the single static placeholder. No fetching,
+      // no downloading, no generation — see scripts/lib/thumbnails.mjs.
+      const resolved = await resolveLocalThumbnail(repo.name);
+      const finalThumb = resolved.url;
+      console.log(`[projects] thumbnail for ${repo.name}: ${finalThumb} (${resolved.kind})`);
       const desc = await getDescriptionWithFallback(repo, token);
       withThumbs.push({ repo, thumbnail: finalThumb, description: desc });
     }

@@ -10,7 +10,6 @@ import { ROOT, snapshotFiles, snapshotDir, assertSnapshotsEqual, withReadmeLock 
 const GENERATORS = [
   "scripts/generate-project-cards.mjs",
   "scripts/generate-starred-projects.mjs",
-  "scripts/generate-project-thumbnails.mjs",
   "scripts/generate-snake.mjs",
   "scripts/build-readme.mjs",
   "scripts/ci.mjs",
@@ -53,13 +52,37 @@ describe("generator filesystem boundaries", () => {
     }
   });
 
-  it("only the thumbnail pipeline deletes files, and only same-repo siblings", () => {
-    for (const f of GENERATORS) {
+  it("no script deletes files and nothing writes thumbnails", () => {
+    // Thumbnails are manually supplied assets: no generator may delete,
+    // download, or synthesize image files. Only profile markdown, README
+    // and snake SVGs are written, each by its documented owner.
+    for (const f of [...GENERATORS, "scripts/lib/thumbnails.mjs", "scripts/lib/github.mjs"]) {
       const src = readFileSync(path.join(ROOT, f), "utf8");
-      assert.ok(!src.includes("unlink("), `${f} must not delete files directly`);
+      assert.ok(!src.includes("unlink("), `${f} must not delete files`);
     }
-    const lib = readFileSync(path.join(ROOT, "scripts/lib/thumbnails.mjs"), "utf8");
-    assert.ok(lib.includes("removeSiblingThumbnails"), "sibling cleanup must stay centralized");
+    const thumbs = readFileSync(path.join(ROOT, "scripts/lib/thumbnails.mjs"), "utf8");
+    for (const banned of [
+      "writeFile",
+      "fetch(",
+      "downloadThumbnail",
+      "generatePlaceholder",
+      "findSourceThumbnail",
+      "resolveCardThumbnail",
+      "localThumbnailExists",
+      "removeSiblingThumbnails",
+      "getHeaders",
+      "opengraph",
+      "raw.githubusercontent",
+    ]) {
+      assert.ok(!thumbs.includes(banned), `thumbnails.mjs must not contain ${banned}`);
+    }
+    for (const f of ["scripts/generate-project-cards.mjs", "scripts/generate-starred-projects.mjs"]) {
+      const src = readFileSync(path.join(ROOT, f), "utf8");
+      for (const banned of ["findSourceThumbnail", "downloadThumbnail", "generatePlaceholder", "resolveCardThumbnail"]) {
+        assert.ok(!src.includes(banned), `${f} must not use remote/generated thumbnails`);
+      }
+      assert.ok(src.includes("resolveLocalThumbnail"), `${f} must use the local resolver`);
+    }
   });
 });
 

@@ -34,7 +34,7 @@
               <a href="https://github.com/VeTwo-dev/nutrition-units" style="text-decoration:none; color:#10B981;">nutrition-units</a>
             </strong>
           </div>
-          <div style="font-size:12px; color:#ECFDF5; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:6px 0;">Nutrition &amp; feed-formulation calculation rules, built on top of</div>
+          <div style="font-size:12px; color:#ECFDF5; height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; line-height:18px; margin:6px 0;">Nutrition &amp; feed-formulation calculation rules, built on top of...</div>
         </div>
         <div>
           <div style="font-size:11px; color:#6EE7B7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><span>TypeScript</span> · <span>⭐ 1</span></div>

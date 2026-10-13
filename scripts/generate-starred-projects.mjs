@@ -10,7 +10,7 @@ import {
   getRepoDescription,
   selectRepos,
 } from "./lib/github.mjs";
-import { resolveCardThumbnail, getPlaceholderPath as getLocalPlaceholder } from "./lib/thumbnails.mjs";
+import { resolveLocalThumbnail, getPlaceholderPath as getLocalPlaceholder } from "./lib/thumbnails.mjs";
 import { loadConfig } from "./lib/config.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -125,10 +125,10 @@ async function main() {
 
     const withThumbs = [];
     for (const repo of top) {
-      // Each card fetches its own repo assets/thumbnail/ (or keeps the default)
-      const finalThumb = await resolveCardThumbnail(repo, token, (msg) =>
-        console.log(`[stars] ${msg}`)
-      );
+      // Same local-only resolution as recent cards (see above).
+      const resolved = await resolveLocalThumbnail(repo.name);
+      const finalThumb = resolved.url;
+      console.log(`[stars] thumbnail for ${repo.name}: ${finalThumb} (${resolved.kind})`);
       const desc = await getRepoDescription(repo, token).then(escapeHtml);
       withThumbs.push({ repo, thumbnail: finalThumb, description: desc });
     }
