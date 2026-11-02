@@ -11,6 +11,7 @@ const GENERATORS = [
   "scripts/generate-project-cards.mjs",
   "scripts/generate-starred-projects.mjs",
   "scripts/generate-snake.mjs",
+  "scripts/generate-contributors.mjs",
   "scripts/build-readme.mjs",
   "scripts/ci.mjs",
 ];
@@ -18,6 +19,7 @@ const GENERATORS = [
 const OWNED_OUTPUTS = [
   "profile/05-projects-generated.md",
   "profile/06-starred-projects-generated.md",
+  "profile/contributors-generated.md",
   "README.md",
   "assets/github/github-contribution-grid-snake.svg",
   "assets/github/github-contribution-grid-snake-dark.svg",

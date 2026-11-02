@@ -15,6 +15,7 @@ describe("ci pipeline allowlist", () => {
       "generate-project-cards.mjs",
       "generate-snake.mjs",
       "generate-starred-projects.mjs",
+      "generate-contributors.mjs",
     ]);
   });
 

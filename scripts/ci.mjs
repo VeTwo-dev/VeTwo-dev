@@ -18,10 +18,13 @@ function sanitize(str) {
 // Explicit pipeline: the only scripts `pnpm ci` may execute, in order.
 // A retired or experimental generate-*.mjs file sitting in scripts/ is never
 // picked up implicitly — it must be added here deliberately to run.
+// The contributors generator runs last (most API calls per run) so its
+// requests never compete with the card generators for the same quota window.
 export const PIPELINE_SCRIPTS = [
   "generate-project-cards.mjs",
   "generate-snake.mjs",
   "generate-starred-projects.mjs",
+  "generate-contributors.mjs",
 ];
 const README_SCRIPT = "build-readme.mjs";
 

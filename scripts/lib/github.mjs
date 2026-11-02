@@ -15,6 +15,20 @@ const githubConfig = loadConfig("github", {
   maxThumbnailBytes: 819200,
 });
 const USERNAME = profileConfig.username || "VeTwo-dev";
+const DEFAULT_API_BASE = "https://api.github.com";
+
+// Optional API base override: GITHUB_API_URL / GITHUB_API_BASE. Centralized
+// here so every generator reuses one client and tests can point the whole
+// generator at a local fixture server without any live network access.
+export function resolveApiBase(override) {
+  const raw = override || process.env.GITHUB_API_URL || process.env.GITHUB_API_BASE || DEFAULT_API_BASE;
+  return String(raw).replace(/\/+$/, "");
+}
+
+export function getTimeout(name, fallback) {
+  const timeouts = githubConfig.timeoutsMs || {};
+  return typeof timeouts[name] === "number" && timeouts[name] > 0 ? timeouts[name] : fallback;
+}
 
 export function sanitize(str, token) {
   if (!str || !token) return str;
@@ -49,14 +63,15 @@ export async function fetchWithTimeout(url, opts = {}, ms = 4000) {
   }
 }
 
-export async function fetchAllRepos(token) {
+export async function fetchAllRepos(token, { apiBase } = {}) {
   const headers = getHeaders(token);
+  const base = resolveApiBase(apiBase);
   const perPage = githubConfig.reposPerPage || 100;
   const sort = githubConfig.sort || "pushed";
   const type = githubConfig.repoType || "all";
   const maxRepos = githubConfig.maxRepos || 300;
   const timeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.repos) || 8000;
-  let url = `https://api.github.com/users/${USERNAME}/repos?per_page=${perPage}&sort=${sort}&type=${type}`;
+  let url = `${base}/users/${USERNAME}/repos?per_page=${perPage}&sort=${sort}&type=${type}`;
   let all = [];
   while (url) {
     const res = await fetchWithTimeout(url, { headers }, timeout);

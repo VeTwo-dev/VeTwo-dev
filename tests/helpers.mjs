@@ -40,22 +40,24 @@ export function assertSnapshotsEqual(before, after, label) {
   );
 }
 
-// Cross-process mutex for README.md. Test files run in parallel processes
-// and several rebuild README.md; without serialization, concurrent writes
-// (O_TRUNC + write) can interleave and a concurrent read can observe torn
-// bytes, producing flakes. All README reads/writes in tests go through this.
-// Lock lives in os.tmpdir() so it works regardless of checkout location.
-const README_LOCK_DIR = path.join(os.tmpdir(), "vetwo-profile-readme.lock");
+// Cross-process mutex for a named resource. Test files run in parallel
+// processes and several rebuild the same outputs; without serialization,
+// concurrent writes (O_TRUNC + write) can interleave and a concurrent read
+// can observe torn bytes, producing flakes. All README writes and generated
+// profile-section snapshots in tests go through this. Locks live in
+// os.tmpdir() so they work regardless of checkout location.
+const LOCK_ROOT = os.tmpdir();
 
-export async function withReadmeLock(fn, { timeoutMs = 60000 } = {}) {
+export async function withLock(name, fn, { timeoutMs = 60000 } = {}) {
+  const lockDir = path.join(LOCK_ROOT, `vetwo-profile-${name}.lock`);
   const start = Date.now();
   for (;;) {
     try {
-      await mkdir(README_LOCK_DIR);
+      await mkdir(lockDir);
       break;
     } catch {
       if (Date.now() - start > timeoutMs) {
-        throw new Error(`timed out waiting for README lock after ${timeoutMs}ms`);
+        throw new Error(`timed out waiting for ${name} lock after ${timeoutMs}ms`);
       }
       await new Promise((r) => setTimeout(r, 25));
     }
@@ -63,6 +65,10 @@ export async function withReadmeLock(fn, { timeoutMs = 60000 } = {}) {
   try {
     return await fn();
   } finally {
-    await rm(README_LOCK_DIR, { recursive: true, force: true });
+    await rm(lockDir, { recursive: true, force: true });
   }
+}
+
+export async function withReadmeLock(fn, options = {}) {
+  return withLock("readme", fn, options);
 }

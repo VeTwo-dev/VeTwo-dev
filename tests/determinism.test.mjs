@@ -37,7 +37,11 @@ describe("README builder determinism", () => {
   });
 
   it("generated sections carry the do-not-edit marker", () => {
-    for (const f of ["profile/05-projects-generated.md", "profile/06-starred-projects-generated.md"]) {
+    for (const f of [
+      "profile/05-projects-generated.md",
+      "profile/06-starred-projects-generated.md",
+      "profile/contributors-generated.md",
+    ]) {
       const content = readFileSync(path.join(ROOT, f), "utf8");
       assert.ok(
         content.includes("generated automatically"),

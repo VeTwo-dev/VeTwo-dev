@@ -54,6 +54,15 @@
     {
       "position": 7,
       "number": "07",
+      "file": "contributors-generated.md",
+      "title": "Contributors",
+      "generated": true,
+      "generator": "scripts/generate-contributors.mjs",
+      "description": "Auto-generated contributor roster aggregated across eligible VeTwo repositories"
+    },
+    {
+      "position": 8,
+      "number": "08",
       "file": "07-footer.md",
       "title": "Footer",
       "generated": false,

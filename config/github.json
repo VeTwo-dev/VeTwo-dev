@@ -11,7 +11,8 @@
     "readme": 4000,
     "contentHead": 3000,
     "thumbnailHead": 3000,
-    "thumbnailDownload": 8000
+    "thumbnailDownload": 8000,
+    "contributors": 8000
   },
   "maxThumbnailBytes": 819200
 }
