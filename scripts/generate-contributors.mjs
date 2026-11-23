@@ -39,10 +39,17 @@ const projectsConfig = loadConfig("projects", {
   },
 });
 const profileConfig = loadConfig("profile", {
-  filter: { excludeForks: true, excludeArchived: true, excludePrivate: true, fallbackToPublic: true, fallbackToAll: true },
+  filter: {
+    excludeForks: true,
+    excludeArchived: true,
+    excludePrivate: true,
+    fallbackToPublic: true,
+    fallbackToAll: true,
+  },
 });
 
-const BANNER = "<!-- This section is generated automatically. Do not edit directly. -->";
+const BANNER =
+  "<!-- This section is generated automatically. Do not edit directly. -->";
 
 // Stable identity for one human across repositories: numeric GitHub user id
 // when the API returns it. Documented fallback (no id in the payload) is the
@@ -67,7 +74,10 @@ export function isBotContributor(contributor) {
 // fallbacks: aggregation must never pull in a repository the profile itself
 // excludes. Repository identity is deduplicated by id (falling back to the
 // full name) so overlapping pagination cannot process a repo twice.
-export function selectEligibleRepos(repos, { username = USER, filter = {} } = {}) {
+export function selectEligibleRepos(
+  repos,
+  { username = USER, filter = {} } = {},
+) {
   const excludeForks = filter.excludeForks !== false;
   const excludeArchived = filter.excludeArchived !== false;
   const excludePrivate = filter.excludePrivate !== false;
@@ -75,12 +85,16 @@ export function selectEligibleRepos(repos, { username = USER, filter = {} } = {}
   const seen = new Set();
   const out = [];
   for (const repo of Array.isArray(repos) ? repos : []) {
-    if (!repo || typeof repo.name !== "string" || repo.name.length === 0) continue;
+    if (!repo || typeof repo.name !== "string" || repo.name.length === 0)
+      continue;
     if (String(repo.name).toLowerCase() === profileName) continue;
     if (excludeForks && repo.fork === true) continue;
     if (excludeArchived && repo.archived === true) continue;
     if (excludePrivate && repo.private === true) continue;
-    const key = repo.id != null ? `id:${repo.id}` : `name:${String(repo.full_name || repo.name).toLowerCase()}`;
+    const key =
+      repo.id != null
+        ? `id:${repo.id}`
+        : `name:${String(repo.full_name || repo.name).toLowerCase()}`;
     if (seen.has(key)) continue;
     seen.add(key);
     out.push(repo);
@@ -95,12 +109,16 @@ export function selectEligibleRepos(repos, { username = USER, filter = {} } = {}
 // repository simply has no contributor data" and is skipped with a warning.
 // Deduplication by identity happens per repository so a retried or
 // overlapping page can never count a contributor twice.
-export async function fetchRepoContributors(repoName, token, {
-  fetchImpl = fetchWithTimeout,
-  apiBase,
-  perPage = 100,
-  timeoutMs = getTimeout("contributors", 5000),
-} = {}) {
+export async function fetchRepoContributors(
+  repoName,
+  token,
+  {
+    fetchImpl = fetchWithTimeout,
+    apiBase,
+    perPage = 100,
+    timeoutMs = getTimeout("contributors", 5000),
+  } = {},
+) {
   const base = resolveApiBase(apiBase);
   const headers = getHeaders(token);
   const per = Math.min(Math.max(Number(perPage) || 100, 1), 100);
@@ -111,24 +129,53 @@ export async function fetchRepoContributors(repoName, token, {
     const res = await fetchImpl(url, { headers }, timeoutMs);
     // 204 carries no body: an empty repository, never a payload to parse.
     if (res && res.ok === true && res.status === 204) {
-      return { ok: false, httpStatus: 204, reason: `contributors endpoint unavailable (204) for ${repoName}` };
+      return {
+        ok: false,
+        httpStatus: 204,
+        reason: `contributors endpoint unavailable (204) for ${repoName}`,
+      };
     }
     if (!res || res.ok !== true) {
       const status = res ? res.status : 0;
-      const text = res ? await res.text().catch(() => res.statusText) : "no response";
+      const text = res
+        ? await res.text().catch(() => res.statusText)
+        : "no response";
       const sanitized = token ? sanitize(text, token) : text;
-      if (status === 401) return { ok: false, fatal: true, httpStatus: status, reason: `GitHub API authentication failed (401): ${sanitized}` };
-      if (status === 403) return { ok: false, fatal: true, httpStatus: status, reason: `GitHub API rate limited: ${sanitized}` };
+      if (status === 401)
+        return {
+          ok: false,
+          fatal: true,
+          httpStatus: status,
+          reason: `GitHub API authentication failed (401): ${sanitized}`,
+        };
+      if (status === 403)
+        return {
+          ok: false,
+          fatal: true,
+          httpStatus: status,
+          reason: `GitHub API rate limited: ${sanitized}`,
+        };
       // 204 (empty repository) and 404/410 (contributors disabled or removed)
       // are data-absence signals, not failures: skip this repository only.
       if (status === 204 || status === 404 || status === 410) {
-        return { ok: false, httpStatus: status, reason: `contributors endpoint unavailable (${status}) for ${repoName}` };
+        return {
+          ok: false,
+          httpStatus: status,
+          reason: `contributors endpoint unavailable (${status}) for ${repoName}`,
+        };
       }
-      return { ok: false, httpStatus: status, reason: `contributors request failed (${status}) for ${repoName}: ${sanitized}` };
+      return {
+        ok: false,
+        httpStatus: status,
+        reason: `contributors request failed (${status}) for ${repoName}: ${sanitized}`,
+      };
     }
     const data = await res.json().catch(() => null);
     if (!Array.isArray(data)) {
-      return { ok: false, reason: `invalid contributors response for ${repoName}` };
+      return {
+        ok: false,
+        reason: `invalid contributors response for ${repoName}`,
+      };
     }
     for (const contributor of data) {
       const key = contributorKey(contributor);
@@ -153,7 +200,9 @@ export function aggregateContributors(perRepo, { includeBots = false } = {}) {
   const aggregated = new Map();
   for (const entry of Array.isArray(perRepo) ? perRepo : []) {
     const repoName = String((entry && entry.repo) || "");
-    const contributors = Array.isArray(entry && entry.contributors) ? entry.contributors : [];
+    const contributors = Array.isArray(entry && entry.contributors)
+      ? entry.contributors
+      : [];
     const seenInRepo = new Set();
     for (const contributor of contributors) {
       if (!contributor || !repoName) continue;
@@ -162,7 +211,9 @@ export function aggregateContributors(perRepo, { includeBots = false } = {}) {
       seenInRepo.add(key);
       if (!includeBots && isBotContributor(contributor)) continue;
       const login = String(contributor.login || "");
-      const numeric = typeof contributor.contributions === "number" && Number.isFinite(contributor.contributions);
+      const numeric =
+        typeof contributor.contributions === "number" &&
+        Number.isFinite(contributor.contributions);
       let acc = aggregated.get(key);
       if (!acc) {
         acc = {
@@ -178,8 +229,10 @@ export function aggregateContributors(perRepo, { includeBots = false } = {}) {
         aggregated.set(key, acc);
       }
       if (login) acc.logins.add(login);
-      if (!acc.avatarUrl && isSafeCardUrl(contributor.avatar_url)) acc.avatarUrl = contributor.avatar_url;
-      if (!acc.htmlUrl && isSafeCardUrl(contributor.html_url)) acc.htmlUrl = contributor.html_url;
+      if (!acc.avatarUrl && isSafeCardUrl(contributor.avatar_url))
+        acc.avatarUrl = contributor.avatar_url;
+      if (!acc.htmlUrl && isSafeCardUrl(contributor.html_url))
+        acc.htmlUrl = contributor.html_url;
       // First numeric value seen wins only for reliability: a later
       // non-numeric count flips the whole total to unreliable.
       acc.countsReliable = acc.countsReliable && numeric;
@@ -194,7 +247,11 @@ export function aggregateContributors(perRepo, { includeBots = false } = {}) {
     login: [...acc.logins].sort()[0] || "",
     logins: [...acc.logins].sort(),
     avatarUrl: acc.avatarUrl,
-    htmlUrl: acc.htmlUrl || (acc.logins.size ? `https://github.com/${encodeURIComponent([...acc.logins].sort()[0])}` : null),
+    htmlUrl:
+      acc.htmlUrl ||
+      (acc.logins.size
+        ? `https://github.com/${encodeURIComponent([...acc.logins].sort()[0])}`
+        : null),
     contributions: acc.countsReliable ? acc.contributions : null,
     repos: [...acc.repos].sort(),
     projectCount: acc.repos.size,
@@ -208,23 +265,48 @@ export function sortContributors(entries) {
     const aNull = a.contributions == null;
     const bNull = b.contributions == null;
     if (aNull !== bNull) return aNull ? 1 : -1;
-    if (!aNull && a.contributions !== b.contributions) return b.contributions - a.contributions;
+    if (!aNull && a.contributions !== b.contributions)
+      return b.contributions - a.contributions;
     return String(a.login).localeCompare(String(b.login));
   });
 }
 
 export function contributorOptions(overrides = {}) {
-  const cfg = (projectsConfig.contributors && { ...projectsConfig.contributors }) || {};
-  const colors = { ...(cfg.colors || {}), ...((overrides && overrides.colors) || {}) };
-  const rawMax = overrides.maxContributors != null ? overrides.maxContributors : cfg.maxContributors;
+  const cfg =
+    (projectsConfig.contributors && { ...projectsConfig.contributors }) || {};
+  const colors = {
+    ...(cfg.colors || {}),
+    ...((overrides && overrides.colors) || {}),
+  };
+  const rawMax =
+    overrides.maxContributors != null
+      ? overrides.maxContributors
+      : cfg.maxContributors;
   const max = Number(rawMax);
   return {
-    title: (overrides.title != null ? overrides.title : cfg.title) || "Contributors",
-    columns: Math.max(1, Number((overrides.columns != null ? overrides.columns : cfg.columns) || 6)),
-    avatarSizePx: Math.max(16, Number((overrides.avatarSizePx != null ? overrides.avatarSizePx : cfg.avatarSizePx) || 64)),
+    title:
+      (overrides.title != null ? overrides.title : cfg.title) || "Contributors",
+    columns: Math.max(
+      1,
+      Number(
+        (overrides.columns != null ? overrides.columns : cfg.columns) || 6,
+      ),
+    ),
+    avatarSizePx: Math.max(
+      16,
+      Number(
+        (overrides.avatarSizePx != null
+          ? overrides.avatarSizePx
+          : cfg.avatarSizePx) || 64,
+      ),
+    ),
     // <= 0 disables the cap (documented in OWNERSHIP.md).
     maxContributors: Number.isFinite(max) ? Math.floor(max) : 0,
-    emptyMessage: (overrides.emptyMessage != null ? overrides.emptyMessage : cfg.emptyMessage) || "No contributors available yet — be the first to contribute.",
+    emptyMessage:
+      (overrides.emptyMessage != null
+        ? overrides.emptyMessage
+        : cfg.emptyMessage) ||
+      "No contributors available yet — be the first to contribute.",
     colors: {
       text: colors.text || "#ECFDF5",
       muted: colors.muted || "#A7B8AF",
@@ -244,14 +326,21 @@ function renderAvatar(contributor, options) {
   }
   // No usable avatar URL: a styled initial tile, never a project thumbnail
   // and never a generated or downloaded image.
-  const initial = escapeHtml(String(contributor.login || "?").charAt(0).toUpperCase() || "?");
+  const initial = escapeHtml(
+    String(contributor.login || "?")
+      .charAt(0)
+      .toUpperCase() || "?",
+  );
   return `<a href="${escapeHtml(contributor.htmlUrl)}" title="${login}"><span style="display:inline-block; width:${size}px; height:${size}px; line-height:${size}px; border-radius:50%; border:1px solid ${options.colors.border}; background:${options.colors.surface}; color:${accent}; font-size:${Math.floor(size / 2.4)}px; text-align:center;">${initial}</span></a>`;
 }
 
 function renderMeta(contributor, options) {
   const parts = [];
-  if (contributor.contributions != null) parts.push(`${contributor.contributions} commits`);
-  parts.push(`${contributor.projectCount} ${contributor.projectCount === 1 ? "repo" : "repos"}`);
+  if (contributor.contributions != null)
+    parts.push(`${contributor.contributions} commits`);
+  parts.push(
+    `${contributor.projectCount} ${contributor.projectCount === 1 ? "repo" : "repos"}`,
+  );
   return `<div style="font-size:11px; color:${options.colors.muted}; margin-top:6px;">${parts.join(" · ")}</div>`;
 }
 
@@ -272,7 +361,8 @@ function renderCell(contributor, options, columns) {
 export function renderContributorsSection(entries, options = {}) {
   const opts = contributorOptions(options);
   const sorted = sortContributors(entries);
-  const capped = opts.maxContributors > 0 ? sorted.slice(0, opts.maxContributors) : sorted;
+  const capped =
+    opts.maxContributors > 0 ? sorted.slice(0, opts.maxContributors) : sorted;
   const hidden = sorted.length - capped.length;
 
   let out = `${BANNER}\n## ${opts.title}\n\n<div align="center">`;
@@ -284,7 +374,9 @@ export function renderContributorsSection(entries, options = {}) {
     for (let i = 0; i < capped.length; i += opts.columns) {
       out += "  <tr>\n";
       const row = capped.slice(i, i + opts.columns);
-      out += row.map((contributor) => renderCell(contributor, opts, opts.columns)).join("\n");
+      out += row
+        .map((contributor) => renderCell(contributor, opts, opts.columns))
+        .join("\n");
       out += "\n  </tr>\n";
     }
     out += "</table>\n";
@@ -299,17 +391,28 @@ export function renderContributorsSection(entries, options = {}) {
 // Walks every eligible repository, collecting contributors and skipping
 // repositories whose endpoint is unavailable. Fatal account-wide problems
 // (bad token, rate limit) abort the whole run before any file is written.
-export async function collectContributors(repos, token, {
-  username = USER,
-  filter = {},
-  fetchImpl = fetchWithTimeout,
-  fetchRepoContributorsImpl,
-  apiBase,
-  perPage,
-} = {}) {
+export async function collectContributors(
+  repos,
+  token,
+  {
+    username = USER,
+    filter = {},
+    fetchImpl = fetchWithTimeout,
+    fetchRepoContributorsImpl,
+    apiBase,
+    perPage,
+  } = {},
+) {
   const eligible = selectEligibleRepos(repos, { username, filter });
-  const fetchOne = fetchRepoContributorsImpl || ((repoName, tok, opts) =>
-    fetchRepoContributors(repoName, tok, { ...opts, fetchImpl, apiBase, perPage }));
+  const fetchOne =
+    fetchRepoContributorsImpl ||
+    ((repoName, tok, opts) =>
+      fetchRepoContributors(repoName, tok, {
+        ...opts,
+        fetchImpl,
+        apiBase,
+        perPage,
+      }));
   const perRepo = [];
   const warnings = [];
   let unavailable = 0;
@@ -322,7 +425,9 @@ export async function collectContributors(repos, token, {
     } catch (err) {
       // A single repository timing out must not kill the roster.
       const msg = err instanceof Error ? err.message : String(err);
-      warnings.push(`contributors unavailable for ${fullName}: ${token ? sanitize(msg, token) : msg}`);
+      warnings.push(
+        `contributors unavailable for ${fullName}: ${token ? sanitize(msg, token) : msg}`,
+      );
       unavailable += 1;
       continue;
     }
@@ -344,7 +449,9 @@ export async function collectContributors(repos, token, {
   // Never replace a good roster with an empty one: if not a single eligible
   // repository answered, fail instead of writing "no contributors".
   if (eligible.length > 0 && unavailable === eligible.length) {
-    throw new Error(`contributor data unavailable for every of ${eligible.length} eligible repositories`);
+    throw new Error(
+      `contributor data unavailable for every of ${eligible.length} eligible repositories`,
+    );
   }
   const entries = aggregateContributors(perRepo);
   return { entries, eligible, warnings };
@@ -353,30 +460,45 @@ export async function collectContributors(repos, token, {
 async function main() {
   const token = process.env.GITHUB_TOKEN || "";
   try {
-    console.log(`[contributors] Fetching repositories for ${USER} (contributors)...`);
+    console.log(
+      `[contributors] Fetching repositories for ${USER} (contributors)...`,
+    );
     const repos = await fetchAllRepos(token, { apiBase: resolveApiBase() });
     if (!Array.isArray(repos)) throw new Error("Invalid GitHub API response");
     console.log(`[contributors] Found ${repos.length} repositories`);
 
     const contributorsCfg = projectsConfig.contributors || {};
     const apiBase = resolveApiBase();
-    const { entries, eligible, warnings } = await collectContributors(repos, token, {
-      username: USER,
-      filter: profileConfig.filter || {},
-      apiBase,
-      perPage: contributorsCfg.perPage,
-      fetchImpl: fetchWithTimeout,
-    });
+    const { entries, eligible, warnings } = await collectContributors(
+      repos,
+      token,
+      {
+        username: USER,
+        filter: profileConfig.filter || {},
+        apiBase,
+        perPage: contributorsCfg.perPage,
+        fetchImpl: fetchWithTimeout,
+      },
+    );
     for (const warning of warnings) {
-      console.warn(`[contributors] warning: ${token ? sanitize(warning, token) : warning}`);
+      console.warn(
+        `[contributors] warning: ${token ? sanitize(warning, token) : warning}`,
+      );
     }
-    console.log(`[contributors] Aggregated ${entries.length} contributor(s) across ${eligible.length} eligible repositories`);
+    console.log(
+      `[contributors] Aggregated ${entries.length} contributor(s) across ${eligible.length} eligible repositories`,
+    );
 
     const section = renderContributorsSection(entries, {});
-    const outRelative = contributorsCfg.output || "profile/contributors-generated.md";
-    await mkdir(path.dirname(path.join(root, outRelative)), { recursive: true });
+    const outRelative =
+      contributorsCfg.output || "profile/contributors-generated.md";
+    await mkdir(path.dirname(path.join(root, outRelative)), {
+      recursive: true,
+    });
     await writeFile(path.join(root, outRelative), section, "utf8");
-    console.log(`[contributors] ✓ ${entries.length} contributor(s) → ${outRelative}`);
+    console.log(
+      `[contributors] ✓ ${entries.length} contributor(s) → ${outRelative}`,
+    );
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[contributors] Failed:", token ? sanitize(msg, token) : msg);
@@ -384,5 +506,7 @@ async function main() {
   }
 }
 
-const isDirectRun = !!process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+const isDirectRun =
+  !!process.argv[1] &&
+  import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
 if (isDirectRun) await main();

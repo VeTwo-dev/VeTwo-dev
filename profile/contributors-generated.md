@@ -1,4 +1,5 @@
 <!-- This section is generated automatically. Do not edit directly. -->
+
 ## Contributors
 
 <div align="center">

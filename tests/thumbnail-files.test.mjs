@@ -21,7 +21,10 @@ describe("normalizeRepoName", () => {
 
   it("maps case variants to the same basename (single file per repo)", () => {
     assert.equal(normalizeRepoName("Cli"), normalizeRepoName("cli"));
-    assert.equal(normalizeRepoName("Units-manager"), normalizeRepoName("UNITS-MANAGER"));
+    assert.equal(
+      normalizeRepoName("Units-manager"),
+      normalizeRepoName("UNITS-MANAGER"),
+    );
   });
 
   it("neutralizes path traversal segments", () => {
@@ -34,15 +37,27 @@ describe("normalizeRepoName", () => {
 
 describe("getLocalThumbnailPath", () => {
   it("is deterministic per repo and extension", () => {
-    assert.equal(getLocalThumbnailPath("Cli", "svg"), "./assets/thumbnail/cli.svg");
-    assert.equal(getLocalThumbnailPath("Cli", "png"), "./assets/thumbnail/cli.png");
-    assert.equal(getLocalThumbnailPath("Cli", "svg"), getLocalThumbnailPath("Cli", "svg"));
+    assert.equal(
+      getLocalThumbnailPath("Cli", "svg"),
+      "./assets/thumbnail/cli.svg",
+    );
+    assert.equal(
+      getLocalThumbnailPath("Cli", "png"),
+      "./assets/thumbnail/cli.png",
+    );
+    assert.equal(
+      getLocalThumbnailPath("Cli", "svg"),
+      getLocalThumbnailPath("Cli", "svg"),
+    );
   });
 });
 
 describe("isSharedPlaceholder", () => {
   it("distinguishes the shared placeholder from real local thumbnails", () => {
-    assert.equal(isSharedPlaceholder("./assets/thumbnail/placeholder.svg"), true);
+    assert.equal(
+      isSharedPlaceholder("./assets/thumbnail/placeholder.svg"),
+      true,
+    );
     assert.equal(isSharedPlaceholder("./assets/thumbnail/cli.svg"), false);
     assert.equal(isSharedPlaceholder(""), false);
   });
@@ -58,7 +73,11 @@ describe("resolveLocalThumbnail (local assets only)", () => {
     // Real local assets a project would commit by hand.
     await writeFile(path.join(thumbDir, "cli.svg"), "<svg></svg>", "utf8");
     await writeFile(path.join(thumbDir, "units.png"), "png-bytes", "utf8");
-    await writeFile(path.join(thumbDir, "units.svg"), "<svg>stale?</svg>", "utf8");
+    await writeFile(
+      path.join(thumbDir, "units.svg"),
+      "<svg>stale?</svg>",
+      "utf8",
+    );
     await writeFile(path.join(thumbDir, "notes.txt"), "not an image", "utf8");
     await mkdir(path.join(thumbDir, "docs.svg"));
   });
@@ -111,10 +130,14 @@ describe("resolveLocalThumbnail (local assets only)", () => {
   it("rejects paths escaping the thumbnail root", async () => {
     for (const evil of ["../../etc/passwd", "..\\..\\x", "/abs/path", ""]) {
       const r = await resolveLocalThumbnail(evil, opts());
-      assert.ok(!r.url.includes(".."), `must not escape root for ${JSON.stringify(evil)}`);
       assert.ok(
-        r.url === "./assets/thumbnail/placeholder.svg" || r.url.startsWith("./assets/thumbnail/"),
-        `must stay inside thumbnail dir for ${JSON.stringify(evil)}`
+        !r.url.includes(".."),
+        `must not escape root for ${JSON.stringify(evil)}`,
+      );
+      assert.ok(
+        r.url === "./assets/thumbnail/placeholder.svg" ||
+          r.url.startsWith("./assets/thumbnail/"),
+        `must stay inside thumbnail dir for ${JSON.stringify(evil)}`,
       );
     }
   });

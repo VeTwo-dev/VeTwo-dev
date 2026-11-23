@@ -9,7 +9,8 @@ const root = path.resolve(__dirname, "..");
 const readmeConfig = loadConfig("readme", {
   profileDir: "profile",
   output: "README.md",
-  header: "<!-- This file is generated from profile/*.md — do not edit directly. Run `pnpm readme` to regenerate. -->",
+  header:
+    "<!-- This file is generated from profile/*.md — do not edit directly. Run `pnpm readme` to regenerate. -->",
   order: [
     "01-hero.md",
     "02-about.md",
@@ -38,7 +39,8 @@ async function main() {
     // sequence.json entries carry position + filename number + generated flag.
     const sequenceConfig = loadConfig("sequence", { sequence: [] });
     const ORDER =
-      Array.isArray(sequenceConfig.sequence) && sequenceConfig.sequence.length > 0
+      Array.isArray(sequenceConfig.sequence) &&
+      sequenceConfig.sequence.length > 0
         ? [...sequenceConfig.sequence]
             .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
             .map((e) => e.file)
@@ -78,7 +80,10 @@ async function main() {
     }
     console.log(`→ ${path.relative(root, outFile)}`);
   } catch (err) {
-    console.error("Failed to build README:", err instanceof Error ? err.message : err);
+    console.error(
+      "Failed to build README:",
+      err instanceof Error ? err.message : err,
+    );
     process.exit(1);
   }
 }
@@ -89,11 +94,11 @@ export function resolveOrder(allMd, order) {
   const list = Array.isArray(order) ? order : [];
   return [
     ...list.filter((f) => allMd.includes(f)),
-    ...allMd
-      .filter((f) => !list.includes(f))
-      .sort(),
+    ...allMd.filter((f) => !list.includes(f)).sort(),
   ];
 }
 
-const isDirectRun = !!process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+const isDirectRun =
+  !!process.argv[1] &&
+  import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
 if (isDirectRun) await main();

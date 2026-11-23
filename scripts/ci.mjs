@@ -46,7 +46,9 @@ async function main() {
   }
   const all = [...PIPELINE_SCRIPTS, README_SCRIPT];
 
-  console.log(`[CI] Pipeline of ${PIPELINE_SCRIPTS.length} generator(s): ${PIPELINE_SCRIPTS.join(", ")}`);
+  console.log(
+    `[CI] Pipeline of ${PIPELINE_SCRIPTS.length} generator(s): ${PIPELINE_SCRIPTS.join(", ")}`,
+  );
   console.log(`[CI] Will run ${README_SCRIPT} last`);
 
   for (const script of all) {
@@ -76,5 +78,7 @@ async function main() {
   console.log("\n[CI] All profile automation completed successfully.");
 }
 
-const isDirectRun = !!process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+const isDirectRun =
+  !!process.argv[1] &&
+  import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
 if (isDirectRun) await main();

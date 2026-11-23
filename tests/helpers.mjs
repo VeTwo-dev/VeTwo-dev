@@ -36,7 +36,7 @@ export function assertSnapshotsEqual(before, after, label) {
   assert.deepEqual(
     [...after.entries()],
     [...before.entries()],
-    `${label}: files changed unexpectedly`
+    `${label}: files changed unexpectedly`,
   );
 }
 
@@ -57,7 +57,9 @@ export async function withLock(name, fn, { timeoutMs = 60000 } = {}) {
       break;
     } catch {
       if (Date.now() - start > timeoutMs) {
-        throw new Error(`timed out waiting for ${name} lock after ${timeoutMs}ms`);
+        throw new Error(
+          `timed out waiting for ${name} lock after ${timeoutMs}ms`,
+        );
       }
       await new Promise((r) => setTimeout(r, 25));
     }

@@ -9,24 +9,24 @@
     "sortBy": "pushed_at",
     "showTopics": 3,
     "descriptionMaxChars": 110,
-  "contributors": {
-    "output": "profile/contributors-generated.md",
-    "title": "Contributors",
-    "columns": 6,
-    "avatarSizePx": 64,
-    "maxContributors": 36,
-    "includeBots": false,
-    "perPage": 100,
-    "emptyMessage": "No contributors available yet — be the first to contribute.",
-    "colors": {
-      "text": "#ECFDF5",
-      "muted": "#A7B8AF",
-      "accent": "#10B981",
-      "surface": "#0D1511",
-      "border": "#121A16"
-    }
-  },
-  "card": {
+    "contributors": {
+      "output": "profile/contributors-generated.md",
+      "title": "Contributors",
+      "columns": 6,
+      "avatarSizePx": 64,
+      "maxContributors": 36,
+      "includeBots": false,
+      "perPage": 100,
+      "emptyMessage": "No contributors available yet — be the first to contribute.",
+      "colors": {
+        "text": "#ECFDF5",
+        "muted": "#A7B8AF",
+        "accent": "#10B981",
+        "surface": "#0D1511",
+        "border": "#121A16"
+      }
+    },
+    "card": {
       "colors": {
         "background": "#0D1511",
         "border": "#121A16",

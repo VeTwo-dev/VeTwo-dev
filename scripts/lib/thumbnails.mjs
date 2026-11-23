@@ -90,7 +90,10 @@ export async function resolveLocalThumbnail(repoName, options = {}) {
     const full = path.join(thumbDir, name);
     // Containment: the resolved path must stay inside the thumbnail dir.
     const resolved = path.resolve(full);
-    if (resolved !== path.join(thumbDirResolved, name) || !resolved.startsWith(thumbDirResolved + path.sep)) {
+    if (
+      resolved !== path.join(thumbDirResolved, name) ||
+      !resolved.startsWith(thumbDirResolved + path.sep)
+    ) {
       continue;
     }
     let isFile = false;
@@ -103,6 +106,8 @@ export async function resolveLocalThumbnail(repoName, options = {}) {
     candidates.push({ name, rank: extRank(ext) });
   }
   if (candidates.length === 0) return fallback();
-  candidates.sort((a, b) => (a.rank !== b.rank ? a.rank - b.rank : a.name.localeCompare(b.name)));
+  candidates.sort((a, b) =>
+    a.rank !== b.rank ? a.rank - b.rank : a.name.localeCompare(b.name),
+  );
   return { url: `./${dir}/${candidates[0].name}`, kind: "local" };
 }

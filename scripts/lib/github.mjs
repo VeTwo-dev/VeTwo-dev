@@ -11,7 +11,13 @@ const githubConfig = loadConfig("github", {
   sort: "pushed",
   repoType: "all",
   maxRepos: 300,
-  timeoutsMs: { repos: 8000, readme: 4000, contentHead: 3000, thumbnailHead: 3000, thumbnailDownload: 8000 },
+  timeoutsMs: {
+    repos: 8000,
+    readme: 4000,
+    contentHead: 3000,
+    thumbnailHead: 3000,
+    thumbnailDownload: 8000,
+  },
   maxThumbnailBytes: 819200,
 });
 const USERNAME = profileConfig.username || "VeTwo-dev";
@@ -21,13 +27,19 @@ const DEFAULT_API_BASE = "https://api.github.com";
 // here so every generator reuses one client and tests can point the whole
 // generator at a local fixture server without any live network access.
 export function resolveApiBase(override) {
-  const raw = override || process.env.GITHUB_API_URL || process.env.GITHUB_API_BASE || DEFAULT_API_BASE;
+  const raw =
+    override ||
+    process.env.GITHUB_API_URL ||
+    process.env.GITHUB_API_BASE ||
+    DEFAULT_API_BASE;
   return String(raw).replace(/\/+$/, "");
 }
 
 export function getTimeout(name, fallback) {
   const timeouts = githubConfig.timeoutsMs || {};
-  return typeof timeouts[name] === "number" && timeouts[name] > 0 ? timeouts[name] : fallback;
+  return typeof timeouts[name] === "number" && timeouts[name] > 0
+    ? timeouts[name]
+    : fallback;
 }
 
 export function sanitize(str, token) {
@@ -70,7 +82,8 @@ export async function fetchAllRepos(token, { apiBase } = {}) {
   const sort = githubConfig.sort || "pushed";
   const type = githubConfig.repoType || "all";
   const maxRepos = githubConfig.maxRepos || 300;
-  const timeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.repos) || 8000;
+  const timeout =
+    (githubConfig.timeoutsMs && githubConfig.timeoutsMs.repos) || 8000;
   let url = `${base}/users/${USERNAME}/repos?per_page=${perPage}&sort=${sort}&type=${type}`;
   let all = [];
   while (url) {
@@ -78,7 +91,10 @@ export async function fetchAllRepos(token, { apiBase } = {}) {
     if (!res.ok) {
       const text = await res.text().catch(() => res.statusText);
       const sanitized = token ? sanitize(text, token) : text;
-      if (res.status === 403 && res.headers.get("x-ratelimit-remaining") === "0") {
+      if (
+        res.status === 403 &&
+        res.headers.get("x-ratelimit-remaining") === "0"
+      ) {
         throw new Error(`GitHub API rate limited: ${sanitized}`);
       }
       throw new Error(`GitHub API failed (${res.status}): ${sanitized}`);
@@ -105,7 +121,11 @@ export function selectRepos(repos, options = {}) {
     filter = {},
   } = options;
   const withoutProfile = excludeProfile
-    ? repos.filter((r) => String(r.name || "").toLowerCase() !== String(username || "").toLowerCase())
+    ? repos.filter(
+        (r) =>
+          String(r.name || "").toLowerCase() !==
+          String(username || "").toLowerCase(),
+      )
     : repos;
   const base = withoutProfile.length >= count ? withoutProfile : repos;
   const excludePrivate = filter.excludePrivate !== false;
@@ -113,7 +133,10 @@ export function selectRepos(repos, options = {}) {
   const excludeArchived = filter.excludeArchived !== false;
   const publicRepos = excludePrivate ? base.filter((r) => !r.private) : base;
   const candidatesPrimary = base.filter(
-    (r) => !(excludeForks && r.fork) && !(excludeArchived && r.archived) && !(excludePrivate && r.private)
+    (r) =>
+      !(excludeForks && r.fork) &&
+      !(excludeArchived && r.archived) &&
+      !(excludePrivate && r.private),
   );
   const candidates =
     candidatesPrimary.length >= count
@@ -160,7 +183,11 @@ export function selectRepos(repos, options = {}) {
 
 export function escapeHtml(str) {
   if (!str) return "";
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 // Card-URL allowlist: local profile assets ("./...") or absolute HTTPS only.
@@ -181,7 +208,9 @@ export function isSafeCardUrl(url) {
 // CSS line-clamping, so the generator itself guarantees short text. The
 // result never exceeds maxChars (ellipsis included).
 export function truncateText(text, maxChars = 110) {
-  const s = String(text ?? "").trim().replace(/\s+/g, " ");
+  const s = String(text ?? "")
+    .trim()
+    .replace(/\s+/g, " ");
   if (s.length <= maxChars) return s;
   if (maxChars <= 3) return s.slice(0, maxChars);
   const cut = s.slice(0, maxChars - 3);
@@ -194,7 +223,11 @@ export function formatDate(dateStr) {
   if (!dateStr) return "";
   try {
     const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+    return d.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   } catch {
     return dateStr;
   }
@@ -255,9 +288,12 @@ export function extractFirstParagraph(markdown, maxLen = 120) {
       i = j;
       continue;
     }
-    const cutOff = lines.slice(j).some((_, k) => !isBoundaryLine(rawLines[j + k], lines[j + k]));
+    const cutOff = lines
+      .slice(j)
+      .some((_, k) => !isBoundaryLine(rawLines[j + k], lines[j + k]));
     let text = paragraph;
-    if (text.length > maxLen) text = `${text.slice(0, maxLen - 3).trimEnd()}...`;
+    if (text.length > maxLen)
+      text = `${text.slice(0, maxLen - 3).trimEnd()}...`;
     else if (cutOff && !/[.!?…:]$/.test(text)) text = `${text}...`;
     return text;
   }
@@ -270,14 +306,21 @@ export async function getRepoDescription(repo, token) {
     return stripMarkdownInline(repo.description);
   }
   const headers = getHeaders(token);
-  const readmeTimeout = (githubConfig.timeoutsMs && githubConfig.timeoutsMs.readme) || 4000;
+  const readmeTimeout =
+    (githubConfig.timeoutsMs && githubConfig.timeoutsMs.readme) || 4000;
   // 1. Try the API README endpoint (base64 payload).
   try {
-    const res = await fetchWithTimeout(`https://api.github.com/repos/${USERNAME}/${repo.name}/readme`, { headers }, readmeTimeout);
+    const res = await fetchWithTimeout(
+      `https://api.github.com/repos/${USERNAME}/${repo.name}/readme`,
+      { headers },
+      readmeTimeout,
+    );
     if (res.ok) {
       const data = await res.json();
       if (data.content) {
-        const first = extractFirstParagraph(Buffer.from(data.content, "base64").toString("utf8"));
+        const first = extractFirstParagraph(
+          Buffer.from(data.content, "base64").toString("utf8"),
+        );
         if (first) return first;
       }
     }
@@ -300,7 +343,10 @@ export async function getRepoDescription(repo, token) {
   }
   // 3. Generic fallback based on language/topics (deterministic, no network).
   const lang = repo.language ? ` ${repo.language}` : "";
-  const topics = Array.isArray(repo.topics) && repo.topics.length > 0 ? ` · ${repo.topics.slice(0, 2).join(", ")}` : "";
+  const topics =
+    Array.isArray(repo.topics) && repo.topics.length > 0
+      ? ` · ${repo.topics.slice(0, 2).join(", ")}`
+      : "";
   if (lang || topics) {
     return `${repo.name} —${lang} project${topics}.`;
   }

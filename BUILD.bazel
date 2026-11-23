@@ -1,0 +1,23 @@
+# Bazel build for github-profile.
+#
+# GitHub profile generator (snake animation, README, project cards). Package
+# marker only — no build targets reproduced in Bazel.
+
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+
+npm_link_all_packages()
+
+filegroup(
+    name = "package",
+    srcs = glob(["*.mjs", "*.json", "*.md", "tests/**/*", "scripts/**/*"], allow_empty = True),
+    visibility = ["//visibility:public"],
+)
+
+npm_package(
+    name = "pkg",
+    srcs = [":package"],
+    package = "github-profile",
+    version = "0.0.0",
+    visibility = ["//visibility:public"],
+)

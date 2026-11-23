@@ -30,7 +30,9 @@ const RECENT_PALETTE = { ...SHARED_PALETTE, ...RECENT_OVERRIDE };
 const LEGACY_PALETTE = ["#252525", "#58a6ff", "#c9d1d9", "#8957e5"];
 
 describe("recent-projects branding config", () => {
-  const projects = JSON.parse(readFileSync(path.join(ROOT, "config", "projects.json"), "utf8"));
+  const projects = JSON.parse(
+    readFileSync(path.join(ROOT, "config", "projects.json"), "utf8"),
+  );
 
   it("shared card colors stay on the VeTwo palette", () => {
     assert.deepEqual(projects.card.colors, SHARED_PALETTE);
@@ -42,7 +44,10 @@ describe("recent-projects branding config", () => {
 
   it("recent section uses the centered h2 header", () => {
     const header = projects.recent?.headerHtml || "";
-    assert.ok(header.includes("<h2>🚀 Featured Ecosystem Repositories</h2>"), "header must carry the branded h2");
+    assert.ok(
+      header.includes("<h2>🚀 Featured Ecosystem Repositories</h2>"),
+      "header must carry the branded h2",
+    );
     assert.ok(header.includes('align="center"'), "header must be centered");
   });
 
@@ -57,17 +62,28 @@ describe("recent-projects generated output", () => {
 
   it("opens with the branded header block, not a markdown title", () => {
     assert.ok(
-      generated.includes("<div align=\"center\">\n  <h2>🚀 Featured Ecosystem Repositories</h2>\n</div>"),
-      "generated file must start with the branded header"
+      generated.includes(
+        '<div align="center">\n  <h2>🚀 Featured Ecosystem Repositories</h2>\n</div>',
+      ),
+      "generated file must start with the branded header",
     );
   });
 
   it("renders one comment per card in order", () => {
     for (const n of [1, 2, 3, 4]) {
-      assert.ok(generated.includes(`<!-- Project Card ${n} -->`), `missing comment for card ${n}`);
+      assert.ok(
+        generated.includes(`<!-- Project Card ${n} -->`),
+        `missing comment for card ${n}`,
+      );
     }
-    const positions = [1, 2, 3, 4].map((n) => generated.indexOf(`<!-- Project Card ${n} -->`));
-    assert.deepEqual([...positions].sort((a, b) => a - b), positions, "card comments must be ordered");
+    const positions = [1, 2, 3, 4].map((n) =>
+      generated.indexOf(`<!-- Project Card ${n} -->`),
+    );
+    assert.deepEqual(
+      [...positions].sort((a, b) => a - b),
+      positions,
+      "card comments must be ordered",
+    );
   });
 
   it("uses the VeTwo palette and none of the legacy palette", () => {
@@ -75,46 +91,79 @@ describe("recent-projects generated output", () => {
       assert.ok(generated.includes(color), `generated file must use ${color}`);
     }
     for (const color of LEGACY_PALETTE) {
-      assert.ok(!generated.includes(color), `generated file must not use legacy ${color}`);
+      assert.ok(
+        !generated.includes(color),
+        `generated file must not use legacy ${color}`,
+      );
     }
   });
 
   it("keeps the max-width 2-column table", () => {
-    assert.ok(generated.includes('<table width="100%"'), "table must span max width");
+    assert.ok(
+      generated.includes('<table width="100%"'),
+      "table must span max width",
+    );
     assert.ok(generated.includes("<tbody>"), "table must wrap rows in tbody");
-    assert.equal((generated.match(/<td width="50%"/g) || []).length, 4, "must render 4 half-width cells");
+    assert.equal(
+      (generated.match(/<td width="50%"/g) || []).length,
+      4,
+      "must render 4 half-width cells",
+    );
   });
 
   it("uses h3 titles, sub language labels and thumbnail alts", () => {
-    assert.equal((generated.match(/<h3 style="font-size:15px;/g) || []).length, 4, "must render 4 h3 titles");
-    assert.ok(generated.includes(" project thumbnail\""), "thumbnails must have meaningful alt text");
+    assert.equal(
+      (generated.match(/<h3 style="font-size:15px;/g) || []).length,
+      4,
+      "must render 4 h3 titles",
+    );
+    assert.ok(
+      generated.includes(' project thumbnail"'),
+      "thumbnails must have meaningful alt text",
+    );
   });
 
   it("does not depend on sanitizer-stripped CSS for truncation", () => {
-    assert.ok(!generated.includes("-webkit-box"), "must not rely on -webkit-box");
-    assert.ok(!generated.includes("-webkit-line-clamp"), "must not rely on -webkit-line-clamp");
-    assert.ok(generated.includes("overflow:hidden"), "must keep overflow guard");
+    assert.ok(
+      !generated.includes("-webkit-box"),
+      "must not rely on -webkit-box",
+    );
+    assert.ok(
+      !generated.includes("-webkit-line-clamp"),
+      "must not rely on -webkit-line-clamp",
+    );
+    assert.ok(
+      generated.includes("overflow:hidden"),
+      "must keep overflow guard",
+    );
   });
 
   it("links and images use only safe URLs", () => {
-    const hrefs = [...generated.matchAll(/(?:href|src)="([^"]*)"/g)].map((m) => m[1]);
+    const hrefs = [...generated.matchAll(/(?:href|src)="([^"]*)"/g)].map(
+      (m) => m[1],
+    );
     assert.ok(hrefs.length > 0, "expected links and images");
     for (const url of hrefs) {
       assert.ok(
         url.startsWith("https://") || url.startsWith("./"),
-        `unsafe URL must never render: ${url}`
+        `unsafe URL must never render: ${url}`,
       );
     }
   });
 });
 
 describe("starred-projects branding config", () => {
-  const projects = JSON.parse(readFileSync(path.join(ROOT, "config", "projects.json"), "utf8"));
+  const projects = JSON.parse(
+    readFileSync(path.join(ROOT, "config", "projects.json"), "utf8"),
+  );
 
   it("starred section uses the centered h2 header", () => {
     assert.equal(projects.starred?.title, "⭐ Featured Repositories");
     const header = projects.starred?.headerHtml || "";
-    assert.ok(header.includes("<h2>⭐ Featured Repositories</h2>"), "header must carry the branded h2");
+    assert.ok(
+      header.includes("<h2>⭐ Featured Repositories</h2>"),
+      "header must carry the branded h2",
+    );
     assert.ok(header.includes('align="center"'), "header must be centered");
   });
 
@@ -124,22 +173,37 @@ describe("starred-projects branding config", () => {
 });
 
 describe("starred-projects generated output", () => {
-  const generatedPath = path.join(ROOT, "profile", "06-starred-projects-generated.md");
+  const generatedPath = path.join(
+    ROOT,
+    "profile",
+    "06-starred-projects-generated.md",
+  );
   const generated = readFileSync(generatedPath, "utf8");
 
   it("opens with the branded header block, not a markdown title", () => {
     assert.ok(
-      generated.includes("<div align=\"center\">\n  <h2>⭐ Featured Repositories</h2>\n</div>"),
-      "generated file must start with the branded header"
+      generated.includes(
+        '<div align="center">\n  <h2>⭐ Featured Repositories</h2>\n</div>',
+      ),
+      "generated file must start with the branded header",
     );
   });
 
   it("renders one comment per card in order", () => {
     for (const n of [1, 2, 3]) {
-      assert.ok(generated.includes(`<!-- Starred Project Card ${n} -->`), `missing comment for card ${n}`);
+      assert.ok(
+        generated.includes(`<!-- Starred Project Card ${n} -->`),
+        `missing comment for card ${n}`,
+      );
     }
-    const positions = [1, 2, 3].map((n) => generated.indexOf(`<!-- Starred Project Card ${n} -->`));
-    assert.deepEqual([...positions].sort((a, b) => a - b), positions, "card comments must be ordered");
+    const positions = [1, 2, 3].map((n) =>
+      generated.indexOf(`<!-- Starred Project Card ${n} -->`),
+    );
+    assert.deepEqual(
+      [...positions].sort((a, b) => a - b),
+      positions,
+      "card comments must be ordered",
+    );
   });
 
   it("uses the VeTwo palette and none of the legacy palette", () => {
@@ -147,15 +211,36 @@ describe("starred-projects generated output", () => {
       assert.ok(generated.includes(color), `generated file must use ${color}`);
     }
     for (const color of LEGACY_PALETTE) {
-      assert.ok(!generated.includes(color), `generated file must not use legacy ${color}`);
+      assert.ok(
+        !generated.includes(color),
+        `generated file must not use legacy ${color}`,
+      );
     }
   });
 
   it("keeps the max-width 3-column table with 14px titles and 6px cells", () => {
-    assert.ok(generated.includes('<table width="100%"'), "table must span max width");
-    assert.ok(generated.includes("table-layout:fixed"), "table must fix column layout");
-    assert.equal((generated.match(/<td width="33.33%"/g) || []).length, 3, "must render 3 third-width cells");
-    assert.equal((generated.match(/font-size:14px/g) || []).length, 3, "must render 3 titles at 14px");
-    assert.equal((generated.match(/padding:6px/g) || []).length, 3, "must render 3 cells with 6px padding");
+    assert.ok(
+      generated.includes('<table width="100%"'),
+      "table must span max width",
+    );
+    assert.ok(
+      generated.includes("table-layout:fixed"),
+      "table must fix column layout",
+    );
+    assert.equal(
+      (generated.match(/<td width="33.33%"/g) || []).length,
+      3,
+      "must render 3 third-width cells",
+    );
+    assert.equal(
+      (generated.match(/font-size:14px/g) || []).length,
+      3,
+      "must render 3 titles at 14px",
+    );
+    assert.equal(
+      (generated.match(/padding:6px/g) || []).length,
+      3,
+      "must render 3 cells with 6px padding",
+    );
   });
 });

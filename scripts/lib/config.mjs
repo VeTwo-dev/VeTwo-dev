@@ -11,10 +11,16 @@ const cache = new Map();
 
 function deepMerge(base, override) {
   if (Array.isArray(base)) return override !== undefined ? override : base;
-  if (base !== null && typeof base === "object" && override !== null && typeof override === "object") {
+  if (
+    base !== null &&
+    typeof base === "object" &&
+    override !== null &&
+    typeof override === "object"
+  ) {
     const out = { ...base };
     for (const key of Object.keys(override)) {
-      out[key] = key in out ? deepMerge(out[key], override[key]) : override[key];
+      out[key] =
+        key in out ? deepMerge(out[key], override[key]) : override[key];
     }
     return out;
   }
@@ -32,7 +38,9 @@ export function loadConfig(name, defaults = {}) {
       fileData = JSON.parse(raw);
     }
   } catch (err) {
-    console.error(`[config] Warning: could not load ${name}.json, using defaults: ${err instanceof Error ? err.message : err}`);
+    console.error(
+      `[config] Warning: could not load ${name}.json, using defaults: ${err instanceof Error ? err.message : err}`,
+    );
     fileData = {};
   }
   const merged = deepMerge(defaults, fileData);

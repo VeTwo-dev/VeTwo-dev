@@ -20,15 +20,15 @@ authoritative input set. When in doubt, this file wins over assumptions.
 
 ## Ownership table
 
-| Output | Sole writer | Authoritative inputs |
-|---|---|---|
-| `README.md` | `scripts/build-readme.mjs` | `profile/*.md` in `config/sequence.json` order |
-| `profile/05-projects-generated.md` | `scripts/generate-project-cards.mjs` | GitHub repos API + `config/projects.json` + `assets/thumbnail/*` |
-| `profile/06-starred-projects-generated.md` | `scripts/generate-starred-projects.mjs` | GitHub repos API + `config/projects.json` + `assets/thumbnail/*` |
-| `profile/contributors-generated.md` | `scripts/generate-contributors.mjs` | GitHub contributors API over the eligible repositories of `config/profile.json` + `config/projects.json` |
-| `assets/github/*.svg` | `scripts/generate-snake.mjs` | GitHub contributions API + `config/snake.json` |
-| `assets/thumbnail/<repo>.<ext>` | committed by hand (manual project asset) | — (resolved read-only via `resolveLocalThumbnail`) |
-| `assets/thumbnail/placeholder.svg` | tracked fallback asset, committed by hand | — (never auto-written) |
+| Output                                     | Sole writer                               | Authoritative inputs                                                                                     |
+| ------------------------------------------ | ----------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `README.md`                                | `scripts/build-readme.mjs`                | `profile/*.md` in `config/sequence.json` order                                                           |
+| `profile/05-projects-generated.md`         | `scripts/generate-project-cards.mjs`      | GitHub repos API + `config/projects.json` + `assets/thumbnail/*`                                         |
+| `profile/06-starred-projects-generated.md` | `scripts/generate-starred-projects.mjs`   | GitHub repos API + `config/projects.json` + `assets/thumbnail/*`                                         |
+| `profile/contributors-generated.md`        | `scripts/generate-contributors.mjs`       | GitHub contributors API over the eligible repositories of `config/profile.json` + `config/projects.json` |
+| `assets/github/*.svg`                      | `scripts/generate-snake.mjs`              | GitHub contributions API + `config/snake.json`                                                           |
+| `assets/thumbnail/<repo>.<ext>`            | committed by hand (manual project asset)  | — (resolved read-only via `resolveLocalThumbnail`)                                                       |
+| `assets/thumbnail/placeholder.svg`         | tracked fallback asset, committed by hand | — (never auto-written)                                                                                   |
 
 ## Fallback policies
 
@@ -81,6 +81,6 @@ after the card generators.
   no GitHub identity to aggregate or link.
 - **Failure policy**: a bad token (401) or a rate limit (403) fails the run
   before any write. A repository whose endpoint is unavailable (404/204/410
-  or a timeout) is skipped with a sanitized warning, but if *every* eligible
+  or a timeout) is skipped with a sanitized warning, but if _every_ eligible
   repository is unavailable the run fails instead of overwriting a good
   roster with an empty one.

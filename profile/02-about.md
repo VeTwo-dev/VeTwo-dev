@@ -49,6 +49,6 @@ Instead of monolithic systems, we architect a **modular, high-performance ecosys
 
 <br />
 
-> 💡 *Built primarily with **TypeScript & Rust** — adhering to UNIX philosophy: small, single-purpose software primitives designed to do one thing with medical-grade precision.*
+> 💡 _Built primarily with **TypeScript & Rust** — adhering to UNIX philosophy: small, single-purpose software primitives designed to do one thing with medical-grade precision._
 
 ---

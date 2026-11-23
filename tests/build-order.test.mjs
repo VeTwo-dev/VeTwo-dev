@@ -22,7 +22,10 @@ describe("resolveOrder", () => {
   });
 
   it("skips pinned files that do not exist", () => {
-    assert.deepEqual(resolveOrder(["01-hero.md"], ["01-hero.md", "missing.md"]), ["01-hero.md"]);
+    assert.deepEqual(
+      resolveOrder(["01-hero.md"], ["01-hero.md", "missing.md"]),
+      ["01-hero.md"],
+    );
   });
 
   it("handles empty or invalid order input", () => {
@@ -37,11 +40,18 @@ describe("config/sequence.json (source of truth for section order)", () => {
 
   it("has unique positions covering every profile file exactly once", () => {
     const positions = seq.map((e) => e.position);
-    assert.equal(new Set(positions).size, positions.length, "positions must be unique");
+    assert.equal(
+      new Set(positions).size,
+      positions.length,
+      "positions must be unique",
+    );
     const files = seq.map((e) => e.file);
     assert.equal(new Set(files).size, files.length, "files must be unique");
     for (const e of seq) {
-      assert.ok(existsSync(path.join(ROOT, "profile", e.file)), `${e.file} must exist`);
+      assert.ok(
+        existsSync(path.join(ROOT, "profile", e.file)),
+        `${e.file} must exist`,
+      );
     }
   });
 
@@ -52,14 +62,18 @@ describe("config/sequence.json (source of truth for section order)", () => {
       assert.ok(e.generator, `${e.file} must name its generator`);
       assert.ok(
         existsSync(path.join(ROOT, e.generator)),
-        `${e.generator} must exist`
+        `${e.generator} must exist`,
       );
     }
   });
 
   it("matches the README builder fallback order in config/readme.json", () => {
-    const readme = JSON.parse(readFileSync(path.join(ROOT, "config", "readme.json"), "utf8"));
-    const byPosition = [...seq].sort((a, b) => a.position - b.position).map((e) => e.file);
+    const readme = JSON.parse(
+      readFileSync(path.join(ROOT, "config", "readme.json"), "utf8"),
+    );
+    const byPosition = [...seq]
+      .sort((a, b) => a.position - b.position)
+      .map((e) => e.file);
     assert.deepEqual(byPosition, readme.order);
   });
 });

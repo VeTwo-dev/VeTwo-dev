@@ -12,28 +12,65 @@ import {
   isSafeCardUrl,
   truncateText,
 } from "./lib/github.mjs";
-import { resolveLocalThumbnail, getPlaceholderPath as getLocalPlaceholder } from "./lib/thumbnails.mjs";
+import {
+  resolveLocalThumbnail,
+  getPlaceholderPath as getLocalPlaceholder,
+} from "./lib/thumbnails.mjs";
 import { loadConfig } from "./lib/config.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
 const projectsConfig = loadConfig("projects", {
-  recent: { count: 4, output: "profile/05-projects-generated.md", title: "Recent Projects", headerHtml: "<div align=\"center\">\n  <h2>🚀 Featured Ecosystem Repositories</h2>\n</div>", columns: 2, showTopics: 3, descriptionMaxChars: 110, card: { colors: { background: "#0D1511", border: "#121A16", meta: "#A7B8AF", date: "#6EE7B7" } } },
+  recent: {
+    count: 4,
+    output: "profile/05-projects-generated.md",
+    title: "Recent Projects",
+    headerHtml:
+      '<div align="center">\n  <h2>🚀 Featured Ecosystem Repositories</h2>\n</div>',
+    columns: 2,
+    showTopics: 3,
+    descriptionMaxChars: 110,
+    card: {
+      colors: {
+        background: "#0D1511",
+        border: "#121A16",
+        meta: "#A7B8AF",
+        date: "#6EE7B7",
+      },
+    },
+  },
   card: {
     heightPx: 280,
     thumbnailHeightPx: 120,
     descriptionLines: 2,
     descriptionLineHeightPx: 18,
-    colors: { border: "#10B98133", background: "#0A0F0D", name: "#10B981", description: "#ECFDF5", meta: "#6EE7B7", date: "#4B5563", link: "#10B981" },
+    colors: {
+      border: "#10B98133",
+      background: "#0A0F0D",
+      name: "#10B981",
+      description: "#ECFDF5",
+      meta: "#6EE7B7",
+      date: "#4B5563",
+      link: "#10B981",
+    },
     linkText: "View Repository →",
     dateIcon: "🕓",
   },
 });
 const profileConfig = loadConfig("profile", {
-  filter: { excludeForks: true, excludeArchived: true, excludePrivate: true, fallbackToPublic: true, fallbackToAll: true },
+  filter: {
+    excludeForks: true,
+    excludeArchived: true,
+    excludePrivate: true,
+    fallbackToPublic: true,
+    fallbackToAll: true,
+  },
 });
-const outFile = path.join(root, projectsConfig.recent?.output || "profile/05-projects-generated.md");
+const outFile = path.join(
+  root,
+  projectsConfig.recent?.output || "profile/05-projects-generated.md",
+);
 const COUNT = projectsConfig.recent?.count || 4;
 // Recent-only visual overrides merge over the shared card block, so the
 // starred section keeps its own approved styling untouched.
@@ -42,7 +79,10 @@ const recentCardOverride = (projectsConfig.recent || {}).card || {};
 const card = {
   ...sharedCard,
   ...recentCardOverride,
-  colors: { ...(sharedCard.colors || {}), ...(recentCardOverride.colors || {}) },
+  colors: {
+    ...(sharedCard.colors || {}),
+    ...(recentCardOverride.colors || {}),
+  },
 };
 const DESCRIPTION_MAX_CHARS = projectsConfig.recent?.descriptionMaxChars ?? 110;
 const ORG_URL = `https://github.com/${USER}`;
@@ -81,11 +121,15 @@ export function generateCard(repo, thumbnail, description, colWidth) {
   const showTopics = projectsConfig.recent?.showTopics ?? 3;
 
   const name = escapeHtml(repo.name);
-  const desc = description || card.fallbackDescription || "No description provided.";
+  const desc =
+    description || card.fallbackDescription || "No description provided.";
   const rawUrl = repo.html_url;
   const url = isSafeCardUrl(rawUrl) ? rawUrl : ORG_URL;
   const lang = repo.language ? escapeHtml(repo.language) : null;
-  const topics = Array.isArray(repo.topics) && repo.topics.length > 0 ? repo.topics.slice(0, showTopics) : [];
+  const topics =
+    Array.isArray(repo.topics) && repo.topics.length > 0
+      ? repo.topics.slice(0, showTopics)
+      : [];
   const pushed = repo.pushed_at ? formatDate(repo.pushed_at) : null;
 
   const rawThumb = thumbnail || getLocalPlaceholder();
@@ -95,15 +139,24 @@ export function generateCard(repo, thumbnail, description, colWidth) {
 
   const langTopicParts = [];
   if (lang) langTopicParts.push(`<span>${lang}</span>`);
-  if (topics.length > 0) langTopicParts.push(`<span>${topics.map((t) => escapeHtml(t)).join(" · ")}</span>`);
-  const langTopicHtml = langTopicParts.length ? `<div style="font-size:11px; color:${metaColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${langTopicParts.join(" · ")}</div>` : "";
-  const dateHtml = pushed ? `<div style="font-size:10px; color:${dateColor}; margin-top:2px;">${dateIcon} ${escapeHtml(pushed)}</div>` : "";
+  if (topics.length > 0)
+    langTopicParts.push(
+      `<span>${topics.map((t) => escapeHtml(t)).join(" · ")}</span>`,
+    );
+  const langTopicHtml = langTopicParts.length
+    ? `<div style="font-size:11px; color:${metaColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${langTopicParts.join(" · ")}</div>`
+    : "";
+  const dateHtml = pushed
+    ? `<div style="font-size:10px; color:${dateColor}; margin-top:2px;">${dateIcon} ${escapeHtml(pushed)}</div>`
+    : "";
   const descHeight = descLines * descLineHeight;
   // Emit only non-empty meta lines, always followed by the action link on
   // its own line. A whitespace-only or empty line would terminate GitHub's
   // HTML block, and every following indented line would then render as a
   // literal code block instead of repository cards.
-  const metaLines = [langTopicHtml, dateHtml].filter((s) => typeof s === "string" && s.trim() !== "");
+  const metaLines = [langTopicHtml, dateHtml].filter(
+    (s) => typeof s === "string" && s.trim() !== "",
+  );
   const actionLine = `          <a href="${url}" style="font-size:12px; color:${linkColor}; font-weight:600; text-decoration:none; display:inline-block; margin-top:6px;">${linkText}</a>`;
 
   return `    <td width="${widthAttr}" valign="top" style="padding:8px;">
@@ -130,8 +183,12 @@ async function main() {
       process.exit(1);
     }
     const latest = selectLatestRepos(allRepos);
-    console.log(`[projects] Found ${allRepos.length}, selected ${latest.length}: ${latest.map((r) => r.name).join(", ")}`);
-    latest.forEach((r) => console.log(` - ${r.name} (pushed_at: ${r.pushed_at})`));
+    console.log(
+      `[projects] Found ${allRepos.length}, selected ${latest.length}: ${latest.map((r) => r.name).join(", ")}`,
+    );
+    latest.forEach((r) =>
+      console.log(` - ${r.name} (pushed_at: ${r.pushed_at})`),
+    );
 
     const withThumbs = [];
     for (const repo of latest) {
@@ -140,7 +197,9 @@ async function main() {
       // no downloading, no generation — see scripts/lib/thumbnails.mjs.
       const resolved = await resolveLocalThumbnail(repo.name);
       const finalThumb = resolved.url;
-      console.log(`[projects] thumbnail for ${repo.name}: ${finalThumb} (${resolved.kind})`);
+      console.log(
+        `[projects] thumbnail for ${repo.name}: ${finalThumb} (${resolved.kind})`,
+      );
       const desc = await getDescriptionWithFallback(repo, token);
       withThumbs.push({ repo, thumbnail: finalThumb, description: desc });
     }
@@ -149,9 +208,11 @@ async function main() {
     const headerHtml = projectsConfig.recent?.headerHtml;
     const columns = Math.max(1, projectsConfig.recent?.columns || 2);
     const colWidth = `${parseFloat((100 / columns).toFixed(2))}%`;
-    let table = "<!-- This section is generated automatically. Do not edit directly. -->\n";
+    let table =
+      "<!-- This section is generated automatically. Do not edit directly. -->\n";
     table += headerHtml ? `${headerHtml}\n\n` : `## ${title}\n\n`;
-    table += '<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse;">\n';
+    table +=
+      '<table width="100%" cellspacing="0" cellpadding="0" style="width:100%; border-collapse:collapse;">\n';
     table += "  <tbody>\n";
     let cardNumber = 0;
     for (let i = 0; i < withThumbs.length; i += columns) {
@@ -161,8 +222,15 @@ async function main() {
         if (item) {
           cardNumber += 1;
           table += `      <!-- Project Card ${cardNumber} -->\n`;
-          table += generateCard(item.repo, item.thumbnail, item.description, colWidth) + "\n";
-        } else table += `      <td width="${colWidth}" valign="top" style="padding:8px;"></td>\n`;
+          table +=
+            generateCard(
+              item.repo,
+              item.thumbnail,
+              item.description,
+              colWidth,
+            ) + "\n";
+        } else
+          table += `      <td width="${colWidth}" valign="top" style="padding:8px;"></td>\n`;
       }
       table += "    </tr>\n";
     }
@@ -171,9 +239,13 @@ async function main() {
 
     await mkdir(path.dirname(outFile), { recursive: true });
     await writeFile(outFile, table, "utf8");
-    console.log(`[projects] ✓ Generated ${withThumbs.length} cards → ${path.relative(root, outFile)}`);
+    console.log(
+      `[projects] ✓ Generated ${withThumbs.length} cards → ${path.relative(root, outFile)}`,
+    );
     withThumbs.forEach(({ repo, thumbnail }) => {
-      console.log(` - ${repo.name}: desc=${repo.description ? "yes" : "no"}, thumb=${thumbnail ? "yes" : "no"} ✓`);
+      console.log(
+        ` - ${repo.name}: desc=${repo.description ? "yes" : "no"}, thumb=${thumbnail ? "yes" : "no"} ✓`,
+      );
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -182,5 +254,7 @@ async function main() {
   }
 }
 
-const isDirectRun = !!process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+const isDirectRun =
+  !!process.argv[1] &&
+  import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
 if (isDirectRun) await main();

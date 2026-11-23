@@ -17,16 +17,29 @@ const snakeConfig = loadConfig("snake", {
   sizes: { sizeCell: 16, sizeDot: 12, sizeDotBorderRadius: 2 },
   animation: { stepDurationMs: 100, frameByStep: 1 },
   outputs: [
-    { format: "svg", drawOptions: { palette: "github", color_snake: "#8957e5" } },
-    { format: "svg", drawOptions: { palette: "github-dark", color_snake: "#8957e5" } },
+    {
+      format: "svg",
+      drawOptions: { palette: "github", color_snake: "#8957e5" },
+    },
+    {
+      format: "svg",
+      drawOptions: { palette: "github-dark", color_snake: "#8957e5" },
+    },
   ],
   palettes: {},
 });
 const profileConfig = loadConfig("profile", { username: "VeTwo-dev" });
 const outputDir = path.join(root, snakeConfig.outputDir || "assets/github");
 
-const lightOutput = path.join(root, snakeConfig.lightOutput || "assets/github/github-contribution-grid-snake.svg");
-const darkOutput = path.join(root, snakeConfig.darkOutput || "assets/github/github-contribution-grid-snake-dark.svg");
+const lightOutput = path.join(
+  root,
+  snakeConfig.lightOutput || "assets/github/github-contribution-grid-snake.svg",
+);
+const darkOutput = path.join(
+  root,
+  snakeConfig.darkOutput ||
+    "assets/github/github-contribution-grid-snake-dark.svg",
+);
 
 // Palette definitions from config/snake.json (mirroring generate-snake-animation cli palettes).
 // Needed at runtime because the library's DrawOptions expects full color objects,
@@ -46,8 +59,13 @@ function resolveDrawOptions(drawOptions) {
     ...drawOptions,
     // Ensure both naming conventions are satisfied:
     // spec requires color_snake, library requires colorSnake
-    colorSnake: drawOptions.color_snake ?? drawOptions.colorSnake ?? palette.colorSnake ?? defaultSnakeColor,
-    color_snake: drawOptions.color_snake ?? drawOptions.colorSnake ?? defaultSnakeColor,
+    colorSnake:
+      drawOptions.color_snake ??
+      drawOptions.colorSnake ??
+      palette.colorSnake ??
+      defaultSnakeColor,
+    color_snake:
+      drawOptions.color_snake ?? drawOptions.colorSnake ?? defaultSnakeColor,
     // Ensure palette stays present for spec compliance
     palette: drawOptions.palette,
   };
@@ -96,7 +114,11 @@ function loadTokenFromEnvFiles() {
 
 function getTrackedFiles() {
   try {
-    const out = execSync("git ls-files", { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
+    const out = execSync("git ls-files", {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
     return out
       .split("\n")
       .map((s) => s.trim())
@@ -121,7 +143,20 @@ function isPlaceholderTokenValue(match) {
   // carrying dummy tokens can never block generation. This only affects the
   // credential-PATTERN check: the exact-token check above always runs and
   // still catches the real GITHUB_TOKEN value wherever it appears.
-  const placeholders = ["your_token", "yourtoken", "<token>", "example", "placeholder", "fake", "test", "dummy", "mock", "sample", "fixture", "demo"];
+  const placeholders = [
+    "your_token",
+    "yourtoken",
+    "<token>",
+    "example",
+    "placeholder",
+    "fake",
+    "test",
+    "dummy",
+    "mock",
+    "sample",
+    "fixture",
+    "demo",
+  ];
   for (const p of placeholders) {
     if (lower.includes(p)) return true;
   }
@@ -135,7 +170,12 @@ async function checkTokenExposure(token) {
   const trackedSet = new Set(trackedFiles);
 
   // Files to inspect for local env check (even if untracked)
-  const envFiles = [".env", ".env.local", ".env.development", ".env.production"];
+  const envFiles = [
+    ".env",
+    ".env.local",
+    ".env.development",
+    ".env.production",
+  ];
 
   let exactMatches = [];
   let credentialMatches = [];
@@ -171,7 +211,8 @@ async function checkTokenExposure(token) {
 
   // --- 2. Check credential-like patterns in tracked files ---
   // Require at least 20 characters after prefix to avoid false positives like "ghp_" alone
-  const credentialRegex = /(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}/g;
+  const credentialRegex =
+    /(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}/g;
 
   for (const file of trackedFiles) {
     if (isExcluded(file)) continue;
@@ -182,7 +223,14 @@ async function checkTokenExposure(token) {
       if (st.size > 5 * 1024 * 1024) continue;
       const content = await readFile(fullPath, "utf8");
       // Quick skip if no prefix at all
-      if (!content.includes("ghp_") && !content.includes("gho_") && !content.includes("ghu_") && !content.includes("ghs_") && !content.includes("ghr_") && !content.includes("github_pat_")) {
+      if (
+        !content.includes("ghp_") &&
+        !content.includes("gho_") &&
+        !content.includes("ghu_") &&
+        !content.includes("ghs_") &&
+        !content.includes("ghr_") &&
+        !content.includes("github_pat_")
+      ) {
         continue;
       }
       const matches = content.match(credentialRegex);
@@ -253,8 +301,12 @@ async function main() {
     }
     const token = process.env.GITHUB_TOKEN;
     if (!token) {
-      console.error("GITHUB_TOKEN is required to generate the GitHub contribution snake.");
-      console.error("Set it in the environment or in a local untracked .env file as GITHUB_TOKEN=<token>.");
+      console.error(
+        "GITHUB_TOKEN is required to generate the GitHub contribution snake.",
+      );
+      console.error(
+        "Set it in the environment or in a local untracked .env file as GITHUB_TOKEN=<token>.",
+      );
       process.exit(1);
     }
 
@@ -271,7 +323,9 @@ async function main() {
         }
         console.error("");
         console.error("The Snake generation was stopped for security.");
-        console.error("Remove the token from the repository and rotate/revoke it if necessary.");
+        console.error(
+          "Remove the token from the repository and rotate/revoke it if necessary.",
+        );
         console.error("");
         console.error("🚨 GitHub token exposure detected.");
         console.error("❌ Snake generation stopped for security.");
@@ -301,7 +355,9 @@ async function main() {
         console.error(`- ${f}`);
       }
       console.error("");
-      console.error("This file is not Git-tracked, so it is not currently exposed through Git.");
+      console.error(
+        "This file is not Git-tracked, so it is not currently exposed through Git.",
+      );
       console.log("ℹ️ GITHUB_TOKEN is loaded from the environment.");
     } else {
       // Check if token is generally loaded from env (always true if we reach here)
@@ -314,12 +370,21 @@ async function main() {
     await mkdir(outputDir, { recursive: true });
 
     const outputs = snakeConfig.outputs || [
-      { format: "svg", drawOptions: { palette: "github", color_snake: defaultSnakeColor } },
-      { format: "svg", drawOptions: { palette: "github-dark", color_snake: defaultSnakeColor } },
+      {
+        format: "svg",
+        drawOptions: { palette: "github", color_snake: defaultSnakeColor },
+      },
+      {
+        format: "svg",
+        drawOptions: { palette: "github-dark", color_snake: defaultSnakeColor },
+      },
     ];
 
     // Resolve palette shorthands to full DrawOptions for runtime compatibility
-    const animationDefaults = snakeConfig.animation || { stepDurationMs: 100, frameByStep: 1 };
+    const animationDefaults = snakeConfig.animation || {
+      stepDurationMs: 100,
+      frameByStep: 1,
+    };
     const resolvedOutputs = outputs.map((o) => ({
       format: o.format,
       drawOptions: resolveDrawOptions(o.drawOptions),
@@ -336,7 +401,9 @@ async function main() {
     );
 
     if (!results || results.length !== 2 || !results[0] || !results[1]) {
-      console.error("Unexpected result from generateSnakeAnimation: expected 2 outputs.");
+      console.error(
+        "Unexpected result from generateSnakeAnimation: expected 2 outputs.",
+      );
       process.exit(1);
     }
 
